@@ -244,3 +244,42 @@ Bold marks valid configurations: y_b ≥ 0.90, y_s ≤ 0.50, oracle ≥ 0.95. Th
 - **Stress-test rule:** the stress sets are run only once, at the end of Phase 4, with the best main-run settings and no tuning.
 - **`neg_spec=0` is degenerate:** `estimator = 1/(1 + 0·(d²+1)) ≡ 1` (`cne.py:654`). The attractive log term is log(1) = 0, the repulsive term log(clamp(0)) = log(1e-4) is constant, and the clamp passes no gradient. The embedding therefore never moves from its init (checked: a 20-epoch fit returns the init bit-for-bit).
 - **The (d) spectrum reference uses `s=0` instead:** Z̄ = 100·n, so `neg_spec = 500/n` (0.1 at n = 5000). A Stage 2 run with it trains normally.
+
+# Phase 2: ξ_B (`method/xi_b.py`)
+
+## Decisions and why
+
+- **Construction:**
+  - exact background kNN (k_B = 15) from X_T to X_B on raw features;
+  - candidates via the integer sparse product M Mᵀ (the inverted index);
+  - Jaccard from integer overlap counts, so it is exact and independent of order.
+- **Tie rule.** With k_B = 15, Jaccard takes only 15 values, so in 90–94% of rows the top-L cut falls inside a tied block. The tie rule therefore decides list membership. The rule:
+  - keep the whole tied block up to 2L = 60 entries;
+  - beyond the cap, a random draw within the block, keyed by `SeedSequence(seed, spawn_key=(row,))`.
+
+  Breaking ties by index would drop pairs by position. Breaking them by target distance would bias ξ_B toward same-signal pairs.
+- **Label agreement** is an exact expectation, Σ_i w_i Σ_j ξ_B(i, j)[same label], with heads weighted by target-graph degree (the way training draws heads). No sampling is involved; the Phase 3 sampler gets its own frequency test.
+- **Stress datasets:** not touched. Their ξ_B is built only at the end of Phase 4.
+
+## Diagnostics (`scripts/phase2_xi_b.py`, `results/phase2/`)
+
+All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and same-y_s ≤ uniform + 0.10. Two runs give byte-identical CSV, JSON and `.npz` files.
+
+| level | same-y_b | same-y_s excess over 0.25 (seeds 0/1/2) | target kNN edges same-y_s | ξ_B mass on target kNN edges (same-y_s / different-y_s) |
+|---|---|---|---|---|
+| easy | 1.000 | +0.015 / +0.018 / +0.017 | 0.58–0.59 | 0.49 (0.22 / 0.27) |
+| medium | 1.000 | +0.058 / +0.058 / +0.058 | 0.47 | 0.58 (0.23 / 0.34) |
+| hard | 1.000 | +0.028 / +0.029 / +0.022 | 0.58–0.63 | 0.51–0.54 (0.24–0.25 / 0.26–0.30) |
+
+- **ξ_B follows background geometry within a cluster, not just the cluster label.**
+  - The mean ‖Bg_i − Bg_j‖ of ξ_B pairs (1.34–1.82) matches that of target kNN edges (1.35–1.84). Both are far below random same-cluster pairs (2.99–5.07).
+  - The Spearman correlation of s_B with background distance is −0.43 to −0.58.
+- **About half of ξ_B mass falls on target kNN edges**, as intended (Plan §3 step 6), and 72–83% of target edges appear in ξ_B. That mass leans toward edges whose endpoints differ in signal, i.e. edges the background explains.
+- **medium leaks a little signal (+0.058).** This is expected: half of A lies inside span(B), so a target point's background neighbors depend slightly on z_s. Pairing same-signal points works against the method. If medium underperforms in Phase 4, check this first (Plan §5).
+- **Lists:**
+  - no empty rows;
+  - list-length median 35–38;
+  - the 2L cap triggers in 0.1–0.9% of rows (`list_sizes.png`).
+- **Sensitivity** (`sensitivity_seed0.csv`, informational only; defaults unchanged):
+  - same-y_b is 1.000 for every k_B ∈ {5, 15, 30} and L ∈ {15, 30, 60};
+  - the same-y_s excess shrinks slightly as k_B grows (medium: +0.067 at k_B = 5, +0.057 at 15, +0.052–0.060 at 30).

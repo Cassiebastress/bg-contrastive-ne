@@ -93,20 +93,33 @@ Difficulty levels:
 
 On the main datasets the signal is still largely present in the high-D kNN graph, and plain Neg-t-SNE loses it in the 2-D embedding. The **stress** datasets (ρ = 0.1, `data.synthetic.STRESS_RHO`) test "graph-level hiding": there the signal is weak in the graph as well. See Phase 4 for how they are used.
 
-## 3. Phase 2 — Build ξ_B (`xi_b.py`)
+## 3. Phase 2 — Build ξ_B (`method/xi_b.py`) — done
 
-Default definition: **background-neighbor overlap**.
-1. Apply identical preprocessing to X_T and X_B (same feature scaling, no separate centering).
-2. Build a kNN index on X_B. It must be deterministic (Reproducibility rule 3): exact (`common.knn.knn_indices(X_T, k_B, Y=X_B)`), or approximate with a fixed seed and a two-build identity check. For each target point i, find its k_B = 15 nearest background points, N_B(i).
-3. Build an inverted index from each background point to the target points that have it in N_B. Candidate pairs (i, j) are target points sharing at least one background neighbor. This avoids computing all n_T² pairs.
-4. For candidates, compute the Jaccard similarity s_B(i, j) = |N_B(i) ∩ N_B(j)| / |N_B(i) ∪ N_B(j)|. Exclude j = i.
-5. For each i, keep the top L = 30 candidates with s_B > 0. Store as CSR arrays (indptr, indices, probs), where probs are s_B normalized per row. This is a per-head sampling distribution ξ_B(i, ·).
-6. Allow target kNN edges (i, j) to appear in the list. A positive edge that the background explains is supposed to receive extra repulsion.
+Definition: **background-neighbor overlap**, implemented as `method.xi_b.build_xi_b(X_T, X_B, k_B=15, L=30, seed)`.
+1. **Preprocessing:** X_T and X_B use identical preprocessing. For the synthetic data that means none: both are used as generated (float32, no scaling or centering), matching the target graph, which is built on raw X_T. For real data (out of scope), use one transform fitted on X_T ∪ X_B.
+2. **Background neighbors:** for each target point i, N_B(i) is its k_B = 15 nearest background points, from exact kNN (`common.knn.knn_indices(X_T, k_B, Y=X_B)`; Reproducibility rule 3).
+3. **Candidates via an inverted index**, computed as an integer sparse product. With M the n_T × n_B 0/1 matrix of N_B, `M @ Mᵀ` gives |N_B(i) ∩ N_B(j)| for exactly the pairs sharing at least one background neighbor, without forming all n_T² pairs. The diagonal (j = i) is removed.
+4. **Jaccard:** s_B(i, j) = |∩| / (2·k_B − |∩|), computed from the integer counts.
+5. **Top L with ties, capped at 2L.**
+   - With c the L-th largest |∩| in the row, keep everything with |∩| > c, plus the tied block |∩| = c, up to 2L entries.
+   - If the block would exceed the cap, the kept block members are a random draw without replacement from `SeedSequence(seed, spawn_key=(i,))`, so the choice is order-independent and bit-reproducible.
+   - Ties are never broken by target distance, which would bias ξ_B toward same-signal pairs.
+   - The result is stored as CSR (`indptr`, `indices` ascending per row, `jaccard`, `probs` = s_B normalized per row) in the `XiB` dataclass, with `save`/`load`/`sha256`.
+6. **Target kNN edges stay in the lists.** A positive edge that the background explains is supposed to receive extra repulsion.
 
-Diagnostics (save to `results/xi_b_diagnostics.json` and plots):
-- Distribution of list sizes. Number of target points with an empty list (these get no background negatives; report the count).
-- On synthetic data: for sampled ξ_B pairs, the fraction sharing a background label vs. sharing a signal label. Compare with uniform random pairs. ξ_B is informative only if same-background-label precision is much higher than chance and same-signal-label precision is near chance.
-- Fraction of target kNN edges that appear in ξ_B lists.
+**Diagnostics** (`scripts/phase2_xi_b.py`, outputs in `results/phase2/`):
+- **Label agreement:** the fraction of ξ_B pairs sharing y_b / y_s, computed as an exact expectation with heads weighted by target-graph degree (the way training draws heads). It is compared against uniform pairs (which is also the `uniform_extra` control's rate) and against target kNN edges.
+- **Structure:** list sizes, empty rows, tie-split rows and capped rows; background distances of ξ_B pairs; overlap with target kNN edges; an informational k_B × L grid (seed 0).
+- **Informativeness gates** (the §6 stop check), on every level and seed: same-y_b ≥ 0.90, and same-y_s ≤ uniform + 0.10. The **same-y_s excess** is always recorded.
+- **Stress datasets:** no ξ_B diagnostics until the end of Phase 4.
+
+**Results** (main datasets, seeds 0–2; all gates pass; two runs are byte-identical):
+
+| level | same-y_b | same-y_s (uniform 0.25) | same-y_s excess | target kNN edges same-y_s | list length median / max | capped rows |
+|---|---|---|---|---|---|---|
+| easy | 1.000 | 0.265–0.268 | +0.015 to +0.018 | 0.58–0.59 | 38 / 60 | 0.7–0.9% |
+| medium | 1.000 | 0.308 | +0.058 | 0.47 | 38 / 60 | 0.7% |
+| hard | 1.000 | 0.272–0.279 | +0.022 to +0.029 | 0.58–0.63 | 35–36 / 60 | 0.1–0.3% |
 
 Alternative (do not implement now; note only): linear ξ_B from a kernel on target-pair differences projected onto the top principal components of X_B.
 
@@ -116,7 +129,7 @@ Implement in the forked package (or as a subclass), keeping the original code pa
 
 New arguments:
 - `bg_mode`: `"none"` (default) | `"xi_b"` | `"uniform_extra"` (control: m_B extra negatives drawn uniformly from all target points instead of from ξ_B).
-- `bg_neighbors`: CSR (indptr, indices, probs) from Phase 2.
+- `bg_neighbors`: CSR (indptr, indices, probs) from Phase 2 (`method.xi_b.XiB`; saved as `results/phase2/xi_b_{level}_seed{s}.npz`).
 - `m_B` (int), `gamma` (float, default 1.0).
 
 Two-stage schedule (replaces the earlier `bg_start_epoch`; the package's early exaggeration is a no-op for `loss_mode="neg"` defaults and never resets the learning rate, see NOTES.md):
@@ -161,6 +174,7 @@ Outputs:
 - `REPORT.md`: a short summary of what happened, including failures. It must explicitly compare (c) against the **strongest non-background alternative**, not just against (a):
   - the best (b) over all m_B, and the (d) spectrum reference;
   - per metric, with seed means ± spread.
+- REPORT.md must also note that ξ_B pairing same-signal points directly opposes the method. If a level underperforms, first check its recorded same-y_s excess (`results/phase2/xi_b_diagnostics.csv`; medium is highest at +0.058) and report it next to that level's results.
 
 Success criterion: for some m_B, (c) improves signal kNN accuracy and signal kNN recall over (a), over (b) at the same m_B, over the best (b) at any m_B, and over (d), while background kNN accuracy drops, without the embedding fragmenting or collapsing. If the best (b) or (d) helps as much as (c), the effect is extra repulsion or a spectrum shift, not background information. Say so plainly in the report.
 
