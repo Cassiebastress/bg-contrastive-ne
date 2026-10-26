@@ -283,3 +283,4 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
 - **Sensitivity** (`sensitivity_seed0.csv`, informational only; defaults unchanged):
   - same-y_b is 1.000 for every k_B ∈ {5, 15, 30} and L ∈ {15, 30, 60};
   - the same-y_s excess shrinks slightly as k_B grows (medium: +0.067 at k_B = 5, +0.057 at 15, +0.052–0.060 at 30).
+- **Provenance flag fix:** `environment_info()["project_git"]["dirty"]` used to count a run's own untracked outputs in `results/`, so every Phase 0 and Phase 1 results file says `dirty: true` even though the code matched the recorded HEAD. Since `92fbcbc`, `results/` is excluded; the Phase 2 diagnostics record `dirty: false`.

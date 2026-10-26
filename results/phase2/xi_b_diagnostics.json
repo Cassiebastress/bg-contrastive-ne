@@ -18,8 +18,8 @@
     },
     "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
     "project_git": {
-      "head": "89d5177f5c29f78c49fd65b5daa4d8db4ca664fe",
-      "dirty": true
+      "head": "92fbcbc47801cb80cbe212af89f19d23ff4d9d3d",
+      "dirty": false
     }
   },
   "main_rho": {
