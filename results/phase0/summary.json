@@ -18,8 +18,8 @@
     },
     "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
     "project_git": {
-      "head": "1765abe668fed52b4d78677e8810d66dd9eb8908",
-      "dirty": true
+      "head": "144800440d25044e0fe94ab76b6b1cb08fecbebc",
+      "dirty": false
     }
   },
   "data": {
@@ -72,7 +72,7 @@
         "clip_grad": true,
         "device": "cpu"
       },
-      "runtime_s": 7.523650169372559,
+      "runtime_s": 7.720350027084351,
       "scale": {
         "std_dim0": 5.662774562835693,
         "std_dim1": 4.42777681350708
@@ -106,7 +106,7 @@
         "clip_grad": true,
         "device": "cpu"
       },
-      "runtime_s": 7.498492002487183,
+      "runtime_s": 7.7205541133880615,
       "scale": {
         "std_dim0": 5.662774562835693,
         "std_dim1": 4.42777681350708
@@ -140,7 +140,7 @@
         "clip_grad": true,
         "device": "cpu"
       },
-      "runtime_s": 9.375343799591064,
+      "runtime_s": 9.630836963653564,
       "scale": {
         "std_dim0": 5.639021396636963,
         "std_dim1": 4.461896896362305
@@ -174,7 +174,7 @@
         "clip_grad": true,
         "device": "cpu"
       },
-      "runtime_s": 19.762993812561035,
+      "runtime_s": 19.200254917144775,
       "scale": {
         "std_dim0": 5.576173782348633,
         "std_dim1": 4.548353672027588
@@ -208,7 +208,7 @@
         "clip_grad": true,
         "device": "cpu"
       },
-      "runtime_s": 18.815195083618164,
+      "runtime_s": 19.26978302001953,
       "scale": {
         "std_dim0": 5.576173782348633,
         "std_dim1": 4.548353672027588
