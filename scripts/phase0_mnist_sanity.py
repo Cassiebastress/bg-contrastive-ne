@@ -4,7 +4,6 @@ Run from anywhere with the cne-bg env:  python scripts/phase0_mnist_sanity.py
 Outputs go to results/phase0/.
 """
 import json
-import subprocess
 import sys
 import time
 from pathlib import Path
@@ -15,7 +14,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.sparse as sp
-import torch
 import torchvision
 from sklearn.decomposition import PCA
 
@@ -24,11 +22,12 @@ sys.path.insert(0, str(ROOT))
 
 import cne  # noqa: E402
 from cne._cne import rescale  # noqa: E402
+from common.knn import knn_graph  # noqa: E402
+from common.repro import environment_info, setup_determinism  # noqa: E402
 from eval.metrics import knn_accuracy  # noqa: E402
 
 cne_core = sys.modules["cne.cne"]  # module holding ContrastiveEmbedding and new_lr
 
-UPSTREAM_COMMIT = "d5f0b530f35be4d6247300a601fb5a860bc0a1c8"
 OUT = ROOT / "results" / "phase0"
 DATA = ROOT / "data"
 PAPER_FIG = ROOT / "third_party" / "contrastive-ne" / "figures" / "negtsne_mnist.png"
@@ -103,19 +102,20 @@ def save_embedding_plot(embd, y, title, path):
 
 
 def main():
+    setup_determinism(SEED)
     OUT.mkdir(parents=True, exist_ok=True)
 
     x, y = load_mnist_subset()
     x50 = PCA(n_components=N_PCA, random_state=SEED).fit_transform(x).astype(np.float32)
 
-    # kNN graph: package code path (annoy, k=15, symmetrized), built once on the 50-dim PCA and reused everywhere,
-    # because the annoy index is unseeded. n_epochs=0 builds the graph without training.
-    graph_builder = cne.CNE(loss_mode="neg", seed=SEED, n_epochs=0)
-    graph_builder.fit(x50)
-    G = graph_builder.neighbor_mat.tocsr()
+    # kNN graph: exact k=15 neighbors on the 50-dim PCA, union-symmetrized and binary like the package's annoy graph,
+    # built once and reused by every fit. Built twice to check it is deterministic.
+    G = knn_graph(x50, k=15)
+    G_rebuilt = knn_graph(x50, k=15)
     sp.save_npz(OUT / "knn_graph.npz", G)
     deg = np.diff(G.indptr)
     graph_stats = {
+        "method": "exact (sklearn brute force), k=15, union-symmetrized, binary weights",
         "n": G.shape[0], "directed_edges": int(G.nnz), "degree_min": int(deg.min()),
         "degree_mean": float(deg.mean()), "degree_max": int(deg.max()),
         "symmetric": bool((G != G.T).nnz == 0), "weight_values": np.unique(G.data).tolist(),
@@ -148,6 +148,7 @@ def main():
         return [i for i in range(1, len(lrs)) if lrs[i] > lrs[i - 1]]
 
     checks = {
+        "knn_graph_rebuild_identical": bool((G != G_rebuilt).nnz == 0),
         "a_early_exaggeration_noop": bool(np.array_equal(plain["embd"], plain_no_ee["embd"])),
         "b_lr_resets_within_fit": {"plain": lr_resets(plain["lrs"]), "stage1": lr_resets(stage1["lrs"]),
                                    "stage2": lr_resets(stage2_a["lrs"])},
@@ -163,10 +164,8 @@ def main():
     def scale(e):
         return {"std_dim0": float(e[:, 0].std()), "std_dim1": float(e[:, 1].std())}
 
-    git_head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
     summary = {
-        "upstream_commit": UPSTREAM_COMMIT, "project_git_head": git_head, "torch": torch.__version__,
-        "torch_num_threads": torch.get_num_threads(), "numpy": np.__version__,
+        "environment": environment_info(),
         "data": {"dataset": "MNIST train+test (70k)", "subset": N_SUBSET, "subset_seed": SEED,
                  "pixels": "raw float32 0-255, flattened", "graph_input": f"PCA-{N_PCA} of pixels"},
         "init": {"used": "first 2 PCs, rescaled so PC1 std = 1 (cne._cne.rescale, target_std=1.0), float32",

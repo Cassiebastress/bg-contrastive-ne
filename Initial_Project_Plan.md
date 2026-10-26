@@ -27,7 +27,14 @@ Scope of this plan: **non-parametric mode only**, synthetic data only, CPU is fi
 4. Sweep values: m_B ∈ {0, 1, 2, 5, 10, 20}, γ = 1.
 5. Package version: contrastive-ne v0.4.0 (`d5f0b53`), vendored in `third_party/contrastive-ne`.
 6. Initialization: always passed explicitly. Stage 1 uses PCA (first 2 PCs) rescaled so PC1 has std 1 (paper, Supp. K.2), as float32; never the package default (v0.4.0 default is PCA rescaled to std 1e-4). Stage 2 uses the Stage 1 embedding unchanged.
-7. kNN graph: built on a 50-dim PCA of the data with the package's code path (annoy, k = 15, symmetrized), computed **once per dataset**, saved, and passed as `graph=` to every fit (both stages, all runs, all seeds). The annoy index is unseeded, so rebuilding it per fit would change the graph between runs.
+7. kNN graph: built on a 50-dim PCA of the data with **exact** kNN (`common/knn.py`; k = 15, union-symmetrized, binary weights, the same structure as the package's annoy graph), computed **once per dataset**, saved, and passed as `graph=` to every fit (both stages, all runs, all seeds). The package's own annoy index is unseeded, so it is never used.
+
+### Reproducibility rules (project-wide)
+1. At startup, all project code calls `common.repro.setup_determinism(seed)`: `torch.use_deterministic_algorithms(True)`, and torch, numpy and `random` seeded from the run's seed.
+2. `torch.set_num_threads` is fixed to a recorded value (`common.repro.NUM_THREADS = 4`). If an exact-equality test fails, retry with 1 thread before investigating further, and note the result.
+3. The target kNN graph and the ξ_B background-kNN step must be deterministic: exact kNN, or approximate kNN with a fixed seed plus a check that two builds give identical graphs.
+4. If the deterministic-algorithms flag raises an error for some op, do not disable it globally. Report which op and where, and propose a deterministic alternative.
+5. Every results file is saved with environment details (`common.repro.environment_info()`: package versions, torch version, thread count, deterministic flag, CPU model, project git HEAD).
 
 ## 1. Phase 0 — Understand the package (no modifications yet)
 
@@ -67,7 +74,7 @@ Add a `signal_to_background` scale parameter.
 
 Default definition: **background-neighbor overlap**.
 1. Apply identical preprocessing to X_T and X_B (same feature scaling, no separate centering).
-2. Build a kNN index on X_B (exact or approximate; e.g. pynndescent or sklearn). For each target point i, find its k_B = 15 nearest background points, N_B(i).
+2. Build a kNN index on X_B. It must be deterministic (Reproducibility rule 3): exact (`common.knn.knn_indices(X_T, k_B, Y=X_B)`), or approximate with a fixed seed and a two-build identity check. For each target point i, find its k_B = 15 nearest background points, N_B(i).
 3. Build an inverted index from each background point to the target points that have it in N_B. Candidate pairs (i, j) are target points sharing at least one background neighbor. This avoids computing all n_T² pairs.
 4. For candidates, compute the Jaccard similarity s_B(i, j) = |N_B(i) ∩ N_B(j)| / |N_B(i) ∪ N_B(j)|. Exclude j = i.
 5. For each i, keep the top L = 30 candidates with s_B > 0. Store as CSR arrays (indptr, indices, probs), where probs are s_B normalized per row. This is a per-head sampling distribution ξ_B(i, ·).

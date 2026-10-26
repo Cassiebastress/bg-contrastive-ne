@@ -1,9 +1,27 @@
 {
-  "upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
-  "project_git_head": "d7e9f9a7864fbcba7c378741763ec98fcefa9f6a",
-  "torch": "2.14.1",
-  "torch_num_threads": 4,
-  "numpy": "2.5.2",
+  "environment": {
+    "python": "3.12.15",
+    "platform": "macOS-14.3-arm64-arm-64bit",
+    "cpu_model": "Apple M3",
+    "cpu_count": 8,
+    "torch": "2.14.1",
+    "torch_num_threads": 4,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "1765abe668fed52b4d78677e8810d66dd9eb8908",
+      "dirty": true
+    }
+  },
   "data": {
     "dataset": "MNIST train+test (70k)",
     "subset": 10000,
@@ -16,11 +34,12 @@
     "v0.4.0_default_would_have_been": "init=None with X given -> 'pca', rescaled to PC1 std 1e-4 (_cne.py:470-494); docstring at _cne.py:384 says std 1"
   },
   "graph": {
+    "method": "exact (sklearn brute force), k=15, union-symmetrized, binary weights",
     "n": 10000,
-    "directed_edges": 210596,
+    "directed_edges": 210584,
     "degree_min": 15,
-    "degree_mean": 21.0596,
-    "degree_max": 53,
+    "degree_mean": 21.0584,
+    "degree_max": 54,
     "symmetric": true,
     "weight_values": [
       1.0
@@ -53,10 +72,10 @@
         "clip_grad": true,
         "device": "cpu"
       },
-      "runtime_s": 7.739382028579712,
+      "runtime_s": 7.523650169372559,
       "scale": {
-        "std_dim0": 6.002026557922363,
-        "std_dim1": 4.375370979309082
+        "std_dim0": 5.662774562835693,
+        "std_dim1": 4.42777681350708
       },
       "lr_first": 1.0,
       "lr_last": 0.0050000000000000044,
@@ -87,10 +106,10 @@
         "clip_grad": true,
         "device": "cpu"
       },
-      "runtime_s": 7.709372043609619,
+      "runtime_s": 7.498492002487183,
       "scale": {
-        "std_dim0": 5.876683235168457,
-        "std_dim1": 4.484062194824219
+        "std_dim0": 5.662774562835693,
+        "std_dim1": 4.42777681350708
       },
       "lr_first": 1.0,
       "lr_last": 0.0050000000000000044,
@@ -121,10 +140,10 @@
         "clip_grad": true,
         "device": "cpu"
       },
-      "runtime_s": 9.443166017532349,
+      "runtime_s": 9.375343799591064,
       "scale": {
-        "std_dim0": 5.8740644454956055,
-        "std_dim1": 4.478768825531006
+        "std_dim0": 5.639021396636963,
+        "std_dim1": 4.461896896362305
       },
       "lr_first": 1.0,
       "lr_last": 0.0040000000000000036,
@@ -155,10 +174,10 @@
         "clip_grad": true,
         "device": "cpu"
       },
-      "runtime_s": 20.892951011657715,
+      "runtime_s": 19.762993812561035,
       "scale": {
-        "std_dim0": 5.878330707550049,
-        "std_dim1": 4.519821643829346
+        "std_dim0": 5.576173782348633,
+        "std_dim1": 4.548353672027588
       },
       "lr_first": 1.0,
       "lr_last": 0.0020000000000000018,
@@ -189,10 +208,10 @@
         "clip_grad": true,
         "device": "cpu"
       },
-      "runtime_s": 18.953601121902466,
+      "runtime_s": 18.815195083618164,
       "scale": {
-        "std_dim0": 5.873545169830322,
-        "std_dim1": 4.516075134277344
+        "std_dim0": 5.576173782348633,
+        "std_dim1": 4.548353672027588
       },
       "lr_first": 1.0,
       "lr_last": 0.0020000000000000018,
@@ -200,12 +219,13 @@
     }
   },
   "knn_accuracy_k15_5fold": {
-    "plain": 0.9259999999999999,
-    "stage1": 0.9109,
-    "stage2": 0.9122
+    "plain": 0.9170999999999999,
+    "stage1": 0.9178000000000001,
+    "stage2": 0.9178000000000001
   },
   "checks": {
-    "a_early_exaggeration_noop": false,
+    "knn_graph_rebuild_identical": true,
+    "a_early_exaggeration_noop": true,
     "b_lr_resets_within_fit": {
       "plain": [],
       "stage1": [],
@@ -219,7 +239,7 @@
       1.0,
       0.0020000000000000018
     ],
-    "stage2_rerun_bit_identical": false,
+    "stage2_rerun_bit_identical": true,
     "plain_start_equals_pca_init": true
   }
 }

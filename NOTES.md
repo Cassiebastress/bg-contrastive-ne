@@ -32,7 +32,7 @@ Defaults that matter for `CNE(loss_mode="neg")`:
 - **annoy:** a Euclidean index with 50 trees, built **without a seed** (`_cne.py:418-420`). Query k+1 neighbors per point and drop the first, assumed to be the point itself (`_cne.py:425-426`).
 - **Symmetrization:** union. `adj[i, neighs] = 1; adj[neighs, i] = 1` (`_cne.py:427-428`). An edge (i,j) exists if j ∈ kNN(i) or i ∈ kNN(j).
 - **Weights:** binary (1) and in practice **ignored**. The loader turns the matrix into COO `row`/`col` and discards `data` (`_cne.py:100-102`). Every *stored* entry becomes an edge, including any explicit zeros in a user-supplied graph.
-- **User-supplied graph:** `graph=<scipy sparse>` is taken as-is via `graph.tocsr()` (`_cne.py:455`). Because annoy is unseeded, we build the graph once and pass it to every fit (see §7).
+- **User-supplied graph:** `graph=<scipy sparse>` is taken as-is via `graph.tocsr()` (`_cne.py:455`). Because annoy is unseeded, we never use the package's graph construction. Instead we build an **exact** kNN graph with the same structure (`common/knn.py`: k = 15, union-symmetrized, binary), once per dataset, and pass it to every fit (see §7 and Plan, Reproducibility rules).
 
 ## 2. Minibatches of directed edges
 
@@ -150,40 +150,40 @@ Consequences:
 ## 10. Empirical confirmation (`scripts/phase0_mnist_sanity.py`, `results/phase0/summary.json`)
 
 **Setup:**
+- Determinism: `common.repro.setup_determinism(0)` (deterministic torch algorithms, 4 threads, torch/numpy/random seeded).
 - Data: 10k random MNIST points (seed 0) drawn from all 70k, raw pixels.
-- kNN graph: built on a 50-dim PCA, then saved and reused for every fit.
+- kNN graph: exact k = 15 on a 50-dim PCA, union-symmetrized, built once and reused.
 - Init: PCA rescaled so PC1 has std 1, float32.
-- Hardware and software: CPU with 4 torch threads, torch 2.14.1.
+- Hardware and software: Apple M3, torch 2.14.1. The full environment is in `summary.json` under `environment`.
 
-**Graph:** 10,000 nodes and 210,596 directed edges. Degree is min 15, mean 21.1, max 53. The graph is symmetric, has all weights equal to 1, and has no self-loops.
+**Graph:** 10,000 nodes and 210,584 directed edges. Degree is min 15, mean 21.1, max 54. The graph is symmetric, binary, and has no self-loops. Building it twice gives identical graphs.
 
 **Results:**
 
-| Run | Epochs | kNN acc (k=15, 5-fold) | std(dim0), std(dim1) | Runtime |
-|---|---|---|---|---|
-| Plain (package defaults) | 200 | 0.926 | 6.00, 4.38 | 7.7 s |
-| Stage 1 | 250 | 0.911 | 5.87, 4.48 | 9.4 s |
-| Stage 2 (from Stage 1) | +500 | 0.912 | 5.88, 4.52 | 20.9 s |
+| Run | Epochs | kNN acc (k=15, 5-fold) | Runtime |
+|---|---|---|---|
+| Plain (package defaults) | 200 | 0.917 | 7.5 s |
+| Stage 1 | 250 | 0.918 | 9.4 s |
+| Stage 2 (from Stage 1) | +500 | 0.918 | 19.8 s |
 
 **Qualitative comparison** (`results/phase0/comparison.png`):
 - The structure is the same as the package README's Neg-t-SNE figure (full 70k): compact, well-separated digit clusters.
 - 4/7/9 form one block and 3/5/8 sit next to each other; 1 is a long thin arc; 0, 2 and 6 are isolated clusters.
 - At 10k points the clusters are sparser, as expected. Stage 2 is stable: no fragmentation and no change in scale.
 
-**Schedule facts:**
-- **(c) confirmed.** The Stage 2 start weights (read through the epoch −1 callback) are exactly equal to the Stage 1 output, float32 (`np.array_equal` = True). The plain run likewise starts exactly at the PCA init. **Stage 2 is therefore a new `CNE.fit(init=stage1_embd, graph=G)`, and the in-loop fallback is not needed.**
-- **(b) confirmed.** The recorded per-epoch learning rates fall monotonically in every fit, with no reset (`results/phase0/lr_schedule.png`). Stage 2 restarts at 1.0 and falls to 0.002.
-- **(a) confirmed only with deterministic algorithms.** In the main run, plain with early exaggeration on vs off was **not** bit-identical. The cause is the nondeterminism below, not early exaggeration: with `torch.use_deterministic_algorithms(True)`, EE on vs off over 200 epochs **is** bit-identical.
+**Schedule facts (all confirmed empirically):**
+- **(a) Early exaggeration is a no-op for neg defaults.** Plain runs with EE on and off are bit-identical.
+- **(b) No LR reset.** The recorded per-epoch learning rates fall monotonically in every fit (`results/phase0/lr_schedule.png`). Stage 2 restarts at 1.0 and falls to 0.002.
+- **(c) A custom init is used unchanged.** The Stage 2 start weights (read through the epoch −1 callback) are exactly equal to the Stage 1 output, float32. The plain run starts exactly at the PCA init.
+- **Approach used:** Stage 2 is a new `CNE.fit(init=stage1_embd, graph=G)`. The in-loop fallback is not needed.
 
-**Reproducibility problem: same-seed reruns are not bit-identical on CPU by default.**
-- Two Stage 2 runs with the same init, graph and seed differ: the final embeddings are not equal, and the epoch-0 mean loss is already 58742.266 vs 58742.265.
-- Diagnosis (scratch script, 20-epoch fits from the PCA init):
+**Reproducibility:**
+- **Within a run:** the Stage 2 rerun is bit-identical.
+- **Across two separate invocations of the script:** the kNN graph, PCA init, and plain, Stage 1 and Stage 2 embeddings are all bit-identical at 4 threads. The 1-thread fallback was not needed.
+- **Deterministic mode:** no op raised an error.
 
-| torch setting | 1 epoch: max abs diff | 20 epochs: max abs diff | 200-epoch runtime |
-|---|---|---|---|
-| default (4 threads) | 2.3e-5 | 7.4 | 8.4 s |
-| `torch.use_deterministic_algorithms(True)` | 0 | 0 | 8.3 s |
-| `torch.set_num_threads(1)` | 0 | 0 | 14.3 s |
-
-- The likely source is multithreaded scatter-add in the backward pass (the `features[neigh_inds]` gather and/or the embedding backward). Its float summation order varies between runs, and the chaotic optimization amplifies the differences.
-- The fix is deterministic algorithms, which have no measurable runtime cost. This is **not yet applied** in `scripts/phase0_mnist_sanity.py`, pending a decision (Plan §6 stop condition).
+**History, before the project-wide determinism rule:**
+- With torch defaults (4 threads, non-deterministic algorithms), same-seed reruns diverged: max |diff| was 2.3e-5 after 1 epoch and 7.4 after 20 epochs.
+- Both `torch.use_deterministic_algorithms(True)` (8.3 s vs 8.4 s per 200 epochs) and `torch.set_num_threads(1)` (14.3 s) removed the divergence.
+- The likely source is multithreaded scatter-add in the backward pass (the `features[neigh_inds]` gather and/or the embedding backward), whose float summation order varies between runs.
+- With the package's annoy graph (now replaced by the exact graph), the plain run's kNN accuracy was 0.926.
