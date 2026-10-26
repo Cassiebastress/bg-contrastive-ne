@@ -1,0 +1,225 @@
+{
+  "upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+  "project_git_head": "d7e9f9a7864fbcba7c378741763ec98fcefa9f6a",
+  "torch": "2.14.1",
+  "torch_num_threads": 4,
+  "numpy": "2.5.2",
+  "data": {
+    "dataset": "MNIST train+test (70k)",
+    "subset": 10000,
+    "subset_seed": 0,
+    "pixels": "raw float32 0-255, flattened",
+    "graph_input": "PCA-50 of pixels"
+  },
+  "init": {
+    "used": "first 2 PCs, rescaled so PC1 std = 1 (cne._cne.rescale, target_std=1.0), float32",
+    "v0.4.0_default_would_have_been": "init=None with X given -> 'pca', rescaled to PC1 std 1e-4 (_cne.py:470-494); docstring at _cne.py:384 says std 1"
+  },
+  "graph": {
+    "n": 10000,
+    "directed_edges": 210596,
+    "degree_min": 15,
+    "degree_mean": 21.0596,
+    "degree_max": 53,
+    "symmetric": true,
+    "weight_values": [
+      1.0
+    ],
+    "self_loops": 0
+  },
+  "runs": {
+    "plain": {
+      "params": {
+        "k": 15,
+        "seed": 0,
+        "n_epochs": 200,
+        "batch_size": 32768,
+        "negative_samples": 5,
+        "optimizer": "sgd",
+        "learning_rate": 1.0,
+        "momentum": 0.0,
+        "anneal_lr": "linear",
+        "lr_min_factor": 0.0,
+        "spec_param": 1.0,
+        "neg_spec": 1.0,
+        "s": null,
+        "Z_bar": null,
+        "eps": 1.0,
+        "clamp_low": 0.0001,
+        "clamp_high": 1.0,
+        "loss_aggregation": "sum",
+        "early_exaggeration": true,
+        "force_resample": null,
+        "clip_grad": true,
+        "device": "cpu"
+      },
+      "runtime_s": 7.739382028579712,
+      "scale": {
+        "std_dim0": 6.002026557922363,
+        "std_dim1": 4.375370979309082
+      },
+      "lr_first": 1.0,
+      "lr_last": 0.0050000000000000044,
+      "n_lr_values": 200
+    },
+    "plain_no_early_exaggeration": {
+      "params": {
+        "k": 15,
+        "seed": 0,
+        "n_epochs": 200,
+        "batch_size": 32768,
+        "negative_samples": 5,
+        "optimizer": "sgd",
+        "learning_rate": 1.0,
+        "momentum": 0.0,
+        "anneal_lr": "linear",
+        "lr_min_factor": 0.0,
+        "spec_param": 1.0,
+        "neg_spec": 1.0,
+        "s": null,
+        "Z_bar": null,
+        "eps": 1.0,
+        "clamp_low": 0.0001,
+        "clamp_high": 1.0,
+        "loss_aggregation": "sum",
+        "early_exaggeration": false,
+        "force_resample": null,
+        "clip_grad": true,
+        "device": "cpu"
+      },
+      "runtime_s": 7.709372043609619,
+      "scale": {
+        "std_dim0": 5.876683235168457,
+        "std_dim1": 4.484062194824219
+      },
+      "lr_first": 1.0,
+      "lr_last": 0.0050000000000000044,
+      "n_lr_values": 200
+    },
+    "stage1": {
+      "params": {
+        "k": 15,
+        "seed": 0,
+        "n_epochs": 250,
+        "batch_size": 32768,
+        "negative_samples": 5,
+        "optimizer": "sgd",
+        "learning_rate": 1.0,
+        "momentum": 0.0,
+        "anneal_lr": "linear",
+        "lr_min_factor": 0.0,
+        "spec_param": 1.0,
+        "neg_spec": 1.0,
+        "s": null,
+        "Z_bar": null,
+        "eps": 1.0,
+        "clamp_low": 0.0001,
+        "clamp_high": 1.0,
+        "loss_aggregation": "sum",
+        "early_exaggeration": true,
+        "force_resample": null,
+        "clip_grad": true,
+        "device": "cpu"
+      },
+      "runtime_s": 9.443166017532349,
+      "scale": {
+        "std_dim0": 5.8740644454956055,
+        "std_dim1": 4.478768825531006
+      },
+      "lr_first": 1.0,
+      "lr_last": 0.0040000000000000036,
+      "n_lr_values": 250
+    },
+    "stage2": {
+      "params": {
+        "k": 15,
+        "seed": 0,
+        "n_epochs": 500,
+        "batch_size": 32768,
+        "negative_samples": 5,
+        "optimizer": "sgd",
+        "learning_rate": 1.0,
+        "momentum": 0.0,
+        "anneal_lr": "linear",
+        "lr_min_factor": 0.0,
+        "spec_param": 1.0,
+        "neg_spec": 1.0,
+        "s": null,
+        "Z_bar": null,
+        "eps": 1.0,
+        "clamp_low": 0.0001,
+        "clamp_high": 1.0,
+        "loss_aggregation": "sum",
+        "early_exaggeration": false,
+        "force_resample": null,
+        "clip_grad": true,
+        "device": "cpu"
+      },
+      "runtime_s": 20.892951011657715,
+      "scale": {
+        "std_dim0": 5.878330707550049,
+        "std_dim1": 4.519821643829346
+      },
+      "lr_first": 1.0,
+      "lr_last": 0.0020000000000000018,
+      "n_lr_values": 500
+    },
+    "stage2_rerun": {
+      "params": {
+        "k": 15,
+        "seed": 0,
+        "n_epochs": 500,
+        "batch_size": 32768,
+        "negative_samples": 5,
+        "optimizer": "sgd",
+        "learning_rate": 1.0,
+        "momentum": 0.0,
+        "anneal_lr": "linear",
+        "lr_min_factor": 0.0,
+        "spec_param": 1.0,
+        "neg_spec": 1.0,
+        "s": null,
+        "Z_bar": null,
+        "eps": 1.0,
+        "clamp_low": 0.0001,
+        "clamp_high": 1.0,
+        "loss_aggregation": "sum",
+        "early_exaggeration": false,
+        "force_resample": null,
+        "clip_grad": true,
+        "device": "cpu"
+      },
+      "runtime_s": 18.953601121902466,
+      "scale": {
+        "std_dim0": 5.873545169830322,
+        "std_dim1": 4.516075134277344
+      },
+      "lr_first": 1.0,
+      "lr_last": 0.0020000000000000018,
+      "n_lr_values": 500
+    }
+  },
+  "knn_accuracy_k15_5fold": {
+    "plain": 0.9259999999999999,
+    "stage1": 0.9109,
+    "stage2": 0.9122
+  },
+  "checks": {
+    "a_early_exaggeration_noop": false,
+    "b_lr_resets_within_fit": {
+      "plain": [],
+      "stage1": [],
+      "stage2": []
+    },
+    "c_stage2_start_equals_stage1_output": true,
+    "c_stage2_start_dtype": "float32",
+    "stage1_output_dtype": "float32",
+    "stage2_first_lr": 1.0,
+    "stage2_lr_first_last": [
+      1.0,
+      0.0020000000000000018
+    ],
+    "stage2_rerun_bit_identical": false,
+    "plain_start_equals_pca_init": true
+  }
+}
