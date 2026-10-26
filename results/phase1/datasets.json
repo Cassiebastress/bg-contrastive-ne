@@ -1,0 +1,260 @@
+{
+  "environment": {
+    "python": "3.12.15",
+    "platform": "macOS-14.3-arm64-arm-64bit",
+    "cpu_model": "Apple M3",
+    "cpu_count": 8,
+    "torch": "2.14.1",
+    "torch_num_threads": 4,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "e2932c58e127ea2abf3be34f08d8e746588ab219",
+      "dirty": true
+    }
+  },
+  "main_rho": {
+    "easy": 0.2,
+    "medium": 0.2,
+    "hard": 0.3
+  },
+  "stress_rho": {
+    "easy": 0.1,
+    "medium": 0.1,
+    "hard": 0.1
+  },
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "generator_defaults": {
+    "K_b": 6,
+    "d_b": 5,
+    "edge_b": 30.0,
+    "sigma_b": 1.0,
+    "K_s": 4,
+    "d_s": 3,
+    "edge_s": 6.0,
+    "sigma_s": 1.0,
+    "noise_std": 0.1,
+    "overlap": 0.5,
+    "hidden": 64,
+    "gain": 6.0,
+    "bias_std": 0.1,
+    "n_ref": 20000
+  },
+  "n_T": 5000,
+  "n_B": 5000,
+  "D": 50,
+  "stress_test_rule": "run the method once, at the end of Phase 4, with the best main-run settings; no tuning",
+  "datasets": [
+    {
+      "set": "main",
+      "level": "easy",
+      "rho": 0.2,
+      "seed": 0,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.8916000000000001,
+      "oracle_acc_s": 0.9955999999999999,
+      "sha256_X_T": "62b331d9df5e8002c53aed7bd51a743378491b33bbed7e5ca941e16124144e4a",
+      "sha256_X_B": "02b0271deceac23493f58504b42ff4880f6f2dbb4fd46b19abaa585325e4dbf1"
+    },
+    {
+      "set": "main",
+      "level": "easy",
+      "rho": 0.2,
+      "seed": 1,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.8757999999999999,
+      "oracle_acc_s": 0.9954000000000001,
+      "sha256_X_T": "6cdccfa2f116e310856759394625c1d442bb4296313cda553ca7c9d308c78397",
+      "sha256_X_B": "f762855aadafac2b1c6a669a3e81123306d58a89b70b8b5a27bee96079bbae3d"
+    },
+    {
+      "set": "main",
+      "level": "easy",
+      "rho": 0.2,
+      "seed": 2,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.8752000000000001,
+      "oracle_acc_s": 0.9949999999999999,
+      "sha256_X_T": "1f97be9755ac1aa526acfb63c167ea539adebcdec7a4a2152947a8fc556c85dc",
+      "sha256_X_B": "788a259f04a3945c43b061b87befa4bb1991ba22694fd6a4d60293b33913d662"
+    },
+    {
+      "set": "main",
+      "level": "medium",
+      "rho": 0.2,
+      "seed": 0,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.7093999999999999,
+      "oracle_acc_s": 0.9955999999999999,
+      "sha256_X_T": "79baad449a28a044a7ef54c52c0b7d25be204582af573a8f65296afc89a42988",
+      "sha256_X_B": "02b0271deceac23493f58504b42ff4880f6f2dbb4fd46b19abaa585325e4dbf1"
+    },
+    {
+      "set": "main",
+      "level": "medium",
+      "rho": 0.2,
+      "seed": 1,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.703,
+      "oracle_acc_s": 0.9954000000000001,
+      "sha256_X_T": "048ee6e15b1233b39d1bea69669f366534711d157882e58853b8ea43b10c0a8f",
+      "sha256_X_B": "f762855aadafac2b1c6a669a3e81123306d58a89b70b8b5a27bee96079bbae3d"
+    },
+    {
+      "set": "main",
+      "level": "medium",
+      "rho": 0.2,
+      "seed": 2,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.6996,
+      "oracle_acc_s": 0.9949999999999999,
+      "sha256_X_T": "b4267ee0fef501e46c847563cad31ad92ded1ed0dbe30d3be5f1df9c3ea7486e",
+      "sha256_X_B": "788a259f04a3945c43b061b87befa4bb1991ba22694fd6a4d60293b33913d662"
+    },
+    {
+      "set": "main",
+      "level": "hard",
+      "rho": 0.3,
+      "seed": 0,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.8821999999999999,
+      "oracle_acc_s": 0.9955999999999999,
+      "sha256_X_T": "f681d829b535fbc3890b0a30f22bfbfb3c067d9b9ec9b800289aafb0fe3cbb48",
+      "sha256_X_B": "2feb79054d535966b31699f69b5612ff4962f885352aaf51c4938d39d9b8b3d4"
+    },
+    {
+      "set": "main",
+      "level": "hard",
+      "rho": 0.3,
+      "seed": 1,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.8700000000000001,
+      "oracle_acc_s": 0.9954000000000001,
+      "sha256_X_T": "f111c91d41f09fd0d5ec9b43d97001801a318e21134ef29133697a58a971ece0",
+      "sha256_X_B": "e5c5fce1d38f745d4bbe1d4b0bb3a80889e206ab50c72927dc04b949a9502850"
+    },
+    {
+      "set": "main",
+      "level": "hard",
+      "rho": 0.3,
+      "seed": 2,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.8485999999999999,
+      "oracle_acc_s": 0.9949999999999999,
+      "sha256_X_T": "daae01d75e643ff95e8d3623260e4623ba7e66987e822efb9cd7f1e0cc8309e5",
+      "sha256_X_B": "8c60e90ff58dde23110384a5dbfb992f1b16fc7c7fa95478c3d7efc29d5061e8"
+    },
+    {
+      "set": "stress",
+      "level": "easy",
+      "rho": 0.1,
+      "seed": 0,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.5088,
+      "oracle_acc_s": 0.9955999999999999,
+      "sha256_X_T": "e99ede750b1ce7481bd6e099a0bff1f695045f5254a36c4867475e48c8c15e29",
+      "sha256_X_B": "02b0271deceac23493f58504b42ff4880f6f2dbb4fd46b19abaa585325e4dbf1"
+    },
+    {
+      "set": "stress",
+      "level": "easy",
+      "rho": 0.1,
+      "seed": 1,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.5088,
+      "oracle_acc_s": 0.9954000000000001,
+      "sha256_X_T": "e2f0c9d6245b7e0f7fb6324cad8b8839be2c4422511810d09226cfb6d85f9db7",
+      "sha256_X_B": "f762855aadafac2b1c6a669a3e81123306d58a89b70b8b5a27bee96079bbae3d"
+    },
+    {
+      "set": "stress",
+      "level": "easy",
+      "rho": 0.1,
+      "seed": 2,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.5024000000000001,
+      "oracle_acc_s": 0.9949999999999999,
+      "sha256_X_T": "2260bf520f65ed611694b7aa2b6961520b50449214d6809711f3ccee8ceb929f",
+      "sha256_X_B": "788a259f04a3945c43b061b87befa4bb1991ba22694fd6a4d60293b33913d662"
+    },
+    {
+      "set": "stress",
+      "level": "medium",
+      "rho": 0.1,
+      "seed": 0,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.40499999999999997,
+      "oracle_acc_s": 0.9955999999999999,
+      "sha256_X_T": "92802b4beb9cc79bc72c0661fd81ff1ed91e9a756e04da86c3b134a4cce9de9d",
+      "sha256_X_B": "02b0271deceac23493f58504b42ff4880f6f2dbb4fd46b19abaa585325e4dbf1"
+    },
+    {
+      "set": "stress",
+      "level": "medium",
+      "rho": 0.1,
+      "seed": 1,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.4034,
+      "oracle_acc_s": 0.9954000000000001,
+      "sha256_X_T": "0ea7fbc1a3b05b5ab786b145f521153c99d25642b7001e71b1d899a621a30928",
+      "sha256_X_B": "f762855aadafac2b1c6a669a3e81123306d58a89b70b8b5a27bee96079bbae3d"
+    },
+    {
+      "set": "stress",
+      "level": "medium",
+      "rho": 0.1,
+      "seed": 2,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.3968,
+      "oracle_acc_s": 0.9949999999999999,
+      "sha256_X_T": "88b226940a21dca084231b36e261e4a245acae4eb58b12b2d5c5c778bc43b0e0",
+      "sha256_X_B": "788a259f04a3945c43b061b87befa4bb1991ba22694fd6a4d60293b33913d662"
+    },
+    {
+      "set": "stress",
+      "level": "hard",
+      "rho": 0.1,
+      "seed": 0,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.392,
+      "oracle_acc_s": 0.9955999999999999,
+      "sha256_X_T": "3fd36e9404f90054052574e8a629ffdacc5f2fe64a05e95861ce0442f5852b15",
+      "sha256_X_B": "2feb79054d535966b31699f69b5612ff4962f885352aaf51c4938d39d9b8b3d4"
+    },
+    {
+      "set": "stress",
+      "level": "hard",
+      "rho": 0.1,
+      "seed": 1,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.3802,
+      "oracle_acc_s": 0.9954000000000001,
+      "sha256_X_T": "b30a0859087fe9bd2828d3a528f4688506a22dbf06b4ef965d4fcb269b6dcd39",
+      "sha256_X_B": "e5c5fce1d38f745d4bbe1d4b0bb3a80889e206ab50c72927dc04b949a9502850"
+    },
+    {
+      "set": "stress",
+      "level": "hard",
+      "rho": 0.1,
+      "seed": 2,
+      "highd_acc_b": 1.0,
+      "highd_acc_s": 0.37859999999999994,
+      "oracle_acc_s": 0.9949999999999999,
+      "sha256_X_T": "7ad3e7895a828eb922dd49c5239e3dd4b0104e02e846cbdd79cbc9999c6709a5",
+      "sha256_X_B": "8c60e90ff58dde23110384a5dbfb992f1b16fc7c7fa95478c3d7efc29d5061e8"
+    }
+  ]
+}

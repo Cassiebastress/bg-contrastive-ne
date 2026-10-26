@@ -235,3 +235,12 @@ Bold marks valid configurations: y_b ≥ 0.90, y_s ≤ 0.50, oracle ≥ 0.95. Th
 - easy has a sharp transition between ρ = 0.2 (0.29) and 0.3 (0.96). medium and hard degrade more gradually; at a given ρ, overlap with the background directions and hard's larger within-cluster background variance hide the signal longer.
 - `raw_pca.png` shows X_B covering X_T's background clusters at every level.
 - **Determinism:** two full runs of the sweep give a byte-identical `validity.csv` and bit-identical chosen embeddings.
+
+## Frozen datasets and Phase 4 additions
+
+- **Approved scales:** `data.synthetic.MAIN_RHO` = {easy 0.2, medium 0.2, hard 0.3}.
+- **Stress test:** `STRESS_RHO` = 0.1 for every level, the "graph-level hiding" set. Its high-D X_T y_s kNN accuracy is 0.50–0.51 (easy), 0.40 (medium) and 0.38–0.39 (hard), against 0.70–0.89 for the main sets.
+- **Hashes:** `scripts/phase1_datasets.py` records SHA-256 hashes of X_T and X_B for every main and stress dataset (seeds 0–2) in `results/phase1/datasets.csv`. Two runs give an identical file.
+- **Stress-test rule:** the stress sets are run only once, at the end of Phase 4, with the best main-run settings and no tuning.
+- **`neg_spec=0` is degenerate:** `estimator = 1/(1 + 0·(d²+1)) ≡ 1` (`cne.py:654`). The attractive log term is log(1) = 0, the repulsive term log(clamp(0)) = log(1e-4) is constant, and the clamp passes no gradient. The embedding therefore never moves from its init (checked: a 20-epoch fit returns the init bit-for-bit).
+- **The (d) spectrum reference uses `s=0` instead:** Z̄ = 100·n, so `neg_spec = 500/n` (0.1 at n = 5000). A Stage 2 run with it trains normally.

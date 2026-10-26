@@ -13,6 +13,13 @@ import numpy as np
 
 LEVELS = ("easy", "medium", "hard")
 
+# Chosen signal_to_background per level (Phase 1 validity sweep, results/phase1/): the largest rho for which plain
+# Neg-t-SNE still hides the signal, confirmed on seeds 0-2.
+MAIN_RHO = {"easy": 0.2, "medium": 0.2, "hard": 0.3}
+# "Graph-level hiding" stress test: rho at which the signal is also weak in the high-D kNN graph. Run the method on
+# these only once, at the end of Phase 4, with the best settings from the main runs; never tune on them.
+STRESS_RHO = {"easy": 0.1, "medium": 0.1, "hard": 0.1}
+
 DEFAULTS = {
     "K_b": 6, "d_b": 5, "edge_b": 30.0, "sigma_b": 1.0,  # background latent: clusters, dim, center distance, std
     "K_s": 4, "d_s": 3, "edge_s": 6.0, "sigma_s": 1.0,  # signal latent

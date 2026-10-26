@@ -78,6 +78,21 @@ Difficulty levels:
 - **Choosing ρ:** sweep ρ ∈ {0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0} on seed 0. For each level, choose the largest valid ρ (the strongest signal plain Neg-t-SNE still hides), then confirm it on seeds 0–2.
 - **Stop:** if no ρ is valid, stop and report. Report the chosen scales.
 
+**Chosen scales (approved):** easy ρ = 0.2, medium ρ = 0.2, hard ρ = 0.3 (`data.synthetic.MAIN_RHO`). Each is valid on seeds 0, 1 and 2 (`results/phase1/validity.csv`).
+
+**Frozen datasets:** n_T = n_B = 5000, D = 50, seeds 0–2. `results/phase1/datasets.csv` records SHA-256 hashes of X_T and X_B for every dataset, so later generator drift is detectable.
+
+| Set | Level | ρ | High-D X_T y_s kNN acc (seeds 0/1/2) | Baseline embedding y_s (seed 0) |
+|---|---|---|---|---|
+| main | easy | 0.2 | 0.892 / 0.876 / 0.875 | 0.289 |
+| main | medium | 0.2 | 0.709 / 0.703 / 0.700 | 0.371 |
+| main | hard | 0.3 | 0.882 / 0.870 / 0.849 | 0.371 |
+| stress | easy | 0.1 | 0.509 / 0.509 / 0.502 | 0.250 |
+| stress | medium | 0.1 | 0.405 / 0.403 / 0.397 | 0.264 |
+| stress | hard | 0.1 | 0.392 / 0.380 / 0.379 | 0.259 |
+
+On the main datasets the signal is still largely present in the high-D kNN graph, and plain Neg-t-SNE loses it in the 2-D embedding. The **stress** datasets (ρ = 0.1, `data.synthetic.STRESS_RHO`) test "graph-level hiding": there the signal is weak in the graph as well. See Phase 4 for how they are used.
+
 ## 3. Phase 2 — Build ξ_B (`xi_b.py`)
 
 Default definition: **background-neighbor overlap**.
@@ -123,12 +138,14 @@ Tests (`tests/`):
 
 ## 5. Phase 4 — Experiment
 
-Datasets: `easy` first. Run `medium` and `hard` only after `easy` gives interpretable results.
+Datasets: the **main** datasets (§2, `MAIN_RHO`). Run `easy` first; run `medium` and `hard` only after `easy` gives interpretable results.
 
-Runs (3 seeds each, package defaults otherwise, same epochs/batch size/k for all). Every run, including (a) and (b), uses the same Stage 1 embedding per seed, the same kNN graph, and the same Stage 2 length, so the only difference between runs is the background term:
+Runs (3 seeds each, package defaults otherwise, same epochs/batch size/k for all). Every run, including (a), (b) and (d), uses the same Stage 1 embedding per seed, the same kNN graph, and the same Stage 2 length, so the only difference between runs is the Stage 2 setting:
 - (a) plain Neg-t-SNE: Stage 2 with `bg_mode="none"`
 - (b) control: `bg_mode="uniform_extra"`, m_B ∈ {1, 2, 5, 10, 20}
 - (c) method: `bg_mode="xi_b"`, m_B ∈ {1, 2, 5, 10, 20}
+- (d) spectrum reference: plain Neg-t-SNE at the t-SNE-like end of the spectrum. This is Stage 2 with `bg_mode="none"` and `s=0`, i.e. Z̄ = 100·n and `neg_spec = 500/n` (0.1 at n = 5000). It tests whether simply moving along the attraction–repulsion spectrum, with no background information, recovers the signal.
+  - **Note:** literally `neg_spec=0` is degenerate in this package. With c = 0 the classifier output is always 1, the clamped loss is constant, and the embedding never moves from its init (checked empirically). `s=0` is the package's own t-SNE-matching point.
 
 Metrics (ground truth used for evaluation only; never passed to the method):
 - kNN classification accuracy (k = 15, 5-fold CV) in the embedding for signal labels y_s (higher is better) and background labels y_b (lower is better).
@@ -138,10 +155,21 @@ Metrics (ground truth used for evaluation only; never passed to the method):
 
 Outputs:
 - `results/metrics.csv` (one row per run).
-- Figures: an embedding grid (rows = runs, columns = colored by y_s / by y_b); metric-vs-m_B curves with seed error bars for (b) vs (c).
-- `REPORT.md`: a short summary of what happened, including failures.
+- Figures:
+  - an embedding grid (rows = runs, columns = colored by y_s / by y_b);
+  - metric-vs-m_B curves with seed error bars for (b) vs (c), with (a) and (d) as horizontal reference bands.
+- `REPORT.md`: a short summary of what happened, including failures. It must explicitly compare (c) against the **strongest non-background alternative**, not just against (a):
+  - the best (b) over all m_B, and the (d) spectrum reference;
+  - per metric, with seed means ± spread.
 
-Success criterion: for some m_B, (c) improves signal kNN accuracy and signal kNN recall over both (a) and (b) at the same m_B, while background kNN accuracy drops, without the embedding fragmenting or collapsing. If (b) helps as much as (c), the effect is extra repulsion, not background information. Say so plainly in the report.
+Success criterion: for some m_B, (c) improves signal kNN accuracy and signal kNN recall over (a), over (b) at the same m_B, over the best (b) at any m_B, and over (d), while background kNN accuracy drops, without the embedding fragmenting or collapsing. If the best (b) or (d) helps as much as (c), the effect is extra repulsion or a spectrum shift, not background information. Say so plainly in the report.
+
+**Stress test (graph-level hiding):**
+- **Data:** the stress datasets (§2, `STRESS_RHO` = 0.1 for every level, seeds 0–2).
+- **When:** run once, **at the end of Phase 4**, after all main-run analysis is done.
+- **What:** use the best settings from the main runs, fixed before looking at any stress result: for each level, the m_B that is best for (c) and the best (b), plus (a) and (d).
+- **No tuning:** nothing is tuned, re-run, or adjusted on these datasets.
+- **Reporting:** in REPORT.md, results go in a separate section clearly labeled **"Stress test (graph-level hiding), not used for any choice"**, next to each dataset's recorded high-D y_s kNN accuracy.
 
 ## 6. Stop-and-ask conditions
 
