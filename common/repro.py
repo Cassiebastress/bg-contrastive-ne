@@ -44,7 +44,9 @@ def _version(dist):
 
 def _git_head():
     head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True)
-    dirty = subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain"], capture_output=True, text=True)
+    # results/ is excluded: a run's own outputs must not mark the code it ran from as dirty
+    dirty = subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain", "--", ".", ":(exclude)results"],
+                           capture_output=True, text=True)
     return {"head": head.stdout.strip() or None, "dirty": bool(dirty.stdout.strip())}
 
 
