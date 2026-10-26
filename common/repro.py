@@ -19,7 +19,7 @@ NUM_THREADS = 4
 
 
 def setup_determinism(seed, num_threads=NUM_THREADS):
-    """Call at startup: deterministic torch algorithms, fixed thread count, and torch/numpy/random seeded from `seed`."""
+    """Call at startup: deterministic torch algorithms, fixed thread count, torch/numpy/random seeded from `seed`."""
     torch.use_deterministic_algorithms(True)
     torch.set_num_threads(num_threads)
     torch.manual_seed(seed)

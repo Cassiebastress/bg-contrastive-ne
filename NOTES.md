@@ -187,3 +187,51 @@ Consequences:
 - Both `torch.use_deterministic_algorithms(True)` (8.3 s vs 8.4 s per 200 epochs) and `torch.set_num_threads(1)` (14.3 s) removed the divergence.
 - The likely source is multithreaded scatter-add in the backward pass (the `features[neigh_inds]` gather and/or the embedding backward), whose float summation order varies between runs.
 - With the package's annoy graph (now replaced by the exact graph), the plain run's kNN accuracy was 0.926.
+
+# Phase 1: synthetic generator (`data/synthetic.py`)
+
+## Decisions and why
+
+- **Simplex centers.** Each latent's cluster centers are the K = d + 1 vertices of a regular simplex, randomly rotated per seed. Edge length is 30 for the background (K_b = 6, d_b = 5) and 6 for the signal (K_s = 4, d_s = 3). All pairs are equidistant, so one number per latent sets the separation.
+  - We first tried i.i.d. Gaussian centers with sep_s = 3. They often nearly collided (minimum signal center distance 0.48–2.8 across seeds 0–3), and the oracle y_s kNN accuracy on S_T was only 0.78–0.92 on 4 of 5 seeds.
+  - With simplex centers (edge 6) the oracle accuracy is 0.995–0.997.
+- **medium overlap.** The overlap is controlled: A = √α·B R + √(1−α)·Q₂, with α = ‖BᵀA‖²_F / d_s = 0.5. A keeps orthonormal columns, so the signal geometry, and therefore ρ, is comparable to easy. Independent random 3- and 5-dim subspaces in 50-D would be nearly orthogonal.
+- **hard nonlinearity is measured within clusters.** Global affine-fit R² of the background on z_b is always ≥ 0.95 here: 6 centers in 5-D are fit exactly by an affine map, so between-cluster variance is always "linear".
+  - Within-cluster R² by gain: 0.99 at gain 1.5, 0.96 at gain 3, and ≈ 0.87–0.89 at **gain 6 (chosen)**.
+  - At gain 6, about 71% of pre-activations satisfy |pre| > 2, yet within-cluster background variance *grows*: 12–15 vs 5 for the linear levels. Total variance is matched to the linear levels.
+  - Consequence: at a given ρ, hard hides the signal more strongly than easy or medium.
+- **Randomness.** Independent `SeedSequence` streams cover centers, maps, target samples and background samples. ρ changes no random draw (S_T scales exactly), and n_B does not affect X_T.
+- **Graph and init.** The validity check builds the exact kNN graph and the PCA init on X_T directly, because D = 50 makes the plan's PCA-50 step a pure rotation.
+
+## Validity sweep (`scripts/phase1_validity.py`, `results/phase1/`)
+
+The baseline embedding is Stage 1 (250 epochs) + Stage 2 (500 epochs), with no background term and n_T = n_B = 5000. kNN accuracy uses k = 15 and 5-fold CV. Chance is 0.167 for y_b and 0.25 for y_s.
+
+Seed 0, embedding y_s accuracy by ρ (embedding y_b accuracy is 1.000 everywhere; oracle y_s accuracy is 0.996 everywhere):
+
+| level | 0.1 | 0.2 | 0.3 | 0.4 | 0.5 | 0.7 | 1.0 |
+|---|---|---|---|---|---|---|---|
+| easy | **0.250** | **0.289** | 0.961 | 0.990 | 0.993 | 0.995 | 0.996 |
+| medium | **0.264** | **0.371** | 0.584 | 0.841 | 0.947 | 0.978 | 0.987 |
+| hard | **0.259** | **0.296** | **0.371** | 0.512 | 0.837 | 0.986 | 0.991 |
+
+Bold marks valid configurations: y_b ≥ 0.90, y_s ≤ 0.50, oracle ≥ 0.95. The valid ρ values form one contiguous range at every level.
+
+**Chosen ρ** (the largest valid value, confirmed valid on seeds 0, 1 and 2):
+
+| level | ρ | emb y_s (seeds 0/1/2) | high-D X_T y_s (seeds 0/1/2) |
+|---|---|---|---|
+| easy | 0.2 | 0.289 / 0.306 / 0.314 | 0.892 / 0.876 / 0.875 |
+| medium | 0.2 | 0.371 / 0.369 / 0.387 | 0.709 / 0.703 / 0.700 |
+| hard | 0.3 | 0.371 / 0.338 / 0.349 | 0.882 / 0.870 / 0.849 |
+
+**Signal is hidden by the embedding, not by the graph.**
+- At the chosen ρ, the high-D kNN y_s accuracy on X_T is 0.70–0.89. The target kNN graph therefore still carries much of the signal: most neighbors share a signal label.
+- Plain Neg-t-SNE loses it. Each background cluster becomes a compact, well-separated blob with the signal colors mixed (`embeddings_chosen.png`). Stage 1 alone gives the same accuracies as Stage 2.
+- Implication for Phase 4: extra repulsion alone may already expand the blobs and expose within-cluster signal structure. The `uniform_extra` control (b) is therefore essential.
+- A stricter criterion that also requires the high-D y_s accuracy to be low would force ρ ≈ 0.1. At that point the high-D y_s accuracy is still 0.51 (easy), 0.40 (medium) and 0.39 (hard).
+
+**Other observations:**
+- easy has a sharp transition between ρ = 0.2 (0.29) and 0.3 (0.96). medium and hard degrade more gradually; at a given ρ, overlap with the background directions and hard's larger within-cluster background variance hide the signal longer.
+- `raw_pca.png` shows X_B covering X_T's background clusters at every level.
+- **Determinism:** two full runs of the sweep give a byte-identical `validity.csv` and bit-identical chosen embeddings.

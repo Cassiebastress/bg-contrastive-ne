@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 120
+exclude = third_party
+# scripts put the repo root on sys.path before importing project modules
+per-file-ignores = scripts/*.py:E402

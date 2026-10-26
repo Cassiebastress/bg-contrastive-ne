@@ -5,7 +5,6 @@ Outputs go to results/phase0/.
 """
 import json
 import sys
-import time
 from pathlib import Path
 
 import matplotlib
@@ -20,22 +19,18 @@ from sklearn.decomposition import PCA
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import cne  # noqa: E402
-from cne._cne import rescale  # noqa: E402
-from common.knn import knn_graph  # noqa: E402
-from common.repro import environment_info, setup_determinism  # noqa: E402
-from eval.metrics import knn_accuracy  # noqa: E402
-
-cne_core = sys.modules["cne.cne"]  # module holding ContrastiveEmbedding and new_lr
+from common.embed import N1, N2, fit_neg, rescale_init
+from common.knn import knn_graph
+from common.repro import environment_info, setup_determinism
+from eval.metrics import knn_accuracy
 
 OUT = ROOT / "results" / "phase0"
-DATA = ROOT / "data"
+DATA = ROOT / "data" / "raw"
 PAPER_FIG = ROOT / "third_party" / "contrastive-ne" / "figures" / "negtsne_mnist.png"
 
 SEED = 0
 N_SUBSET = 10_000
 N_PCA = 50
-N1, N2 = 250, 500
 
 
 def load_mnist_subset():
@@ -45,46 +40,6 @@ def load_mnist_subset():
     y = np.concatenate([p.targets.numpy() for p in parts])
     idx = np.random.default_rng(SEED).choice(len(x), N_SUBSET, replace=False)
     return x[idx], y[idx]
-
-
-def fit_neg(init, graph, **kwargs):
-    """Fit non-parametric Neg-t-SNE from `init` on `graph`.
-
-    Returns the embedding, the per-epoch learning rates actually set by the package, the embedding weights
-    at the start of training (read via the package's epoch -1 callback), the runtime, and the resolved params.
-    """
-    lrs, start = [], {}
-    orig_new_lr = cne_core.new_lr
-
-    def recording_new_lr(*args, **kw):
-        lr = orig_new_lr(*args, **kw)
-        lrs.append(lr)
-        return lr
-
-    def callback(epoch, model, *_):
-        if epoch == -1:
-            start["weight"] = model.weight.detach().cpu().numpy().copy()
-
-    cne_core.new_lr = recording_new_lr
-    try:
-        embedder = cne.CNE(loss_mode="neg", seed=SEED, callback=callback, **kwargs)
-        t0 = time.time()
-        embd = embedder.fit_transform(init=init, graph=graph)
-        runtime = time.time() - t0
-    finally:
-        cne_core.new_lr = orig_new_lr
-
-    c = embedder.cne
-    params = {
-        "k": embedder.k, "seed": SEED, "n_epochs": c.n_epochs, "batch_size": c.batch_size,
-        "negative_samples": c.negative_samples, "optimizer": c.optimizer, "learning_rate": c.learning_rate,
-        "momentum": c.momentum, "anneal_lr": c.anneal_lr, "lr_min_factor": c.lr_min_factor,
-        "spec_param": float(c.spec_param), "neg_spec": c.neg_spec, "s": c.s, "Z_bar": c.Z_bar, "eps": c.eps,
-        "clamp_low": c.clamp_low, "clamp_high": c.clamp_high, "loss_aggregation": c.loss_aggregation,
-        "early_exaggeration": c.early_exaggeration, "force_resample": c.force_resample,
-        "clip_grad": c.clip_grad, "device": c.device,
-    }
-    return {"embd": embd, "lrs": lrs, "start": start["weight"], "runtime_s": runtime, "params": params}
 
 
 def scatter(ax, embd, y, title):
@@ -123,19 +78,19 @@ def main():
     }
 
     # Init: first 2 PCs (columns of the PCA-50 output), rescaled with the package's own helper so PC1 has std 1.
-    pca_init = rescale(x50[:, :2].copy(), target_std=1.0).astype(np.float32)
+    pca_init = rescale_init(x50[:, :2])
     np.save(OUT / "pca_init.npy", pca_init)
 
     # Plain run: package defaults apart from the explicit init and graph.
-    plain = fit_neg(pca_init, G)
+    plain = fit_neg(pca_init, G, SEED)
     # Same run with early exaggeration off: identical iff early exaggeration is a no-op with neg defaults.
-    plain_no_ee = fit_neg(pca_init, G, early_exaggeration=False)
+    plain_no_ee = fit_neg(pca_init, G, SEED, early_exaggeration=False)
 
     # Two-stage dry run.
-    stage1 = fit_neg(pca_init, G, n_epochs=N1)
+    stage1 = fit_neg(pca_init, G, SEED, n_epochs=N1)
     stage1_embd = stage1["embd"].astype(np.float32)
-    stage2_a = fit_neg(stage1_embd, G, n_epochs=N2, early_exaggeration=False)
-    stage2_b = fit_neg(stage1_embd, G, n_epochs=N2, early_exaggeration=False)
+    stage2_a = fit_neg(stage1_embd, G, SEED, n_epochs=N2, early_exaggeration=False)
+    stage2_b = fit_neg(stage1_embd, G, SEED, n_epochs=N2, early_exaggeration=False)
 
     for name, run in [("plain", plain), ("stage1", stage1), ("stage2", stage2_a)]:
         np.save(OUT / f"{name}_embd.npy", run["embd"])

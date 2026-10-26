@@ -57,18 +57,26 @@ The target kNN graph for each dataset is built once (see Open decision 7) and re
 Function `make_dataset(level, n_T=5000, n_B=5000, D=50, seed)` returns X_T, X_B, and ground truth used **only for evaluation**: signal labels y_s, background labels y_b for the target points, and the clean signal component S_T.
 
 Construction:
-- Background latent: K_b = 6 Gaussian clusters in a d_b = 5 dimensional latent space. Map to D dims with map B. Large scale (σ_b, cluster separation scaled so background dominates distances).
-- Signal latent: K_s = 4 Gaussian clusters in a d_s = 3 dimensional latent space. Map to D dims with map A. Smaller scale than the background.
-- Target point: x = A(z_s) + B(z_b) + ε. Background point: x = B(z_b') + ε, using the same B and the same background latent distribution. ε is isotropic Gaussian noise.
+- Background latent: K_b = 6 equal-weight Gaussian clusters in a d_b = 5 dimensional latent space, within-cluster std σ_b = 1. Map to D dims with map B. Large scale, so the background dominates distances.
+- Signal latent: K_s = 4 equal-weight Gaussian clusters in a d_s = 3 dimensional latent space, σ_s = 1. Map to D dims with map A. Smaller scale than the background.
+- Cluster centers: the K = d + 1 vertices of a regular simplex (all pairs equidistant), randomly rotated per seed. Edge length 30 for the background and 6 for the signal. Random Gaussian centers were rejected because they often nearly collide: the signal oracle accuracy fell to 0.78–0.92 on 4 of 5 seeds.
+- Target point: x = ρ·A z_s + B(z_b) + ε. Background point: x = B(z_b') + ε, using the same B and the same background latent distribution. ε is isotropic Gaussian noise with std 0.1.
+- `signal_to_background` = ρ scales only the signal component. All randomness comes from `seed`, through independent streams for centers, maps, target samples and background samples, so ρ changes no random draw.
 
 Difficulty levels:
-- `easy`: A and B are linear with orthogonal column spaces.
-- `medium`: A and B are linear with overlapping (random, non-orthogonal) column spaces.
-- `hard`: B is a fixed random 2-layer MLP with tanh (nonlinear background); A is linear.
+- `easy`: A and B are linear and orthonormal, with orthogonal column spaces.
+- `medium`: A and B are linear and orthonormal, with controlled overlap A = √α·B R + √(1−α)·Q₂ and α = ‖BᵀA‖²_F / d_s = 0.5. Literally random Gaussian maps would barely overlap in 50 dimensions.
+- `hard`: B is a fixed random MLP, z ↦ W₂ tanh(W₁ z̃ + b₁), with hidden width 64, gain 6, and z̃ the standardized latent. Its output is rescaled so the total background variance matches the linear levels. A is linear and orthonormal. Nonlinearity is measured **within clusters** (mean within-cluster affine-fit R² ≈ 0.87–0.89): global R² is uninformative, because 6 centers in 5-D are always fit exactly by an affine map. Within-cluster background variance is about 2.5–3× that of the linear levels; it grows rather than collapses.
 
-Add a `signal_to_background` scale parameter.
-
-**Validity check** (required before using a dataset): run plain Neg-t-SNE on X_T and compute kNN classification accuracy (k = 15, 5-fold CV) in the embedding for y_b and y_s. The dataset is a valid test only if background accuracy is high and signal accuracy is clearly lower, i.e. plain Neg-t-SNE organizes the embedding by background. If not, increase background dominance and recheck. Report the chosen scales.
+**Validity check** (required before using a dataset):
+- **Embedding:** embed X_T with the Phase 4 baseline (Stage 1 + Stage 2, no background term). The exact kNN graph and the PCA init are built on X_T directly, because D = 50 makes a PCA-50 step a pure rotation.
+- **Metrics:** compute kNN classification accuracy (k = 15, 5-fold CV) for y_b and y_s.
+- **Criterion:** the dataset is a valid test only if all three hold:
+  - embedding y_b accuracy ≥ 0.90;
+  - embedding y_s accuracy ≤ 0.50;
+  - oracle y_s accuracy on the clean signal S_T ≥ 0.95, so the signal is recoverable at all.
+- **Choosing ρ:** sweep ρ ∈ {0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0} on seed 0. For each level, choose the largest valid ρ (the strongest signal plain Neg-t-SNE still hides), then confirm it on seeds 0–2.
+- **Stop:** if no ρ is valid, stop and report. Report the chosen scales.
 
 ## 3. Phase 2 — Build ξ_B (`xi_b.py`)
 
