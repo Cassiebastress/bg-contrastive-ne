@@ -16,3 +16,6 @@ __pycache__/
 # editor / OS
 .vscode/
 .DS_Store
+
+# paper: a separate git repo synced with Overleaf
+Paper/
