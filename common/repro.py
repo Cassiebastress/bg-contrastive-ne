@@ -61,7 +61,8 @@ def environment_info():
         "torch_num_threads": torch.get_num_threads(),
         "torch_deterministic_algorithms": torch.are_deterministic_algorithms_enabled(),
         "packages": {d: _version(d) for d in
-                     ["numpy", "scipy", "scikit-learn", "torchvision", "annoy", "matplotlib", "contrastive-ne"]},
+                     ["numpy", "scipy", "scikit-learn", "torchvision", "annoy", "matplotlib", "contrastive-ne",
+                      "contrastive", "umap-learn", "numba", "llvmlite", "pynndescent"]},
         "contrastive_ne_upstream_commit": UPSTREAM_COMMIT,
         "project_git": _git_head(),
     }
