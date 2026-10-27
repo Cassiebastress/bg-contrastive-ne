@@ -304,12 +304,12 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
 
 | Stage 2 run | runtime | std growth (max / start) | mean φ end (start 0.078) | background share (Stage 2 range) |
 |---|---|---|---|---|
-| none (a) | 13 s | 1.30 | 0.077 | 0 |
-| uniform_extra m_B=5 | 20 s | 1.52 | 0.052 | 0.05–0.16 |
-| uniform_extra m_B=20 | 42 s | 1.89 | 0.027 | 0.11–0.25 |
-| xi_b m_B=5 | 26 s | 1.40 | 0.030 | 0.19–0.36 |
-| xi_b m_B=20 | 54 s | 1.55 | 0.012 | 0.18–0.67 |
-| s=0 reference (d) | 16 s | 2.34 | 0.015 | 0 |
+| none (a) | 12 s | 1.30 | 0.077 | 0 |
+| uniform_extra m_B=5 | 18 s | 1.52 | 0.052 | 0.05–0.16 |
+| uniform_extra m_B=20 | 38 s | 1.89 | 0.027 | 0.11–0.25 |
+| xi_b m_B=5 | 24 s | 1.40 | 0.030 | 0.19–0.36 |
+| xi_b m_B=20 | 51 s | 1.55 | 0.012 | 0.18–0.67 |
+| s=0 reference (d) | 13 s | 2.34 | 0.015 | 0 |
 
 - **All §6 checks pass:**
   - exact Stage 2 start;
@@ -324,5 +324,6 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
   - The extra repulsion from ξ_B is concentrated on background-similar pairs, about half of them target kNN edges (Phase 2). That is why `xi_b`'s attraction stays high: at m_B = 20 it ends near 288k, against 85k for (a).
   - Phase 4 compares against the best (b) over all m_B and against (d), and logs Σφ for every run, so scale shifts are visible next to the signal metrics.
 - **Phase 4 runtime estimate:**
-  - Stage 2 grows from about 15 s (m_B = 1) to about 54 s (m_B = 20).
+  - Stage 2 grows from about 12 s (m_B = 0) to about 51 s (m_B = 20).
   - The 12 Stage 2 runs per (level, seed) take about 5 min, so about 45 min for 3 levels × 3 seeds, plus the stress test at the end.
+- **Runtimes exclude sleep.** Runtimes were timed with `time.time()`, which counts laptop sleep: one rerun recorded about 7500 s for a 51 s fit. Since `150285d` they use `time.perf_counter()` (`mach_absolute_time` on macOS, which pauses during sleep). The table above comes from that commit. All three smoke runs gave identical results apart from the environment block and runtimes.

@@ -178,12 +178,12 @@ Alternative (do not implement now; note only): linear ξ_B from a kernel on targ
 
   | run | runtime |
   |---|---|
-  | (a) | 13 s |
-  | (d) | 16 s |
-  | `uniform_extra` m_B = 5 | 20 s |
-  | `uniform_extra` m_B = 20 | 42 s |
-  | `xi_b` m_B = 5 | 26 s |
-  | `xi_b` m_B = 20 | 54 s |
+  | (a) | 12 s |
+  | (d) | 13 s |
+  | `uniform_extra` m_B = 5 | 18 s |
+  | `uniform_extra` m_B = 20 | 38 s |
+  | `xi_b` m_B = 5 | 24 s |
+  | `xi_b` m_B = 20 | 51 s |
 
 - **Phase 4 estimate:** about 5 min per (level, seed), so about 45 min for the main grid.
 
