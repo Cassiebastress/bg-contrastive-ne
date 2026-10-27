@@ -18,6 +18,7 @@ from eval.global_metrics import global_scores
 from eval.metrics import knn_accuracy
 
 DESIGNS = ("J", "K")
+EXTRA_COMPONENTS = {"J": (), "K": (20, 40)}  # (e2-k20), (e2-k40): K only, descriptive in calibration
 PHASE1_RHOS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0]
 # J's signal has unit total variance, so its rho grid is Phase 1's in units of the std of A z_s (sqrt 16.5)
 RHO_GRID = {"J": [float(r * np.sqrt(SIGNAL_TOTAL_VAR)) for r in PHASE1_RHOS], "K": PHASE1_RHOS}
@@ -65,9 +66,10 @@ def fit_a(ds, seed):
     return two_stage(pca_init(ds.X_T), knn_graph(ds.X_T, k=15), seed)[1]["embd"]
 
 
-def cpca_runs(ds, seed):
+def cpca_runs(ds, seed, extra_components=()):
     """(e2) and (e3) at the label-free alpha, plus the descriptive oracle alpha (10-D signal accuracy for J, 10-D WC
-    for K; ties -> the smaller alpha)."""
+    for K; ties -> the smaller alpha). Each n in extra_components adds (e2-k<n>): cPCA -> Neg-t-SNE on the top n
+    components at the same alpha, run after (e2) and (e3) so they are unchanged."""
     t = ds.truth
     f = cpca.fit(ds.X_T, ds.X_B)
     chosen, reps, ratios, _ = cpca.select_alpha(f, seed)
@@ -79,11 +81,15 @@ def cpca_runs(ds, seed):
     setup_determinism(seed)
     e2 = embed_e2(Z10, seed)
     e3 = embed_e3(Z10, seed)
+    extra = {}
+    for n in extra_components:
+        setup_determinism(seed)
+        extra[f"e2_k{n}"] = embed_e2(cpca.project(f, chosen, n), seed)
     alpha = {"selected_alpha": float(chosen), "representatives": [float(a) for a in reps],
              "variance_ratios": [float(r) for r in ratios], "oracle_alpha": float(cpca.ALPHAS[int(np.argmax(crit))]),
              "oracle_10d": float(max(crit)), "selected_10d": float(crit[int(np.flatnonzero(cpca.ALPHAS == chosen)[0])]),
              "oracle_criterion": "10-D signal accuracy" if ds.params["design"] == "J" else "10-D WC"}
-    return {"e2": e2, "e3": e3}, alpha
+    return {"e2": e2, "e3": e3, **extra}, alpha
 
 
 def v1(a):

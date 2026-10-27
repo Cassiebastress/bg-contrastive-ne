@@ -6,6 +6,7 @@ Steps (run in order):
   --step grid     Design J: the theta = 0 sanity check (cPCA must solve it), then all 16 configurations.
   --step k        Design K at rho_K: V1, V2, V3-K (coherence reported).
   --step summary  grid_J.md (prediction + generated tables), validity.md, and the chosen J configuration.
+  --step freeze   preregistration.md from calibration.json (commit before any (b), (c) or oracle-control run).
 
 Run with the cne-bg env:  caffeinate -i python scripts/phase5a_calibrate.py --step <step>
 Outputs: results/phase5a/rho_sweep.csv, grid_J.csv, k_validity.csv, calibration.json, grid_J.md, validity.md.
@@ -22,9 +23,9 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from common.benchmark import (GRID, METRICS, RHO_GRID, SELECTION_SEEDS, V1, V2_MIN_DETECTABILITY, V3_J, V3_K_MAX_WC,
-                              V4_MIN_COHERENCE, config_name, cpca_runs, data_scores, fit_a, make, score, v1, v2,
-                              v3_j, v3_k, v4)
+from common.benchmark import (EXTRA_COMPONENTS, GRID, METRICS, RHO_GRID, SELECTION_SEEDS, V1, V2_MIN_DETECTABILITY,
+                              V3_J, V3_K_MAX_WC, V4_MIN_COHERENCE, config_name, cpca_runs, data_scores, fit_a, make,
+                              score, v1, v2, v3_j, v3_k, v4)
 from common.experiment import VALIDITY
 from common.repro import assert_committed, environment_info
 from eval.metrics import knn_accuracy
@@ -112,7 +113,7 @@ def evaluate(design, seed, rho, config=None, save_prefix=None):
     rec.update(ds.params["map_info"])
     rec.update(data_scores(ds))
     embs = {"a": fit_a(ds, seed)}
-    more, alpha = cpca_runs(ds, seed)
+    more, alpha = cpca_runs(ds, seed, EXTRA_COMPONENTS[design])
     embs.update(more)
     for run, X in embs.items():
         rec.update({f"{run}_{k}": v for k, v in score(X, ds.truth).items()})
@@ -324,12 +325,97 @@ def step_summary():
     print(f"chosen J configuration: {chosen}")
 
 
+def step_freeze():
+    """Write results/phase5a/preregistration.md from calibration.json (commit it before any (b), (c) or (o) run)."""
+    cal = load_cal()
+    c = cal.get("chosen_J")
+    if not c:
+        stop("no valid Design J configuration: report the grid instead of freezing")
+    j = (f"θ = {c['theta']}°, Δ {'projected off span(B)' if c['projected'] else 'not projected'}, MLP gain "
+         f"g = {c['gain']:g} (configuration {c['config']}), ρ_J = {cal['rho']['J']['rho']:.6g}")
+    text = f"""# Phase 5a pre-registration (frozen before any (b), (c) or oracle-control run)
+
+## Datasets
+
+The rule for each design's ρ is the Phase 1 rule: the largest grid value whose plain-Neg-t-SNE run (a) is valid on
+seed 0 (background accuracy ≥ 0.90, signal accuracy ≤ 0.50, signal accuracy in the signal itself ≥ 0.95), confirmed
+on seeds 0–2.
+
+| Design | Generator | Setting |
+|---|---|---|
+| J | `data/synthetic_j.py` | {j} |
+| K | `data/synthetic_k.py` | ρ_K = {cal['rho']['K']['rho']:.6g} |
+
+In J, Ã z_s and Δ̃ are each scaled to unit total variance per dataset; the scale factors are recorded per seed.
+
+n_T = n_B = 5000 and D = 50. Selection seeds are 0–2; confirmation seeds start at 3.
+
+## Metrics
+
+All metrics use k = 15 and the true labels. kNN accuracies use the existing classifier: stratified 5-fold CV, seed 0.
+
+| Metric | Definition |
+|---|---|
+| signal accuracy | kNN accuracy of y_s in the 2-D embedding |
+| background accuracy (G2) | kNN accuracy of y_b in the 2-D embedding |
+| WC | signal kNN accuracy computed inside each true background cluster, size-weighted over clusters |
+| G1 | mean fraction of a point's 15 embedding neighbors with the same y_s and a different y_b |
+| G3 "shares signal" | fraction of the 24 cells (y_s × y_b) whose nearest other cell centroid shares y_s but not y_b |
+| coherence (data) | mean over g and cluster pairs k ≠ k′ of cos(d_kg, d_k′g), d_kg = cell mean − cluster mean in X_T |
+| detectability (data) | WC on high-D X_T |
+
+## Runs
+
+- (a): plain two-stage Neg-t-SNE.
+- (b): uniform extra negatives.
+- (c): ξ_B negatives, built as in Phase 2.
+- (o): the oracle same-cluster control. m_B extra negatives are drawn uniformly from the other members of the head's
+  true background cluster. It is an oracle: it uses labels.
+- (b), (c) and (o) each run at m_B ∈ {{1, 2, 5, 10, 20}} and share one Stage 1 per seed.
+- (e2): cPCA → Neg-t-SNE. (e3): cPCA → UMAP. Both use the label-free α of Phase 5 prep.
+
+## Selection (seeds 0–2)
+
+For each of (b), (c) and (o), the m_B with the highest mean over the selection seeds is chosen; ties go to the smaller
+m_B. The selection metric is signal accuracy for J and WC for K.
+
+## Confirmation (fresh seeds from 3)
+
+- **Runs:** (a), best (b), best (c), best (o), (e2) and (e3).
+- **Exclusion:** a seed is excluded if it fails V1 ((a) signal accuracy ≤ 0.50 and (a) background accuracy ≥ 0.90), V2
+  (detectability ≥ 0.85), or, for J, V4 (coherence ≥ 0.5). These criteria use the data and (a) only, never (e2).
+  The next seed is then drawn, until 3 valid seeds exist. More than 2 exclusions in a design means stop and report.
+- **Listing:** excluded seeds are listed with their validity numbers and enter no comparison.
+
+## Comparisons (confirmation seeds)
+
+- **Rule:** "consistent across 3 paired seeds" (Phase 4): the mean paired difference is > 0 and every per-seed
+  difference is > 0, with the sign flipped where lower is better. Mean and per-seed values are reported, with no
+  p-values.
+- **Design J:** (c) vs (e2), and (c) vs (o), each on signal accuracy, G1, G2 (lower is better) and G3 "shares
+  signal", reported separately. The frozen thresholds G1 ≥ 0.50, G2 ≤ 0.50 and G3 "shares signal" ≥ 0.50 are also
+  checked per seed for every run.
+- **Design K:** (c) vs (e2), and (c) vs (o), on WC (primary). Signal accuracy is secondary. G1–G3 are reported but
+  marked ill-posed for K: same-label groups in different clusters are unrelated.
+- **Descriptive only** (no verdict): (c) vs (a), (c) vs best (b), and (c) vs (e3).
+
+## Stop and report
+
+- ξ_B fails the Phase 2 gates (same-y_b precision ≥ 0.90, same-y_s excess ≤ 0.10) on any seed.
+- Any run is non-finite or its scale grows by more than 10×.
+- The rerun of selection seed 0 is not bit-identical.
+- More than 2 confirmation seeds are excluded in a design.
+"""
+    (OUT / "preregistration.md").write_text(text)
+    print(text)
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--step", choices=["rho", "grid", "k", "summary"], required=True)
+    parser.add_argument("--step", choices=["rho", "grid", "k", "summary", "freeze"], required=True)
     args = parser.parse_args()
     EMB.mkdir(parents=True, exist_ok=True)
-    {"rho": step_rho, "grid": step_grid, "k": step_k, "summary": step_summary}[args.step]()
+    {"rho": step_rho, "grid": step_grid, "k": step_k, "summary": step_summary, "freeze": step_freeze}[args.step]()
 
 
 if __name__ == "__main__":
