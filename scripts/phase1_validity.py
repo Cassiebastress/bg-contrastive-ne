@@ -50,7 +50,7 @@ def is_valid(row):
 def evaluate(level, rho, seed):
     """Generate one dataset, embed it with the baseline schedule, and score it."""
     setup_determinism(seed)
-    t0 = time.time()
+    t0 = time.perf_counter()
     ds = make_dataset(level, seed=seed, signal_to_background=rho)
     y_b, y_s = ds.truth["y_b"], ds.truth["y_s"]
     # D = 50, so a PCA-50 step would only rotate the data: build the graph and init on X_T directly
@@ -65,7 +65,7 @@ def evaluate(level, rho, seed):
         "oracle_acc_s": knn_accuracy(ds.truth["S_T"], y_s),
     }
     row["valid"] = is_valid(row)
-    extra = {"runtime_s": time.time() - t0, "embd_std": embd.std(axis=0).tolist(),
+    extra = {"runtime_s": time.perf_counter() - t0, "embd_std": embd.std(axis=0).tolist(),
              "finite": bool(np.isfinite(embd).all()), "generator": ds.params}
     print(f"{level:6s} rho={rho:<4} seed={seed}  emb y_b {row['emb_acc_b']:.3f}  emb y_s {row['emb_acc_s']:.3f}  "
           f"oracle {row['oracle_acc_s']:.3f}  valid={row['valid']}  ({extra['runtime_s']:.0f}s)", flush=True)

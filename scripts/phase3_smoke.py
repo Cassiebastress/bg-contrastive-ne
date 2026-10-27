@@ -91,10 +91,11 @@ def main():
     s1 = fit_neg(pca_init(ds.X_T), G, SEED, batch_hook=BackgroundTerm("none"), n_epochs=N1)
     runs, results = {}, {}
     for name, kwargs in VARIANTS.items():
-        t0 = time.time()
+        t0 = time.perf_counter()
         s2 = stage2(s1["embd"], G, SEED, xi=xi, **kwargs)
         runs[name] = s2
-        results[name] = {"params": s2["params"], "runtime_s": time.time() - t0, "checks": checks(name, kwargs, s1, s2)}
+        runtime = time.perf_counter() - t0  # pauses while the machine sleeps (mach_absolute_time on macOS)
+        results[name] = {"params": s2["params"], "runtime_s": runtime, "checks": checks(name, kwargs, s1, s2)}
         c = results[name]["checks"]
         print(f"{name:22s} {results[name]['runtime_s']:5.1f}s  all_ok={c['all_ok']}  "
               f"std growth {c['max_std_growth_stage2']:.2f}  final bg share {s2['log']['bg_share'][-1]:.3f}",

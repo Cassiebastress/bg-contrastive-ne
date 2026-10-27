@@ -70,9 +70,9 @@ def fit_neg(init, graph, seed, batch_hook=None, **kwargs):
     try:
         embedder = cne.CNE(loss_mode="neg", seed=seed, callback=callback, save_freq=1, batch_hook=batch_hook,
                            **kwargs)
-        t0 = time.time()
+        t0 = time.perf_counter()  # pauses while the machine sleeps (mach_absolute_time on macOS)
         embd = embedder.fit_transform(init=init, graph=graph)
-        runtime = time.time() - t0
+        runtime = time.perf_counter() - t0
     finally:
         cne_core.new_lr = orig_new_lr
 
