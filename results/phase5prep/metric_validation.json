@@ -1,0 +1,578 @@
+{
+  "environment": {
+    "python": "3.12.15",
+    "platform": "macOS-14.3-arm64-arm-64bit",
+    "cpu_model": "Apple M3",
+    "cpu_count": 8,
+    "torch": "2.14.1",
+    "torch_num_threads": 4,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "8067d25159be642892f53c71b81cb4b682619192",
+      "dirty": false
+    }
+  },
+  "separation_threshold": 0.3,
+  "separation": {
+    "easy": {
+      "G1": {
+        "reference_min": 0.81564,
+        "phase4_max": 0.0,
+        "gap": 0.81564,
+        "separated": true
+      },
+      "G3_shares_signal": {
+        "reference_min": 1.0,
+        "phase4_max": 0.0,
+        "gap": 1.0,
+        "separated": true
+      }
+    },
+    "medium": {
+      "G1": {
+        "reference_min": 0.8166933333333334,
+        "phase4_max": 0.0014533333333333334,
+        "gap": 0.8152400000000001,
+        "separated": true
+      },
+      "G3_shares_signal": {
+        "reference_min": 1.0,
+        "phase4_max": 0.0,
+        "gap": 1.0,
+        "separated": true
+      }
+    },
+    "hard": {
+      "G1": {
+        "reference_min": 0.82144,
+        "phase4_max": 0.0,
+        "gap": 0.82144,
+        "separated": true
+      },
+      "G3_shares_signal": {
+        "reference_min": 1.0,
+        "phase4_max": 0.0,
+        "gap": 1.0,
+        "separated": true
+      }
+    }
+  },
+  "all_separated": true,
+  "reload_checks_all_match": true,
+  "reload_checks": [
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 0,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 0,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 0,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 0,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 1,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 1,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 1,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 1,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 2,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 2,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 2,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "selection",
+      "seed": 2,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "easy",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 0,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 0,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 0,
+      "run": "c_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 0,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 1,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 1,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 1,
+      "run": "c_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 1,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 2,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 2,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 2,
+      "run": "c_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "selection",
+      "seed": 2,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "c_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "c_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "c_m20",
+      "match": true
+    },
+    {
+      "level": "medium",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 0,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 0,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 0,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 0,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 1,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 1,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 1,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 1,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 2,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 2,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 2,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "selection",
+      "seed": 2,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "d",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 6,
+      "run": "a",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 6,
+      "run": "b_m20",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 6,
+      "run": "c_m10",
+      "match": true
+    },
+    {
+      "level": "hard",
+      "stage": "confirmation",
+      "seed": 6,
+      "run": "d",
+      "match": true
+    }
+  ]
+}
