@@ -1,0 +1,118 @@
+{
+  "environment": {
+    "python": "3.12.15",
+    "platform": "macOS-14.3-arm64-arm-64bit",
+    "cpu_model": "Apple M3",
+    "cpu_count": 8,
+    "torch": "2.14.1",
+    "torch_num_threads": 4,
+    "torch_deterministic_algorithms": false,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "9547bdb8dbab08e23a799299f928331f0680a2e0",
+      "dirty": false
+    }
+  },
+  "label": "extension (requested after the main runs)",
+  "check_o_m20_seed0_bit_identical": true,
+  "selection_means_acc_s": {
+    "1": 0.3128,
+    "2": 0.3370666666666667,
+    "5": 0.3822666666666666,
+    "10": 0.4206666666666667,
+    "20": 0.4546666666666666,
+    "40": 0.48353333333333337,
+    "80": 0.4577333333333333
+  },
+  "best_m_B_o": 40,
+  "previous_best_m_B_o": 20,
+  "rule": "highest mean acc_s over selection seeds 0-2; ties -> smaller m_B",
+  "comparisons": [
+    {
+      "x": "c_m10",
+      "y": "o_m40",
+      "metric": "acc_s",
+      "higher_is_better": true,
+      "seeds": [
+        3,
+        4,
+        5
+      ],
+      "per_seed": [
+        0.36719999999999986,
+        0.3672000000000002,
+        0.3546000000000001
+      ],
+      "mean_diff": 0.36300000000000004,
+      "consistent": true
+    },
+    {
+      "x": "c_m10",
+      "y": "o_m40",
+      "metric": "G1",
+      "higher_is_better": true,
+      "seeds": [
+        3,
+        4,
+        5
+      ],
+      "per_seed": [
+        -0.00856,
+        -0.018226666666666665,
+        -0.009853333333333334
+      ],
+      "mean_diff": -0.012213333333333333,
+      "consistent": false
+    },
+    {
+      "x": "c_m10",
+      "y": "o_m40",
+      "metric": "G2",
+      "higher_is_better": false,
+      "seeds": [
+        3,
+        4,
+        5
+      ],
+      "per_seed": [
+        -0.028999999999999915,
+        -0.06479999999999997,
+        -0.02400000000000002
+      ],
+      "mean_diff": -0.03926666666666664,
+      "consistent": false
+    },
+    {
+      "x": "c_m10",
+      "y": "o_m40",
+      "metric": "G3_shares_signal",
+      "higher_is_better": true,
+      "seeds": [
+        3,
+        4,
+        5
+      ],
+      "per_seed": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mean_diff": 0.0,
+      "consistent": false
+    }
+  ]
+}

@@ -22,7 +22,8 @@ def main():
     parts = {"grid_J": "\n".join("#" * 2 + ln if ln.startswith("#") else ln for ln in grid.splitlines()).strip(),
              "validity": body(P5A / "validity.md"), "diagnostics": body(P5A / "data_diagnostics.md"),
              "k_calibration": body(P5A / "k_calibration.md"), "tables_J": body(P5A / "tables_J.md"),
-             "predictions": (P5A / "predictions_status.md").read_text().strip()}
+             "predictions": (P5A / "predictions_status.md").read_text().strip(),
+             "extension_o": body(P5A / "extension_o.md")}
     text = (ROOT / "scripts" / "REPORT_phase5a.template.md").read_text()
     for name, content in parts.items():
         text = text.replace("{{" + name + "}}", content)

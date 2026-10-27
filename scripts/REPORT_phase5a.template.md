@@ -58,7 +58,7 @@ Tables marked **(generated)** are copied verbatim from `results/phase5a/*.md` by
 1. **Design K stopped at calibration: cPCA already reveals the signal within clusters.**
    - (e2) reaches WC 0.970–0.980, against the validity bar of ≤ 0.80. (e2-k20) and (e2-k40) reach 0.978–0.984.
    - **Why:** K's per-cluster signal maps lie outside the background's span, and each has mean zero, so the target-minus-background covariance is still exactly the (now 18-dimensional) signal covariance. Breaking *independence* this way does not hurt cPCA.
-   - **The diagnostics agree:** along K's signal directions, the background's global and within-cluster variances are equal (ratio 1.00), the case in which (c) is predicted to have no advantage.
+   - **The diagnostics agree:** none of K's signal variance lies in span(B), the only directions where the background varies strongly, so cPCA can keep all of it.
    - **Consequence:** (c) was never run on K, so question 2 is unanswered.
 2. **Design J has one valid configuration, but it is valid only through local metrics.**
    - Of 16 configurations, only θ = 60°, projected, g = 2 meets V1–V4 on every selection seed. At θ ≤ 30°, cPCA solves the dataset (V3 fails). At θ ≥ 60°, every other configuration fails V2 on at least one seed: the signal is no longer locally detectable in high-D.
@@ -74,14 +74,16 @@ Tables marked **(generated)** are copied verbatim from `results/phase5a/*.md` by
    - (c) reveals the signal within background islands (signal accuracy 0.86, up from 0.30 for (a)), but its global layout stays organized by background, as in Phase 4.
 5. **(c) beats the oracle same-cluster control by +0.39 signal accuracy, consistently across 3 paired seeds** (0.86 vs 0.47).
    - This is the control `REPORT.md` listed as Next steps #1. Repelling random points of the same true background cluster spreads each island but recovers little signal; ξ_B's fine-grained background neighborhoods account for most of (c)'s gain.
-   - **Caveats:** shown here on one dataset family. (o)'s selection mean was still rising at the largest m_B (20).
+   - **Extension (requested after the main runs):** (o)'s grid was extended to m_B = 40 and 80. Its selection mean peaks at m_B = 40 (0.48) and falls at 80. At m_B = 40, (c) still beats (o) by +0.36 signal accuracy on every confirmation seed (0.86 vs 0.50). (o) at m_B = 40 is marginally better on G1 (+0.01) and G2 (−0.04), also consistently across the 3 seeds; both stay far from the frozen thresholds.
+   - **Post-hoc interpretation (not tested):** ξ_B partners are close in the background but random in signal (on the confirmation seeds: same-y_b precision 1.000, same-y_s excess +0.014 to +0.020). Its repulsion therefore lands on pairs that are neighbors for background reasons, which are exactly the pairs keeping different signal groups together. Random same-cluster partners are mostly already far apart within the island, so repelling them does little.
+   - **Caveat:** shown on one dataset family.
 6. **Predictions.**
    - **P1 not confirmed:** projected configurations failed V3 with coherence still high, through the hidden background main effect.
    - **P2 not confirmed** (descriptive): the one valid configuration is projected.
    - **P3 not applicable** for both designs: K has no main runs, and J's chosen configuration is projected.
 7. **Overall answer to question 1: no.** Within this family, no J configuration was found where cPCA fails robustly while the signal stays shared.
    - **The only valid configuration** fails V3 through background sub-structure inside a signal-first layout, and only at some α.
-   - **The configurations predicted to favor (c)** are the unprojected ones (global/local background-variance ratio 46–69). At θ = 30° cPCA solved them; at θ ≥ 60° they failed V2. None was run in the main runs.
+   - **No configuration put most of the signal where cPCA must suppress.** Even unprojected, only 2–10% of the signal variance lies in span(B) (means per configuration; at most 12% on one seed), so cPCA can use the other 90–98%. Their large global/local background-variance ratio (46–69) reflects that small tilt, not a signal cPCA must discard. At θ = 30° cPCA solved them; at θ ≥ 60° they failed V2.
 
 ## Design
 
@@ -148,6 +150,8 @@ The top section of `results/phase5a/grid_J.md`, not repeated here, holds the pre
 
 The "background main effect" column was added after the grid results (descriptive). It quantifies the effect described in Summary item 2.
 
+**Reading the global/local ratio.** The ratio is computed along the signal's top principal directions, and a small tilt of the signal into span(B) is enough to dominate it: the between-cluster background variance there is large. The unprojected configurations have only 2–10% of their signal variance in span(B), so their ratios of 46–69 come from that tilt, while cPCA can still use the other 90–98% of the signal. What decides whether cPCA fails is the fraction of the signal lying *outside* the directions with high global background variance, not the ratio. That fraction is at least 87% on every seed of every configuration here, and 100% in projected J and in K.
+
 ### Design K calibration runs (generated)
 
 {{k_calibration}}
@@ -155,6 +159,10 @@ The "background main effect" column was added after the grid results (descriptiv
 ### Design J main runs (generated)
 
 {{tables_J}}
+
+### Extension: the oracle control at larger m_B (generated)
+
+{{extension_o}}
 
 ### Figures
 
@@ -174,22 +182,22 @@ The "background main effect" column was added after the grid results (descriptiv
 
 - **Why K did not break cPCA.** cPCA needs only that the target-minus-background covariance points at the signal. In K, cluster-specific maps make the signal *depend* on the background, but each cluster's signal has mean zero and lies outside the background's span. So no cross-covariance with the background appears, and the identity survives with a higher-dimensional signal covariance. Ten components already reveal each cluster's signal (WC 0.97), and 20 or 40 do slightly better (0.98).
 - **Why J's valid configuration is a weak test.** The non-additive term does more than make the signal background-dependent: it adds a background-dependent *mean shift* outside the background's span. The background data never shows this shift, so cPCA keeps it, and the embedding shows background sub-lobes inside signal blobs. The frozen G1 and G2 thresholds, which read local neighbor composition, score this as cPCA failing. G3, which reads the arrangement of cells, scores it as signal-organized (1.00 on every seed).
-- **What (c) shows here.** (c) behaves as in Phase 4. It separates the signal within each background island (signal accuracy 0.86, WC 0.86) and leaves the global layout organized by background (G1 = 0, G2 = 1). The oracle same-cluster control isolates where that gain comes from: the same number of repulsions, drawn from the right background cluster but without ξ_B's neighborhood structure, recovers far less (0.47).
+- **What (c) shows here.** (c) behaves as in Phase 4. It separates the signal within each background island (signal accuracy 0.86, WC 0.86) and leaves the global layout organized by background (G1 = 0, G2 = 1). The oracle same-cluster control isolates where that gain comes from. Repulsions drawn from the right background cluster, but without ξ_B's neighborhood structure, recover far less. That holds at every m_B tried up to 80, with (o) using 2–4 times as many extra negatives as (c) at its best setting (0.47 at m_B = 20, and 0.50 at m_B = 40 in the extension, vs 0.86 for (c) at m_B = 10).
 - **Coherence caveat.** Coherence measures alignment in ambient coordinates. It can call a signal incoherent even when the signal is consistent in the background's own frame (for example, with a curved background). V4 was not changed for this; it applies to every low-coherence result above. In this grid, every J configuration had coherence of at least 0.56 on every seed.
 
 ## Limitations
 
 - **One valid J configuration, and its V3 status did not replicate.** cPCA failed the frozen thresholds on 1 of 3 confirmation seeds, and the outcome tracked the label-free α. V3 was judged with one α per dataset; a check across all α representatives was not part of the protocol.
 - **G1 and G2 are local.** They count neighbors among the 15 nearest, so they cannot tell a background-organized layout from a signal-organized layout with background sub-structure. G3 can. In this phase it disagreed with G1/G2 for (e2) on every selection seed and on confirmation seed 5.
-- **The regime predicted to favor (c) was not tested.** Unprojected J configurations have background variance along the signal that is 46–69 times larger globally than within clusters. At the calibrated ρ, cPCA solved them at θ = 30°, and they failed V2 at θ ≥ 60°, so none was run.
-- **The oracle control's m_B grid may be too short.** (o)'s mean signal accuracy was still rising at m_B = 20 (0.45 on the selection seeds).
+- **No benchmark put the signal where cPCA must suppress it.** At least 87% of the signal variance lay outside span(B) on every seed of every configuration (100% in projected J and in K). The unprojected configurations' large global/local ratios (46–69) come from a 2–10% tilt into span(B), so they were never a regime that cPCA must lose. None of them was run in the main runs either: cPCA solved them at θ = 30°, and they failed V2 at θ ≥ 60°.
 - **Synthetic data only**, with discrete background clusters, as in all earlier phases.
 
 ## Next steps
 
-1. **Remove the hidden background main effect from J.** Center the interaction, using Δ − E[Δ | z_b] (estimated per background state), then rerun the grid. This tests whether cPCA's failure then requires low coherence, as the grid prediction expected.
-2. **Test where the diagnostics predict an advantage for (c).** Use unprojected or partially projected configurations with a large global/local background-variance ratio and with detectability kept above the V2 bar (e.g. smaller θ or g, or a larger ρ checked against V1).
-3. **Judge "cPCA fails" across all α representatives,** not only the label-free choice, so a benchmark counts as hard for cPCA only if no representative solves it.
+1. **Design L: put the signal entirely inside span(B), along between-cluster directions, with tight background clusters.** cPCA must then suppress exactly the directions that carry the signal, because the background varies strongly there globally. Within each tight cluster, though, those directions vary little, so ξ_B's local neighborhoods can still separate the signal.
+2. **Judge V3 across all α representatives,** not only the label-free choice, so a benchmark counts as hard for cPCA only if no representative solves it.
+3. **Pre-register a non-local global metric alongside G3,** for example G1 at k = 200, so a signal-first layout with background sub-structure is not scored as background-organized.
+4. **Center J's interaction (lower priority).** Rerun the J grid with Δ − E[Δ | z_b] (estimated per background state), which removes the hidden background main effect. This tests whether cPCA's failure then requires low coherence, as the grid prediction expected.
 
 ## Reproducibility
 
@@ -204,6 +212,7 @@ Run with the cne-bg environment, in this order:
     python scripts/phase5a_run.py --design J --stage selection
     python scripts/phase5a_run.py --design J --stage confirmation
     python scripts/phase5a_run.py --design J --recheck
+    python scripts/phase5a_extend_o.py
     python scripts/phase5a_report.py
     python scripts/phase5a_assemble.py
 
@@ -214,6 +223,7 @@ Run with the cne-bg environment, in this order:
 - Calibration results: `843e189`.
 - Freeze: `9ed1110`, before any (b), (c) or (o) run.
 - J selection: `2aa4462`.
+- Oracle-control extension script: `9547bdb`, committed before the extension ran.
 
 **Checks:**
 - The rerun of J selection seed 0 is bit-identical in every row and embedding (`results/phase5a/recheck_J.json`).
