@@ -1,7 +1,12 @@
 """Evaluation metrics for embeddings. Ground-truth labels are used here only, never by the method."""
 import numpy as np
+from scipy.sparse.csgraph import connected_components
+from scipy.spatial.distance import pdist
+from scipy.stats import rankdata
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
+
+from common.knn import knn_graph, knn_indices
 
 
 def knn_accuracy(embd, labels, k=15, n_splits=5, seed=0):
@@ -32,3 +37,27 @@ def uniform_pair_agreement(labels):
     counts = np.bincount(labels).astype(float)
     n = counts.sum()
     return float((counts * (counts - 1)).sum() / (n * (n - 1)))
+
+
+def knn_recall(embd, reference, k=15):
+    """Mean over points of |N_k(embd) ∩ N_k(reference)| / k, with exact neighbors in both spaces."""
+    a, b = knn_indices(embd, k), knn_indices(reference, k)
+    return float((a[:, :, None] == b[:, None, :]).any(axis=2).mean())
+
+
+def pair_distance_ranks(X):
+    """Ranks (average ties) of all pairwise Euclidean distances, in pdist order; float64."""
+    return rankdata(pdist(np.asarray(X, dtype=np.float64)))
+
+
+def distance_spearman(embd, reference_ranks):
+    """Spearman correlation between all pairwise distances of embd and precomputed reference distance ranks."""
+    return float(np.corrcoef(pair_distance_ranks(embd), reference_ranks)[0, 1])
+
+
+def component_stats(embd, k=15, small=50):
+    """Connected components of the k-NN graph (union-symmetrized) of an embedding: their number and the fraction of
+    points in components with fewer than `small` points."""
+    n_comp, labels = connected_components(knn_graph(embd, k=k), directed=False)
+    sizes = np.bincount(labels)
+    return {"n_components": int(n_comp), "frac_in_small_components": float((sizes[labels] < small).mean())}

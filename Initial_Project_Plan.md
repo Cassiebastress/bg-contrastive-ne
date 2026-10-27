@@ -216,6 +216,30 @@ Outputs:
 
 Success criterion: for some m_B, (c) improves signal kNN accuracy and signal kNN recall over (a), over (b) at the same m_B, over the best (b) at any m_B, and over (d), while background kNN accuracy drops, without the embedding fragmenting or collapsing. If the best (b) or (d) helps as much as (c), the effect is extra repulsion or a spectrum shift, not background information. Say so plainly in the report.
 
+### Phase 4 protocol (pre-registered before any Phase 4 result; code in `common/experiment.py`)
+
+- **Selection, then confirmation, per level.**
+  - **Selection (seeds 0–2):** Stage 1, then the 12 Stage 2 runs (a), (b) at m_B ∈ {1, 2, 5, 10, 20}, (c) at the same m_B, and (d). The selection is written to `results/phase4/selection_{level}.json` and **committed before any confirmation fit**.
+  - **Confirmation (fresh seeds 3–5, same ρ):** (a), (d), (c) at m*_c, (b) at m*_c, and (b) at each per-metric best m_B. The fresh datasets must pass the Phase 1 validity criterion and the ξ_B gates.
+  - **Order:** easy first, then a checkpoint with the user before medium and hard.
+- **Rule 1, metrics.** The primary metrics are signal kNN accuracy (`acc_s`) and signal kNN recall against S_T (`recall_s`). The secondary metrics are background kNN accuracy (`acc_b`, which should drop), the signal distance Spearman correlation, and scale (mean φ, embedding std).
+- **Rule 2, improvement.** Runs are paired by seed. "X improves over Y" means the mean over 3 seeds is higher and every per-seed difference is > 0. REPORT.md states this as "consistent across 3 paired seeds", with the mean difference and the per-seed values, and no p-values.
+- **Rule 3, best settings (chosen on seeds 0–2).** m*_c is the m_B with the highest mean `acc_s` among (c). The best (b) is chosen per primary metric. Ties go to the smaller m_B. The per-metric best (b) favors the control, and REPORT.md says so.
+- **Rule 4, success (judged on seeds 3–5).**
+  - (c) at m*_c must improve both primary metrics over (a), over (b) at m*_c, over the per-metric best (b), and over (d).
+  - `acc_b` must drop relative to (a).
+  - The (c) runs must not be flagged.
+- **Rule 5, flags.** Flags mark runs for review; flagged runs are never dropped. Components are those of the k = 15 kNN graph in the 2-D embedding.
+  - **collapse:** embedding std < 0.5× that of (a) on the same seed;
+  - **fragmentation:** more than 5% of points in components of fewer than 50 points.
+- **Rule 6, interpretation.** If the best (b) or (d) matches (c) on a primary metric, REPORT.md says the effect is extra repulsion or a spectrum shift, not background information.
+- **Checks (stop and report on failure):**
+  - dataset and ξ_B hashes match Phases 1–2 (seeds 0–2);
+  - (a) reproduces the Phase 1 accuracies exactly;
+  - every run is finite, with std growth ≤ 10×;
+  - a rerun of easy seed 0 is bit-identical.
+- **Stress settings:** `results/phase4/stress_settings.json` (per level: m*_c and the best (b), plus (a) and (d)) is committed before any stress fit.
+
 **Stress test (graph-level hiding):**
 - **Data:** the stress datasets (§2, `STRESS_RHO` = 0.1 for every level, seeds 0–2).
 - **When:** run once, **at the end of Phase 4**, after all main-run analysis is done.

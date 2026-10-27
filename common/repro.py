@@ -65,3 +65,13 @@ def environment_info():
         "contrastive_ne_upstream_commit": UPSTREAM_COMMIT,
         "project_git": _git_head(),
     }
+
+
+def assert_committed(path):
+    """Raise unless `path` is tracked by git and has no uncommitted changes (used to freeze pre-registered choices)."""
+    rel = str(Path(path).resolve().relative_to(ROOT))
+    tracked = subprocess.run(["git", "-C", str(ROOT), "ls-files", "--error-unmatch", rel], capture_output=True)
+    status = subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain", "--", rel],
+                            capture_output=True, text=True)
+    if tracked.returncode != 0 or status.stdout.strip():
+        raise RuntimeError(f"{rel} must be committed (and unmodified) before this step")
