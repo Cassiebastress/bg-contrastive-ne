@@ -29,7 +29,7 @@ def main():
         "posthoc": body(P4 / "posthoc.md"),
         "tables": body(P4 / "tables.md"),
         "excluded": body(P4 / "excluded_runs_note.md"),
-        "stress": (body(stress) + "\n\nFigure: `results/phase4/stress/stress_embeddings.png` (seed 0).")
+        "stress": body(stress)
         if stress.exists() else PENDING,
     }
     text = (ROOT / "scripts" / "REPORT.template.md").read_text()
