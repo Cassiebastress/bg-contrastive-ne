@@ -92,6 +92,15 @@ Full per-run tables, with selection and confirmation seeds and every pre-registe
 
 Medium, the weakest level, has the highest excess. That fits its construction: half of the signal direction lies inside the background span, so a point's background neighbors depend slightly on its signal group. Every level stays well within the ξ_B gate (+0.10).
 
+**Why medium is weaker than hard (post-hoc interpretation, added after the verdicts).** The level names describe how hard it is for *plain* Neg-t-SNE to show the signal, not how much signal the method has to work with.
+- **The target kNN graph carries the signal; ξ_B only clears room.** Attraction along target kNN edges is what sorts each island into signal groups. On medium, half of the signal direction lies inside the background span, so within a background cluster that half looks like ordinary background spread. As a result, medium's high-D graph carries clearly less signal: fewer edges join same-signal points, and the high-D signal accuracy is lower. On easy and hard, (c) recovers about as much signal as the high-D graph holds. On medium it recovers less, and its islands become diffuse rather than splitting into sectors.
+- **ξ_B works slightly against the method on medium.** The same entanglement makes ξ_B pair same-signal points a little more often than chance (the excess above), which opposes the method.
+- **Hard also runs at a larger ρ** (0.3 vs 0.2). Its nonlinear background hides the signal from plain Neg-t-SNE for longer, so the validity criterion allowed a 1.5× stronger signal, along a random direction rather than one built to overlap the background.
+
+Confirmation seeds (generated):
+
+{{graph_signal}}
+
 **Scale shift.** Extra repulsion spreads the embedding, so scale has to be ruled out as the explanation. Embedding std relative to (a), on the confirmation seeds:
 
 | run | easy | medium | hard |
@@ -133,6 +142,12 @@ The pre-registered global metrics, signal kNN recall and signal distance Spearma
 ## Stress test (graph-level hiding), not used for any choice
 
 {{stress}}
+
+**Reading.** At ρ = 0.1 the signal is hidden in the target kNN graph itself. Only 0.29–0.34 of kNN edges share a signal group (chance is 0.25), against 0.47–0.64 in the main datasets. Attraction therefore has almost nothing to sort islands by.
+- **easy and hard:** (c) adds a small gain, consistent across seeds, of about +0.03 signal accuracy over the best (b), and stays far below the high-D X_T level.
+- **medium:** no consistent gain.
+
+This matches the graph-signal interpretation above: background negatives reveal signal that the target graph carries, but they cannot create it. That is a further reason the main next step is to change the attraction graph itself.
 
 ## Reproducibility
 

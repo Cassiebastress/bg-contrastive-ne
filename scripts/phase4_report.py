@@ -250,6 +250,27 @@ def headline_and_posthoc(levels, data, verdicts, selections):
     (OUT / "posthoc.md").write_text("\n".join(post))
 
 
+def graph_signal_table(levels, data, selections):
+    """results/phase4/graph_signal.md (post-hoc): how much signal the target kNN graph carries, against what (c)
+    recovers, on the confirmation seeds."""
+    out = ["| level | confirmation seeds | high-D X_T signal acc | target kNN edges sharing y_s | xi_B same-y_s excess "
+           "| (c) signal acc | (c) / high-D |", "|---|---|---|---|---|---|---|"]
+    for level in levels:
+        rows = data[level]["confirmation"]
+        if not rows:
+            continue
+        conf = json.loads((OUT / f"summary_{level}_confirmation.json").read_text())
+        diag = [conf["checks"][str(s)]["xi_b_diagnostics"] for s in conf["seeds"]]
+        c = f"c_m{selections[level]['m_star_c']}"
+        highd, cv = values(rows, "highD_X_T", "acc_s"), values(rows, c, "acc_s")
+        knn = np.array([d["same_s_knn"] for d in diag])
+        excess = np.array([d["same_s_excess"] for d in diag])
+        out.append(f"| {level} | {', '.join(str(s) for s in conf['seeds'])} | {fmt(highd, 'acc_s')} "
+                   f"| {fmt(knn, 'acc_s')} | {excess.mean():+.3f} [{excess.min():+.3f}, {excess.max():+.3f}] "
+                   f"| {fmt(cv, 'acc_s')} (m_B={c[3:]}) | {cv.mean() / highd.mean():.2f} |")
+    (OUT / "graph_signal.md").write_text("\n".join(out) + "\n")
+
+
 def stress_outputs():
     """Stress test (graph-level hiding), not used for any choice: tables and a seed-0 figure, if results exist."""
     path = OUT / "stress" / "runs_stress.csv"
@@ -261,7 +282,8 @@ def stress_outputs():
     settings = summary["settings"]
     parts = ["# Stress test (graph-level hiding), not used for any choice", "",
              "Stress datasets: rho = 0.1 at every level, seeds 0-2. Settings frozen in stress_settings.json from the "
-             "main selection seeds before any stress fit. Values are mean [min, max] over seeds.", ""]
+             "main selection seeds before any stress fit: (a), (d), (c) at m*_c and the best (b); (b) at m*_c was not "
+             "part of them, so that comparison is absent. Values are mean [min, max] over seeds.", ""]
     for level in LEVELS:
         lr = [r for r in rows if r["level"] == level]
         if not lr:
@@ -273,6 +295,9 @@ def stress_outputs():
         unhealthy = sorted({u for d in diag for u in d["unhealthy_runs"]})
         sel = {"m_star_c": settings[level]["m_star_c"], "best_b": settings[level]["best_b"]}
         v = verdict([r for r in lr if r["group"] != "ref"], sel)
+        # (b) at m*_c is not part of the frozen stress settings: drop comparisons without data
+        v["comparisons"] = [c for c in v["comparisons"] if c["seeds"]]
+        v["success"] = all(c["consistent"] for c in v["comparisons"]) and not v["c_flagged"]
         parts += [f"## {level}", "",
                   f"High-D X_T signal kNN accuracy (seeds 0-2, Phase 1 record): {highd}. "
                   f"xi_B same-y_b precision: {same_b}; same-y_s excess: {excess}. "
@@ -339,6 +364,7 @@ def main():
 
     write_tables(levels, data, verdicts, selections)
     headline_and_posthoc(levels, data, verdicts, selections)
+    graph_signal_table(levels, data, selections)
     for level in levels:
         embedding_grid(level, data[level]["selection"])
         allseeds_grid(level, selections[level], data[level])
