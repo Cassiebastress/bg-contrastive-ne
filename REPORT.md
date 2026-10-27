@@ -51,7 +51,15 @@ Tables marked **(generated)** are copied verbatim from `results/phase4/*.md` by 
 - **Signal revealed within background clusters.** Background negatives drawn from ξ_B reveal the hidden signal inside each background cluster, at every level. This goes well beyond both controls: the same number of uniform extra negatives (b), and the move along the attraction–repulsion spectrum (d). The (c) improvement is consistent across 3 paired confirmation seeds at every level, against (a), against (b) at the same m_B, against the best (b) at any m_B, and against (d). It holds on both primary metrics.
 - **Global layout still organized by background.** The 6 background clusters stay separate islands in every run. Background kNN accuracy stays at 1.000 on easy and hard.
 
-**Why easy and hard "fail".** The only failing clause is "background kNN accuracy drops relative to (a)". By design, the method can't do this. Background negatives add only repulsion. No target kNN edges connect different background islands, which sit about 30 units apart in the data, so nothing pulls islands together. The method can reorganize points within an island; it can't merge islands. With background accuracy at 1.000 for every run, the paired difference is exactly 0, and the rule needs it to be strictly positive.
+**Current claim.** ξ_B recovers background-cluster membership without labels (its pairs share a background cluster 100% of the time) and uses it to target repulsion at points of the same cluster.
+
+**What the evidence does not yet show.**
+- **(b) is a weak control.** Its uniform extra negatives mostly land in *other* islands (5 of 6), which are already far apart, so they add almost no force within an island (see "Why the islands split"). Beating (b) shows that the repulsion has to be targeted, not that ξ_B's targeting is the only one that works.
+- **Two explanations remain open.** The experiment cannot yet tell "ξ_B's fine-grained background similarity matters" apart from "repelling random points of the same background cluster is enough". A same-cluster control that uses the true background labels as a deliberate oracle (Next steps #1) would separate them.
+
+**Why easy and hard "fail".** The only failing clause is "background kNN accuracy drops relative to (a)". By design, the method can't do this. Background negatives add only repulsion. Attraction comes only from target kNN edges, and in every dataset used here **0** of its roughly 50,000 kNN edges join different background clusters (0 of about 925,000 across all 18 datasets) (measured; see "Background-cluster separation" below). So nothing pulls islands together.
+
+The clusters are far apart: cluster centers sit 30 apart in the background latent space. In the data, the closest points of different clusters are 22–23 apart on easy and medium and 16–21 on hard, against a typical 15th-neighbor distance of about 2. The method can reorganize points within an island; it can't merge islands. With background accuracy at 1.000 for every run, the paired difference is exactly 0, and the rule needs it to be strictly positive.
 
 **Why medium "passes".** Under (c), medium's background accuracy is 0.997–0.999: about 7–13 of 5000 points sit nearer another island's points. These are boundary points of islands that spread until they touch (under (c), medium's 6 islands join into one kNN-graph component). **This is not background suppression.** Medium is also the level with the *smallest* signal gain (+0.18 over the best control, against +0.51 on easy and +0.44 on hard).
 
@@ -77,10 +85,24 @@ Tables marked **(generated)** are copied verbatim from `results/phase4/*.md` by 
 - **Difficulty levels** (they describe how the background hides the signal from *plain* Neg-t-SNE):
   - **easy:** A and B are orthonormal maps into orthogonal subspaces;
   - **medium:** half of A's direction lies inside B's span (overlap α = 0.5);
-  - **hard:** B is a random one-hidden-layer tanh network (width 64, gain 6), so the background is nonlinear.
+  - **hard:** B is a random one-hidden-layer tanh network (width 64, gain 6), so the background is nonlinear. Its output is rescaled to the same total variance as the linear levels. A is a random orthonormal 50×3 map drawn independently of the network, so it overlaps the background's directions only as much as random directions do, not by construction.
 - **Signal strength ρ.** Phase 1 chose ρ per level: the largest ρ for which plain Neg-t-SNE still hides the signal (validity criterion below). Main ρ = 0.2 (easy), 0.2 (medium), 0.3 (hard); stress-test ρ = 0.1 at every level.
-- **Signal in the high-D graph.** At the main ρ the high-dimensional kNN graph of X_T still carries much of the signal (high-D signal kNN accuracy 0.70–0.89). The signal is lost only in the 2-D embedding.
+- **Signal in the high-D graph.** At the main ρ the high-dimensional kNN graph of X_T still carries much of the signal. High-D signal kNN accuracy is 0.70–0.89 on selection seeds 0–2, and 0.70–0.91 over all seeds used in Phase 4. The signal is lost only in the 2-D embedding.
 - **Seeds.** Each dataset is fully determined by its seed, and its hash is recorded in `results/phase1/datasets.csv`. In every run the method seed equals the dataset seed.
+- **The background is discrete.** It consists of separated clusters. Continuous backgrounds (gradients, manifolds) are untested (see "Failures, surprises, and limits").
+
+**Background-cluster separation** (generated by `scripts/phase4_data_geometry.py`, data only, no embeddings; every dataset used in Phase 4). The columns are:
+- **latent center distance:** the minimum distance between background cluster centers in the 5-D latent;
+- **data-space centroid distance:** the minimum (and mean) distance between the cluster centroids of X_T;
+- **closest points:** the smallest distance between two target points from different clusters;
+- **15th neighbor:** the median distance from a point to its 15th nearest neighbor, for scale;
+- **kNN edges joining clusters:** undirected edges of the exact k = 15 target graph whose endpoints lie in different background clusters.
+
+| level | seeds | latent center distance | data-space centroid distance, min (mean) | closest points of different clusters | median distance to 15th neighbor | target kNN edges joining different clusters |
+|---|---|---|---|---|---|---|
+| easy | 0, 1, 2, 3, 4, 5 | 30.0 | 29.9 (30.0) | 22.4–23.2 | 1.86–1.89 | 0 of 313574 |
+| medium | 0, 1, 2, 3, 4, 5 | 30.0 | 29.9–30.0 (30.0) | 21.9–22.7 | 1.77–1.79 | 0 of 312002 |
+| hard | 0, 1, 2, 4, 5, 6 | 30.0 | 18.8–24.9 (29.4–29.6) | 16.3–21.0 | 2.22–2.46 | 0 of 300033 |
 
 ### ξ_B, the background-informed negative distribution (Plan §3; `method/xi_b.py`; Phase 2)
 
@@ -112,14 +134,14 @@ Tables marked **(generated)** are copied verbatim from `results/phase4/*.md` by 
   | (a) | plain | no background term |
   | (b) | `uniform_extra` | m_B extra negatives per edge, drawn uniformly from all other target points. This control adds the same amount of repulsion as (c) with no background information |
   | (c) | `xi_b` | the method: m_B extra negatives per edge, drawn from ξ_B(i, ·) |
-  | (d) | spectrum reference | plain Neg-t-SNE at the t-SNE-like end of the attraction–repulsion spectrum (`s=0`, so c = 500/n = 0.1). It tests whether simply shifting the repulsion balance recovers the signal. The literal `neg_spec=0` is degenerate in this package: the embedding never moves |
+  | (d) | spectrum reference | plain Neg-t-SNE at the t-SNE-like end of the attraction–repulsion spectrum (`s=0`). The package sets Z̄ = 100·n at s = 0, and c = m·Z̄/n² = 500/n = 0.1 at n = 5000 (`third_party/contrastive-ne/src/cne/cne.py:333-339`). It tests whether simply shifting the repulsion balance recovers the signal. The literal `neg_spec=0` is degenerate in this package: the embedding never moves |
 
 ### Metrics (`eval/metrics.py`; ground truth used for evaluation only)
 
 | metric | definition | better |
 |---|---|---|
 | signal kNN accuracy | accuracy of a 15-nearest-neighbor classifier predicting y_s from the embedding; stratified 5-fold cross-validation, shuffled with seed 0. Chance ≈ 0.25 | higher |
-| background kNN accuracy | the same, predicting y_b. Chance ≈ 0.17 | lower (should drop) |
+| background kNN accuracy | the same, predicting y_b. Chance ≈ 0.17 | diagnostic; pre-registered as should-drop (see Summary) |
 | signal kNN recall | mean over points of the fraction of a point's 15 nearest neighbors in the embedding that are also among its 15 nearest neighbors in the clean signal S_T. Exact neighbors; chance = 15/4999 = 0.0030 | higher |
 | signal Spearman | Spearman rank correlation between all pairwise embedding distances and all pairwise S_T distances (all 5000 points) | higher |
 | mean φ | mean of φ = 1/(1 + d²) over a fixed sample of 100,000 random point pairs (per dataset and seed). Lower means a more expanded embedding | scale diagnostic |
@@ -256,7 +278,7 @@ hard (`results/phase4/embeddings_allseeds_hard.png`):
 - **Attraction** along target kNN edges mostly joins points of the same signal group: 59% of edges on easy, against 25% by chance.
 - **ξ_B repulsion** pushes each point away from partners chosen for background similarity, which within an island are nearly blind to signal (see the excess below).
 
-Pushing everyone apart from random island-mates while still pulling same-signal neighbors together sorts each island into signal groups. In the terms of the method's theory, the embedding learns roughly "target similarity divided by background similarity". Within an island the background part is high and nearly equal for everyone, so dividing it out leaves the signal.
+Pushing everyone apart from random island-mates while still pulling same-signal neighbors together sorts each island into signal groups. In the terms of the method's theory, at the idealized optimum the embedding learns roughly "target similarity divided by background similarity". Within an island the background part is high and nearly equal for everyone, so dividing it out leaves the signal.
 
 Uniform extra negatives (b) mostly land in *other* islands (5 of 6), which are already far apart, so they add almost no force within an island.
 
@@ -344,9 +366,9 @@ Signal kNN recall and signal distance Spearman against S_T are pre-registered me
 | (b) uniform_extra, m_B=20 | +0.0083, +0.0102, +0.0082 | yes | +0.0147, +0.0182, +0.0121 | yes |
 | (d) s=0 reference | +0.0087, +0.0111, +0.0089 | yes | +0.0149, +0.0181, +0.0121 | yes |
 
-**Reading.** These two metrics already show the picture, so no further measure (such as island separation relative to island size) was added.
+**Reading.** Recall shows the local picture. Spearman turns out to be uninformative here (second point). No further measure, such as island separation relative to island size, was added: background kNN accuracy and the embedding figures already show that the islands stay separate.
 - **Recall shows the local picture.** Signal kNN recall under (c) is about 3–4× the level of every control on easy and hard (e.g. easy 0.0144 against 0.0036–0.0038), and about 1.5× on medium, consistently across seeds.
-- **Spearman shows the global picture.** The signal Spearman correlation stays near 0 (≤ 0.02) for every run, (c) included. Global distances are set by the background islands, not by the signal.
+- **Spearman cannot detect global signal organization here.** The signal Spearman correlation stays near 0 (≤ 0.02) for every run, (c) included. But the high-D X_T itself also scores only about 0.01 (0.008–0.013; Appendix A, "high-D X_T (reference)" rows). In these datasets, distances between background clusters dominate all pairwise distances, so this metric reflects the data, not the embedding. It cannot show whether an embedding organizes the signal globally.
 - **The absolute values are small** because exact 15-nearest neighbors in the clean 3-D signal are a very fine target. Even the high-D X_T scores only about 0.009 recall.
 
 ## Failures, surprises, and limits
@@ -355,13 +377,14 @@ Signal kNN recall and signal distance Spearman against S_T are pre-registered me
 - **Hard seed 3 failed validity.** No rule existed for this, so the run stopped (Plan §6). The exclusion rule above was added before any further hard confirmation result. Hard ρ = 0.3 sits close to the validity boundary; (a) gives 0.34–0.37 on most seeds but 0.51 on seed 3.
 - **Recall and Spearman are weak metrics here** (post-hoc section). Signal kNN accuracy carries the interpretation.
 - **No collapse or fragmentation flags** on any run. Under (c), medium's islands touch and form a single kNN component, but no small fragments appear.
-- **The evidence has a gap.** No run separates "ξ_B's fine-grained background similarity matters" from "repelling random points of the *same background cluster* is enough". A same-cluster uniform control, using the true background labels as a deliberate oracle, would answer it.
+- **The evidence has a gap.** No run separates "ξ_B's fine-grained background similarity matters" from "repelling random points of the *same background cluster* is enough". A same-cluster uniform control, using the true background labels as a deliberate oracle, would answer it (Next steps #1).
+- **Only discrete backgrounds were tested.** The background here is separated clusters. With a continuous background (a gradient or manifold), there are no islands, ξ_B's neighborhoods overlap smoothly, and both the mechanism and the "islands can't merge" limit may behave differently. This is untested.
 - **Operational note.** Laptop sleep inflated wall-clock runtimes until the timer was switched to one that pauses during sleep (Phase 3). Results were never affected.
 
 ## Next steps
 
-1. **Cross-background attraction (main next step).** The result shows what repulsion alone can and can't do. To also suppress the background, the method needs attraction across background clusters: for example, a target kNN graph built in a background-suppressed metric, so that same-signal points in different islands become neighbors and pull the islands together.
-2. **A same-background-cluster uniform control** (oracle labels), to close the gap above.
+1. **A same-background-cluster uniform control (first).** Draw the m_B extra negatives uniformly from points with the same *true* background label, a deliberate oracle. If it matches (c), the current result rests on recovering cluster membership; if (c) beats it, ξ_B's fine-grained background similarity adds something. This settles what the current claim can be.
+2. **Cross-background attraction.** The result shows what repulsion alone can and can't do. To also suppress the background, the method needs attraction across background clusters: for example, a target kNN graph built in a background-suppressed metric, so that same-signal points in different islands become neighbors and pull the islands together.
 3. **The later work in Plan §7:**
    - baselines: UMAP on X_T, contrastive PCA followed by UMAP, and contrastiveVI;
    - the linear ξ_B variant;
@@ -463,7 +486,7 @@ Seed 0 embeddings of the stress runs. Rows alternate between coloring by y_s and
 - **easy and hard:** (c) adds a small gain, consistent across seeds, of about +0.03 signal accuracy over the best (b), and stays far below the high-D X_T level.
 - **medium:** no consistent gain.
 
-This matches the graph-signal interpretation above: background negatives reveal signal that the target graph carries, but they cannot create it. That is a further reason the main next step is to change the attraction graph itself.
+This matches the graph-signal interpretation above: background negatives reveal signal that the target graph carries, but they cannot create it. That is a further reason to change the attraction graph itself (Next steps #2).
 
 ## Reproducibility
 

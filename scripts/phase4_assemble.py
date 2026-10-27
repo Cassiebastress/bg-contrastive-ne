@@ -26,6 +26,7 @@ def main():
     parts = {
         "headline": (P4 / "headline.md").read_text().strip(),
         "graph_signal": (P4 / "graph_signal.md").read_text().strip(),
+        "data_geometry": (P4 / "data_geometry.md").read_text().strip(),
         "posthoc": body(P4 / "posthoc.md"),
         "tables": body(P4 / "tables.md"),
         "excluded": body(P4 / "excluded_runs_note.md"),
