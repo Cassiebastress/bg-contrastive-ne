@@ -1,0 +1,321 @@
+{
+  "environment": {
+    "python": "3.12.15",
+    "platform": "macOS-14.3-arm64-arm-64bit",
+    "cpu_model": "Apple M3",
+    "cpu_count": 8,
+    "torch": "2.14.1",
+    "torch_num_threads": 4,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "9ed111016c844273a3f27fe9871d32958220f164",
+      "dirty": false
+    }
+  },
+  "design": "J",
+  "stage": "selection",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "excluded_seeds": [],
+  "runs": [
+    "a",
+    "b_m1",
+    "b_m2",
+    "b_m5",
+    "b_m10",
+    "b_m20",
+    "c_m1",
+    "c_m2",
+    "c_m5",
+    "c_m10",
+    "c_m20",
+    "o_m1",
+    "o_m2",
+    "o_m5",
+    "o_m10",
+    "o_m20",
+    "e2",
+    "e3"
+  ],
+  "checks": {
+    "0": {
+      "sha256_X_T": "7246a6360ccd8f32eb37fec98444644659bb91bc40c9ac2b7fbce50af2ed53cf",
+      "sha256_X_B": "02b0271deceac23493f58504b42ff4880f6f2dbb4fd46b19abaa585325e4dbf1",
+      "xi_b": "00b6edc1ebd10add8ba15495924e3dbca3019be4414ccee7e6226be917fe25c5",
+      "params": {
+        "design": "J",
+        "n_T": 5000,
+        "n_B": 5000,
+        "D": 50,
+        "seed": 0,
+        "rho": 0.8124038404635961,
+        "theta": 60,
+        "projected": true,
+        "gain": 2.0,
+        "hidden": 64,
+        "bias_std": 0.1,
+        "map_info": {
+          "scale_A": 4.032885741445604,
+          "scale_Delta": 4.155087287996095,
+          "median_abs_preactivation": 1.3137395506587035,
+          "frac_abs_preactivation_gt_2": 0.302240625,
+          "frac_Delta_var_in_span_B": 0.09783500947385942
+        }
+      },
+      "detectability": 0.886619432470345,
+      "coherence": 0.8575392531667679,
+      "highd_acc_s": 0.883,
+      "highd_acc_b": 1.0,
+      "xi_b_diagnostics": {
+        "same_b_xi": 1.0,
+        "same_s_xi": 0.2643465802739846,
+        "same_s_excess": 0.014369784914912809,
+        "same_b_xi_uniform_heads": 1.0,
+        "same_s_xi_uniform_heads": 0.26276174680982184,
+        "same_b_uniform": 0.16674382876575314,
+        "same_s_uniform": 0.2499767953590718,
+        "same_b_knn": 1.0,
+        "same_s_knn": 0.5791714614499425,
+        "len_min": 30,
+        "len_median": 38.0,
+        "len_p90": 49.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.936,
+        "frac_capped_rows": 0.0088,
+        "bgdist_xi": 1.343377562965457,
+        "bgdist_same_b_random": 2.98708101617306,
+        "bgdist_knn": 1.3478361206440532,
+        "spearman_jaccard_bgdist": -0.5767962346281676,
+        "frac_knn_edges_in_xi": 0.7324702723436901,
+        "xi_mass_on_knn": 0.49636275182003303,
+        "xi_mass_on_knn_same_s": 0.22072849127478528,
+        "xi_mass_on_knn_diff_s": 0.27563426054524776,
+        "sha256": "00b6edc1ebd10add8ba15495924e3dbca3019be4414ccee7e6226be917fe25c5",
+        "gate_same_b": true,
+        "gate_same_s": true
+      },
+      "alpha": {
+        "selected_alpha": 3.455107294592218,
+        "representatives": [
+          0.0,
+          3.455107294592218,
+          242.44620170823282,
+          623.5507341273913
+        ],
+        "variance_ratios": [
+          1.0297419983623202,
+          21.3562073051382,
+          8.499729471681395,
+          2.8617238923007933
+        ],
+        "oracle_alpha": 1.7012542798525891,
+        "oracle_10d": 0.986,
+        "selected_10d": 0.9853999999999999,
+        "oracle_criterion": "10-D signal accuracy"
+      }
+    },
+    "1": {
+      "sha256_X_T": "1e0f697eee2e5ad74b09839f9514b9901d7a2c51fe870feb2822763f78f0ceb0",
+      "sha256_X_B": "f762855aadafac2b1c6a669a3e81123306d58a89b70b8b5a27bee96079bbae3d",
+      "xi_b": "32e1b1a920e71b43893640163e9e4f1682f01fe457a7af308351ef848ff37ee7",
+      "params": {
+        "design": "J",
+        "n_T": 5000,
+        "n_B": 5000,
+        "D": 50,
+        "seed": 1,
+        "rho": 0.8124038404635961,
+        "theta": 60,
+        "projected": true,
+        "gain": 2.0,
+        "hidden": 64,
+        "bias_std": 0.1,
+        "map_info": {
+          "scale_A": 4.05602367992521,
+          "scale_Delta": 3.6951530112817372,
+          "median_abs_preactivation": 1.38208882331916,
+          "frac_abs_preactivation_gt_2": 0.32945,
+          "frac_Delta_var_in_span_B": 0.10865139677611219
+        }
+      },
+      "detectability": 0.8506014246071365,
+      "coherence": 0.7924714545321893,
+      "highd_acc_s": 0.8530000000000001,
+      "highd_acc_b": 1.0,
+      "xi_b_diagnostics": {
+        "same_b_xi": 1.0,
+        "same_s_xi": 0.2664955249559181,
+        "same_s_excess": 0.016397265303987718,
+        "same_b_xi_uniform_heads": 1.0,
+        "same_s_xi_uniform_heads": 0.26418219322464104,
+        "same_b_uniform": 0.16659899979995998,
+        "same_s_uniform": 0.2500982596519304,
+        "same_b_knn": 1.0,
+        "same_s_knn": 0.561961854941866,
+        "len_min": 30,
+        "len_median": 38.0,
+        "len_p90": 49.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.9434,
+        "frac_capped_rows": 0.0064,
+        "bgdist_xi": 1.3646866137939193,
+        "bgdist_same_b_random": 3.0297497294330955,
+        "bgdist_knn": 1.3597687559532823,
+        "spearman_jaccard_bgdist": -0.5612646575660458,
+        "frac_knn_edges_in_xi": 0.7351610378205006,
+        "xi_mass_on_knn": 0.5038828056281998,
+        "xi_mass_on_knn_same_s": 0.22008674006542547,
+        "xi_mass_on_knn_diff_s": 0.28379606556277426,
+        "sha256": "32e1b1a920e71b43893640163e9e4f1682f01fe457a7af308351ef848ff37ee7",
+        "gate_same_b": true,
+        "gate_same_s": true
+      },
+      "alpha": {
+        "selected_alpha": 3.455107294592218,
+        "representatives": [
+          0.0,
+          3.455107294592218,
+          191.44819761699577,
+          623.5507341273913
+        ],
+        "variance_ratios": [
+          1.045591582385901,
+          21.48676151424253,
+          13.56797409243021,
+          6.464485985782679
+        ],
+        "oracle_alpha": 2.728333376486768,
+        "oracle_10d": 0.9832000000000001,
+        "selected_10d": 0.9823999999999999,
+        "oracle_criterion": "10-D signal accuracy"
+      }
+    },
+    "2": {
+      "sha256_X_T": "14f4f6e35c087f67f202626c7d1d3d3603f18fe497a74851848dc939aa65dc4e",
+      "sha256_X_B": "788a259f04a3945c43b061b87befa4bb1991ba22694fd6a4d60293b33913d662",
+      "xi_b": "50e2ef0605dd9186bfdf2ab29911f699cbd35df19c971fe52a108fdcee454354",
+      "params": {
+        "design": "J",
+        "n_T": 5000,
+        "n_B": 5000,
+        "D": 50,
+        "seed": 2,
+        "rho": 0.8124038404635961,
+        "theta": 60,
+        "projected": true,
+        "gain": 2.0,
+        "hidden": 64,
+        "bias_std": 0.1,
+        "map_info": {
+          "scale_A": 4.056733467348962,
+          "scale_Delta": 4.011181493859291,
+          "median_abs_preactivation": 1.2836707718459026,
+          "frac_abs_preactivation_gt_2": 0.299853125,
+          "frac_Delta_var_in_span_B": 0.08010324275182684
+        }
+      },
+      "detectability": 0.8609954488172576,
+      "coherence": 0.8175828223787962,
+      "highd_acc_s": 0.8632,
+      "highd_acc_b": 1.0,
+      "xi_b_diagnostics": {
+        "same_b_xi": 1.0,
+        "same_s_xi": 0.26348087530042774,
+        "same_s_excess": 0.013395098144996676,
+        "same_b_xi_uniform_heads": 1.0,
+        "same_s_xi_uniform_heads": 0.26168945381837033,
+        "same_b_uniform": 0.16683312662532507,
+        "same_s_uniform": 0.25008577715543107,
+        "same_b_knn": 1.0,
+        "same_s_knn": 0.5620898681805061,
+        "len_min": 30,
+        "len_median": 38.0,
+        "len_p90": 49.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.9324,
+        "frac_capped_rows": 0.0086,
+        "bgdist_xi": 1.3636538830146092,
+        "bgdist_same_b_random": 3.0207954111251203,
+        "bgdist_knn": 1.3513215950876287,
+        "spearman_jaccard_bgdist": -0.5616164986000161,
+        "frac_knn_edges_in_xi": 0.7415760608101607,
+        "xi_mass_on_knn": 0.5033406364141273,
+        "xi_mass_on_knn_same_s": 0.21708789729201614,
+        "xi_mass_on_knn_diff_s": 0.2862527391221111,
+        "sha256": "50e2ef0605dd9186bfdf2ab29911f699cbd35df19c971fe52a108fdcee454354",
+        "gate_same_b": true,
+        "gate_same_s": true
+      },
+      "alpha": {
+        "selected_alpha": 2.728333376486768,
+        "representatives": [
+          0.0,
+          2.728333376486768,
+          151.17750706156616,
+          492.38826317067367
+        ],
+        "variance_ratios": [
+          1.0195301579789238,
+          17.522518418937274,
+          13.07180491747107,
+          3.890854478186558
+        ],
+        "oracle_alpha": 1.3433993325989002,
+        "oracle_10d": 0.9882000000000002,
+        "selected_10d": 0.9882,
+        "oracle_criterion": "10-D signal accuracy"
+      }
+    }
+  },
+  "selection": {
+    "design": "J",
+    "metric": "acc_s",
+    "best_m_B": {
+      "b": 20,
+      "c": 10,
+      "o": 20
+    },
+    "means": {
+      "a": 0.2966,
+      "b_m1": 0.30266666666666664,
+      "b_m2": 0.3,
+      "b_m5": 0.3022,
+      "b_m10": 0.3344666666666667,
+      "b_m20": 0.35793333333333327,
+      "c_m1": 0.5872,
+      "c_m2": 0.7741333333333333,
+      "c_m5": 0.8492000000000001,
+      "c_m10": 0.8693333333333334,
+      "c_m20": 0.8561333333333332,
+      "o_m1": 0.3128,
+      "o_m2": 0.3370666666666667,
+      "o_m5": 0.3822666666666666,
+      "o_m10": 0.4206666666666667,
+      "o_m20": 0.4546666666666666,
+      "e2": 0.9855333333333333,
+      "e3": 0.9844
+    },
+    "rule": "highest mean acc_s over selection seeds 0-2 per group; ties -> smaller m_B"
+  }
+}
