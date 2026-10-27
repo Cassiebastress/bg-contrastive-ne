@@ -123,31 +123,69 @@ Definition: **background-neighbor overlap**, implemented as `method.xi_b.build_x
 
 Alternative (do not implement now; note only): linear ξ_B from a kernel on target-pair differences projected onto the top principal components of X_B.
 
-## 4. Phase 3 — Modify the trainer
+## 4. Phase 3 — Modify the trainer — done
 
-Implement in the forked package (or as a subclass), keeping the original code path intact and bit-for-bit reproducible when the new feature is disabled.
+**Hook in the vendored package** (`third_party/contrastive-ne/src/cne/cne.py`, 11 lines; listed in `UPSTREAM.md` under "Local changes"):
+- `ContrastiveEmbedding(..., batch_hook=None)` passes the hook to `train()`.
+- There, right after `loss = criterion(...)`, `batch_hook(item, neigh, features, model, criterion, epoch)` is called, and a non-`None` return value is added to the batch loss.
+- With `batch_hook=None` the original code path runs, and the Phase 1 embeddings are reproduced bit-for-bit.
 
-New arguments:
-- `bg_mode`: `"none"` (default) | `"xi_b"` | `"uniform_extra"` (control: m_B extra negatives drawn uniformly from all target points instead of from ξ_B).
-- `bg_neighbors`: CSR (indptr, indices, probs) from Phase 2 (`method.xi_b.XiB`; saved as `results/phase2/xi_b_{level}_seed{s}.npz`).
-- `m_B` (int), `gamma` (float, default 1.0).
+**Background term** (`method/bg_term.py`, `BackgroundTerm(bg_mode, m_B, gamma, n, xi, seed)`, used as the hook):
+- `bg_mode`: `"none"` (logging only) | `"xi_b"` | `"uniform_extra"`. `m_B` is an integer ≥ 0; `gamma` defaults to 1.0. `xi` is the `method.xi_b.XiB` from Phase 2.
+- **Sampling, with its own RNG.** For each directed edge in the batch with head i, m_B tails are drawn with replacement.
+  - `xi_b`: from row i of ξ_B, by vectorized inverse-CDF sampling. Heads with empty rows are masked (they get no background negatives).
+  - `uniform_extra`: uniform over all n_T target points except i, **not in-batch**. Like ξ_B, its tails index the full embedding table, so (b) and (c) differ only in the distribution.
+  - The sampler uses its own `torch.Generator`, seeded from `SeedSequence([seed, 1])`. The global torch RNG (edge shuffle and the package's negatives) is never touched.
+- **Loss.** The term is γ·Σ −log((1 − est).clamp(clamp_low, clamp_high)), with est = 1/(1 + c·(d² + eps)). It uses the same c (`criterion.spec_param`), eps and clamps as the package's negatives.
+  - It joins the batch loss with the package's aggregation (`"sum"` by default; divided by b·(m+1) under `"mean"`), so L_ij matches the formula in §0 exactly.
+  - Gradients reach both the heads and the background tail rows.
+- **Logging, every mode, every epoch** (no gradient, no random draws):
+  - attraction, uniform repulsion, and background repulsion (raw and γ-weighted), summed per epoch;
+  - the background share of the loss;
+  - masked heads and non-finite batches.
 
-Two-stage schedule (replaces the earlier `bg_start_epoch`; the package's early exaggeration is a no-op for `loss_mode="neg"` defaults and never resets the learning rate, see NOTES.md):
-- **Stage 1 (warm-up):** plain Neg-t-SNE with package defaults (`neg_spec=1.0`), N1 epochs (default 250), explicit PCA std-1 init, the shared kNN graph, its own LR annealing. Save the embedding (one per seed).
-- **Stage 2:** a new fit initialized from the Stage 1 embedding at its actual scale (float32, no rescaling), N2 epochs (default 500), fresh LR annealing from the default starting LR, `early_exaggeration=False`, the same kNN graph, and the run's `bg_mode` / `m_B` / `gamma`.
-- Fallback, only if CNE could not take a custom init: implement the equivalent inside the training loop (switch the background term on at epoch N1 and reset the LR schedule there). NOTES.md records which approach is used.
+  `common.embed.fit_neg` also records, at every epoch, the mean φ = 1/(1+d²) over a fixed sample of 100k pairs (and its all-pairs Σφ estimate), the embedding std, and finiteness.
 
-Behavior:
-- For each directed edge in a batch with head i, after the existing negative sampling, sample m_B tails from row i of `bg_neighbors` (with replacement, by `probs`). Skip if the row is empty. Background tails index the full embedding table, not just the batch; this is fine in non-parametric mode.
-- Compute the repulsive term with the same φ and constant c as existing negatives. Multiply by γ and add to the loss.
-- The term is active for all of Stage 2 and never in Stage 1.
-- Log per epoch: loss components (attraction, uniform repulsion, background repulsion) and Σφ over a fixed random sample of pairs (embedding-scale diagnostic).
+**Two-stage schedule** (`common.embed.two_stage` / `stage2`):
+- **Stage 1 (warm-up):** plain Neg-t-SNE with package defaults (`neg_spec=1.0`), N1 = 250 epochs, explicit PCA std-1 init, the shared kNN graph, its own LR annealing, logging only.
+- **Stage 2:** a new fit initialized from the Stage 1 embedding at its actual scale (float32, no rescaling), N2 = 500 epochs, fresh LR annealing, `early_exaggeration=False`, the same graph, and the run's `bg_mode` / `m_B` / `gamma`. The term is active for all of Stage 2 and never in Stage 1.
+- We use this approach because CNE accepts a custom init (NOTES §7). The in-loop fallback is not needed.
 
-Tests (`tests/`):
-- With `bg_mode="none"` or m_B = 0, embeddings match the unmodified package exactly for a fixed seed.
-- The sampler's empirical frequencies match `probs` for a few rows (chi-square or tolerance check).
-- The background term's gradient only pushes sampled pairs apart (sign check on a tiny example).
-- With `bg_mode="none"` (or m_B = 0), Stage 2 equals a plain continuation run of the unmodified package (same Stage 1 init, graph, and seed), bit-for-bit.
+**Tests** (`tests/test_bg_term.py`, all passing):
+- **Off switch:** with `bg_mode="none"` (logging on), `xi_b` with m_B = 0, or `uniform_extra` with m_B = 0, Stage 2 is bit-identical to a plain package continuation fit.
+- **Stage 2 start:** Stage 2 starts from the exact Stage 1 embedding.
+- **Global RNG:** untouched by the sampler.
+- **Samplers:**
+  - ξ_B sampler frequencies match `probs` (chi-square), and draws never leave their row;
+  - empty rows are masked;
+  - `uniform_extra` never returns the head and is uniform over the other points.
+- **Value and sign:** the term's value equals the formula, its gradient pushes sampled pairs apart, and unsampled rows get zero gradient (`"sum"` and `"mean"`).
+- **Equal treatment:** one background negative and one uniform in-batch negative at the same φ contribute identical loss and gradient (`"sum"` and `"mean"`).
+- **Logging:** logged components sum to the package's own batch losses.
+- **Determinism:** two `xi_b` fits are bit-identical and differ from `uniform_extra` and from `none`.
+
+**Regression check:** with the patched package and the logging-enabled helpers, the Phase 1 chosen embeddings (3 levels, seed 0, full schedule) are bit-identical to those saved before the patch.
+
+**Smoke run** (`scripts/phase3_smoke.py`, `results/phase3/`; easy, seed 0; stability only, no signal metrics):
+- **Runs:** Stage 2 with `none`, `uniform_extra` and `xi_b` at m_B ∈ {5, 20}, and the (d) `s=0` reference.
+- **All checks pass:**
+  - Stage 2 starts at the exact Stage 1 embedding.
+  - The background share of the loss is exactly 0 in every Stage 1 epoch, and > 0 in every Stage 2 epoch of each m_B > 0 run (0 for (a) and (d)).
+  - No non-finite batch or embedding.
+  - The Stage 2 embedding-std growth is ≤ 2.3×.
+  - Rerunning `xi_b` at m_B = 20 gives a bit-identical result.
+- **Runtime per Stage 2 run** (500 epochs, n = 5000):
+
+  | run | runtime |
+  |---|---|
+  | (a) | 13 s |
+  | (d) | 16 s |
+  | `uniform_extra` m_B = 5 | 20 s |
+  | `uniform_extra` m_B = 20 | 42 s |
+  | `xi_b` m_B = 5 | 26 s |
+  | `xi_b` m_B = 20 | 54 s |
+
+- **Phase 4 estimate:** about 5 min per (level, seed), so about 45 min for the main grid.
 
 ## 5. Phase 4 — Experiment
 

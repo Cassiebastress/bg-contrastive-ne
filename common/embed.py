@@ -3,14 +3,18 @@ import sys
 import time
 
 import numpy as np
+import torch
 from sklearn.decomposition import PCA
 
 import cne
 from cne._cne import rescale
 
+from method.bg_term import BackgroundTerm
+
 cne_core = sys.modules["cne.cne"]  # module holding ContrastiveEmbedding and new_lr
 
 N1, N2 = 250, 500
+N_SCALE_PAIRS = 100_000
 
 
 def rescale_init(Y):
@@ -23,13 +27,26 @@ def pca_init(X):
     return rescale_init(PCA(n_components=2, svd_solver="full").fit_transform(X))
 
 
-def fit_neg(init, graph, seed, **kwargs):
-    """Fit non-parametric Neg-t-SNE from `init` on `graph`.
+def scale_pairs(n, seed, n_pairs=N_SCALE_PAIRS):
+    """Fixed uniform sample of pairs i != j for the embedding-scale diagnostic (its own numpy stream)."""
+    rng = np.random.default_rng([seed, 2])
+    i = rng.integers(n, size=n_pairs)
+    j = rng.integers(n - 1, size=n_pairs)
+    return torch.from_numpy(i), torch.from_numpy(j + (j >= i))
+
+
+def fit_neg(init, graph, seed, batch_hook=None, **kwargs):
+    """Fit non-parametric Neg-t-SNE from `init` on `graph`, with an optional trainer `batch_hook`.
 
     Returns the embedding, the per-epoch learning rates actually set by the package, the embedding weights
-    at the start of training (read via the package's epoch -1 callback), the runtime, and the resolved params.
+    at the start of training (read via the package's epoch -1 callback), the runtime, the resolved params, and a
+    per-epoch `scale` log (epoch -1 = start): mean Cauchy kernel phi = 1 / (1 + d^2) over a fixed pair sample, its
+    all-pairs sum estimate, the embedding std, and whether the embedding is finite.
     """
     lrs, start = [], {}
+    n = len(init)
+    pair_i, pair_j = scale_pairs(n, seed)
+    scale = {"epoch": [], "mean_phi": [], "sum_phi_est": [], "embd_std": [], "finite": []}
     orig_new_lr = cne_core.new_lr
 
     def recording_new_lr(*args, **kw):
@@ -38,12 +55,21 @@ def fit_neg(init, graph, seed, **kwargs):
         return lr
 
     def callback(epoch, model, *_):
+        w = model.weight.detach()
         if epoch == -1:
-            start["weight"] = model.weight.detach().cpu().numpy().copy()
+            start["weight"] = w.cpu().numpy().copy()
+        with torch.no_grad():
+            mean_phi = float((1 / (1 + ((w[pair_i] - w[pair_j]) ** 2).sum(1))).mean())
+        scale["epoch"].append(epoch)
+        scale["mean_phi"].append(mean_phi)
+        scale["sum_phi_est"].append(mean_phi * n * (n - 1))
+        scale["embd_std"].append(float(w.std(dim=0).mean()))
+        scale["finite"].append(bool(torch.isfinite(w).all()))
 
     cne_core.new_lr = recording_new_lr
     try:
-        embedder = cne.CNE(loss_mode="neg", seed=seed, callback=callback, **kwargs)
+        embedder = cne.CNE(loss_mode="neg", seed=seed, callback=callback, save_freq=1, batch_hook=batch_hook,
+                           **kwargs)
         t0 = time.time()
         embd = embedder.fit_transform(init=init, graph=graph)
         runtime = time.time() - t0
@@ -60,13 +86,25 @@ def fit_neg(init, graph, seed, **kwargs):
         "early_exaggeration": c.early_exaggeration, "force_resample": c.force_resample,
         "clip_grad": c.clip_grad, "device": c.device,
     }
-    return {"embd": embd, "lrs": lrs, "start": start["weight"], "runtime_s": runtime, "params": params}
+    out = {"embd": embd, "lrs": lrs, "start": start["weight"], "runtime_s": runtime, "params": params, "scale": scale,
+           "batch_losses": [[float(v) for v in bl] for bl in c.losses]}
+    if isinstance(batch_hook, BackgroundTerm):
+        out["params"]["background"] = batch_hook.params()
+        out["log"] = batch_hook.epoch_log()
+    return out
 
 
-def two_stage(init, graph, seed, n1=N1, n2=N2, **stage2_kwargs):
-    """Stage 1: plain Neg-t-SNE for n1 epochs from `init`. Stage 2: a new fit for n2 epochs from the Stage 1
-    embedding (float32, unchanged), fresh LR annealing, early exaggeration off, plus `stage2_kwargs`."""
-    stage1 = fit_neg(init, graph, seed, n_epochs=n1)
-    stage1_embd = stage1["embd"].astype(np.float32)
-    stage2 = fit_neg(stage1_embd, graph, seed, n_epochs=n2, early_exaggeration=False, **stage2_kwargs)
-    return stage1, stage2
+def stage2(stage1_embd, graph, seed, n2=N2, bg_mode="none", m_B=0, gamma=1.0, xi=None, **kwargs):
+    """Stage 2 alone: a new fit for n2 epochs from the Stage 1 embedding (float32, unchanged), fresh LR annealing,
+    early exaggeration off, and the requested background term (logging only for bg_mode="none")."""
+    hook = BackgroundTerm(bg_mode, m_B, gamma, n=len(stage1_embd), xi=xi, seed=seed)
+    return fit_neg(np.asarray(stage1_embd, dtype=np.float32), graph, seed, batch_hook=hook, n_epochs=n2,
+                   early_exaggeration=False, **kwargs)
+
+
+def two_stage(init, graph, seed, n1=N1, n2=N2, bg_mode="none", m_B=0, gamma=1.0, xi=None, **stage2_kwargs):
+    """Stage 1: plain Neg-t-SNE for n1 epochs from `init` (logging only). Stage 2: `stage2` from its embedding with
+    the requested background term and `stage2_kwargs`."""
+    stage1 = fit_neg(init, graph, seed, batch_hook=BackgroundTerm("none"), n_epochs=n1)
+    return stage1, stage2(stage1["embd"], graph, seed, n2=n2, bg_mode=bg_mode, m_B=m_B, gamma=gamma, xi=xi,
+                          **stage2_kwargs)

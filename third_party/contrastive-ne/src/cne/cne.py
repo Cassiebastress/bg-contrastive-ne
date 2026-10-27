@@ -16,6 +16,7 @@ def train(
     clip_grad=True,
     print_freq=None,
     force_resample=None,
+    batch_hook=None,
 ):
     """
     one epoch training
@@ -29,6 +30,7 @@ def train(
     :param clip_grad: bool If True, clips gradients to 4
     :param print_freq: int or None Frequency for printing if not None
     :param force_resample: bool or None If True, forces resampling of negative sample indices for every batch. If None, once every epoch.
+    :param batch_hook: callable or None (local change, bg-contrastive-ne) Called as batch_hook(item, neigh, features, model, criterion, epoch) after the loss is computed; a non-None return value is added to the batch loss.
     :return: torch.tensor Losses for all batches of the epoch
     """
     model.train()
@@ -47,6 +49,10 @@ def train(
             features.retain_grad()  # to print model agnostic grad statistics
         force_resample = force_resample if force_resample is not None else idx == 0
         loss = criterion(features, log_Z, log_temp, force_resample=force_resample)
+        if batch_hook is not None:  # local change (bg-contrastive-ne)
+            extra = batch_hook(item, neigh, features, model, criterion, epoch)
+            if extra is not None:
+                loss = loss + extra
 
         # update metric
         losses.append(loss.item())
@@ -126,7 +132,8 @@ class ContrastiveEmbedding(object):
         force_resample=None,
         warmup_epochs=0,
         warmup_lr=0,
-        early_exaggeration=True
+        early_exaggeration=True,
+        batch_hook=None,
     ):
         """
         :param model: torch.nn.Module Embedding model (embedding layer for non-parametric, neural network for parametric)
@@ -166,6 +173,7 @@ class ContrastiveEmbedding(object):
         :param warmup_epochs: int Number of epochs for linearly warming up the learning rate
         :param warmup_lr: float Starting learning rate to warm up from.
         :param early_exaggeration: bool Whether to use the first third of the optimization in the s=1 regime. Only affects loss modes "infonce" and "neg".
+        :param batch_hook: callable or None (local change, bg-contrastive-ne) Passed to train(); see there.
         """
         self.model: torch.nn.Module = model
         self.batch_size: int = batch_size
@@ -222,6 +230,7 @@ class ContrastiveEmbedding(object):
         self.clip_grad: bool = clip_grad
         self.save_freq: int = save_freq
         self.callback = callback
+        self.batch_hook = batch_hook  # local change (bg-contrastive-ne)
 
         if print_freq_epoch == "auto":
             self.print_freq_epoch = np.maximum(self.n_epochs // 5, 1)
@@ -490,6 +499,7 @@ class ContrastiveEmbedding(object):
                 clip_grad=self.clip_grad,
                 print_freq=self.print_freq_iteration,
                 force_resample=self.force_resample,
+                batch_hook=self.batch_hook,
             )
             batch_losses.append(bl)
 

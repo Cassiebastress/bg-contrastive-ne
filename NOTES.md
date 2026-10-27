@@ -284,3 +284,45 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
   - same-y_b is 1.000 for every k_B ∈ {5, 15, 30} and L ∈ {15, 30, 60};
   - the same-y_s excess shrinks slightly as k_B grows (medium: +0.067 at k_B = 5, +0.057 at 15, +0.052–0.060 at 30).
 - **Provenance flag fix:** `environment_info()["project_git"]["dirty"]` used to count a run's own untracked outputs in `results/`, so every Phase 0 and Phase 1 results file says `dirty: true` even though the code matched the recorded HEAD. Since `92fbcbc`, `results/` is excluded; the Phase 2 diagnostics record `dirty: false`.
+
+# Phase 3: background term in the trainer
+
+## Decisions and why
+
+- **Hook in the vendored package (11 lines).** We use this instead of monkeypatching a copy of `train()`, so the training loop isn't duplicated. It's documented in `third_party/contrastive-ne/UPSTREAM.md`, and the changed lines are marked `# local change (bg-contrastive-ne)`.
+- **The term joins the batch loss with the package's own aggregation** (`"sum"`, so L_ij matches the plan formula exactly). A unit test checks that one background negative and one uniform in-batch negative at the same φ contribute identical loss and gradient, under `"sum"` and under `"mean"`.
+- **`uniform_extra` samples uniformly from all other target points**, not in-batch. ξ_B tails are drawn from the full table too, so (b) and (c) differ only in the distribution.
+- **The sampler has its own generator,** seeded from `SeedSequence([seed, 1])`. A generator seeded with the bare run seed would replay the global torch stream, which drives the edge shuffle and the package's negatives.
+- **Logging runs in every mode and both stages, using no gradients and no random draws.** It records loss components, the background share of the loss, mean φ over a fixed pair sample, the embedding std, and finiteness. It changes nothing: the bit-identity tests and the regression check pass with it on.
+
+## Verification
+
+- **Regression check:** with the patched package and the logging helpers, the Phase 1 chosen embeddings (3 levels, seed 0) are bit-identical to those saved before the patch.
+- **Tests:** 14 new, 44 in total, all passing.
+
+## Smoke run (`scripts/phase3_smoke.py`, `results/phase3/`; easy, seed 0; stability only)
+
+| Stage 2 run | runtime | std growth (max / start) | mean φ end (start 0.078) | background share (Stage 2 range) |
+|---|---|---|---|---|
+| none (a) | 13 s | 1.30 | 0.077 | 0 |
+| uniform_extra m_B=5 | 20 s | 1.52 | 0.052 | 0.05–0.16 |
+| uniform_extra m_B=20 | 42 s | 1.89 | 0.027 | 0.11–0.25 |
+| xi_b m_B=5 | 26 s | 1.40 | 0.030 | 0.19–0.36 |
+| xi_b m_B=20 | 54 s | 1.55 | 0.012 | 0.18–0.67 |
+| s=0 reference (d) | 16 s | 2.34 | 0.015 | 0 |
+
+- **All §6 checks pass:**
+  - exact Stage 2 start;
+  - the background share is exactly 0 throughout Stage 1 and > 0 in every Stage 2 epoch with m_B > 0;
+  - no non-finite batch or embedding;
+  - a bit-identical rerun.
+- **There is a transient at the stage boundary in every run, including (a).** The fresh learning rate of 1.0 expands the embedding in the first Stage 2 epochs: (a)'s mean φ drops from 0.078 to about 0.04, then recovers to 0.077 by the end. For `xi_b` at m_B = 20, the background share peaks at 0.67 in the first Stage 2 epoch, because ξ_B pairs start close together. It falls to about 0.18 within a few epochs. Gradient clipping (±4 per element) bounds each step, and nothing diverges.
+- **Scale differs between runs** (relevant for Phase 4):
+  - A lower mean φ means a more expanded embedding.
+  - `xi_b` at m_B = 5 lowers mean φ almost as much (0.030) as `uniform_extra` at m_B = 20 (0.027), with a quarter of the extra negatives. `xi_b` at m_B = 20 lowers it most (0.012).
+  - By embedding std, the `s=0` reference (d) expands most (2.34×).
+  - The extra repulsion from ξ_B is concentrated on background-similar pairs, about half of them target kNN edges (Phase 2). That is why `xi_b`'s attraction stays high: at m_B = 20 it ends near 288k, against 85k for (a).
+  - Phase 4 compares against the best (b) over all m_B and against (d), and logs Σφ for every run, so scale shifts are visible next to the signal metrics.
+- **Phase 4 runtime estimate:**
+  - Stage 2 grows from about 15 s (m_B = 1) to about 54 s (m_B = 20).
+  - The 12 Stage 2 runs per (level, seed) take about 5 min, so about 45 min for 3 levels × 3 seeds, plus the stress test at the end.
