@@ -177,9 +177,9 @@ def comparison_table(v):
            "|---|---|---|---|---|"]
     for c in v["comparisons"]:
         direction = "" if c["higher_is_better"] else " (drop)"
-        per_seed = ", ".join(f"{d:+.4f}" for d in c["per_seed"])
-        out.append(f"| {run_name(c['x'])} vs {run_name(c['y'])} | {c['metric']}{direction} | {c['mean_diff']:+.4f} "
-                   f"| {per_seed} | {'yes' if c['consistent'] else 'no'} |")
+        per_seed = ", ".join(f"{d + 0.0:+.4f}" for d in c["per_seed"])  # + 0.0 turns -0.0 into 0.0
+        out.append(f"| {run_name(c['x'])} vs {run_name(c['y'])} | {c['metric']}{direction} "
+                   f"| {c['mean_diff'] + 0.0:+.4f} | {per_seed} | {'yes' if c['consistent'] else 'no'} |")
     return "\n".join(out)
 
 
@@ -249,7 +249,7 @@ def main():
         for stage, v in verdicts[level].items():
             print(f"{level} {stage}: {v['c_run']} success={v['success']} flagged={v['c_flagged']}")
             for c in v["comparisons"]:
-                print(f"    {c['x']} vs {c['y']:6s} {c['metric']:8s} mean {c['mean_diff']:+.4f} "
+                print(f"    {c['x']} vs {c['y']:6s} {c['metric']:8s} mean {c['mean_diff'] + 0.0:+.4f} "
                       f"per-seed {[round(d, 4) for d in c['per_seed']]} consistent={c['consistent']}")
 
     if args.stress_settings:
