@@ -368,3 +368,22 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
 - **Why α > 1 is also fine (secondary diagnostic):** the share of signal variance lying in directions where the background has no variance is 100% (easy), 50% (medium) and 17–35% (hard).
 - **Consequence:** benchmarks for the next method must break additivity or independence, so that the signal's effect depends on the background state. Examples are x = F(z_b, z_s) with background F(z_b′, s₀), or background-cluster-specific signal maps; the latter makes G1 and G3 ill-posed.
 - **Installing umap-learn / contrastive** changed no existing package, and the Phase 4 bit-identity check still passes.
+
+# Phase 5a: benchmarks that break cPCA's additive assumption (`REPORT_phase5a.md`, `results/phase5a/`)
+
+- **Spec:** given by the project owner in conversation and summarized in REPORT_phase5a.md "Design".
+  - J's knobs were changed in plan review to θ × projection × MLP gain (16 configurations).
+  - Added later: predictions P1–P3, the data diagnostics, and (e2-k20)/(e2-k40) for K.
+- **Generators** (`data/synthetic_j.py`, `data/synthetic_k.py`): both reuse easy's latents, maps, noise and X_B bit for bit. New draws come from a fifth seed stream. `data/synthetic.py` now also records `eps_T` in `truth`.
+- **Oracle same-cluster control:** `bg_mode="oracle_cluster"` runs through the ξ_B sampling path, over `same_cluster_xi(y_b)`. The Phase 4 easy recheck stayed bit-identical after the change.
+- **ρ:** ρ_J = 0.812 (= 0.2·√16.5, since J's signal has unit total variance) and ρ_K = 0.2, both from the Phase 1 rule.
+- **K stopped at calibration:** (e2) WC 0.97–0.98 > 0.80, and the top 20/40 components give 0.98. The cluster-specific maps keep C_T − C_B equal to the signal covariance (zero-mean, outside span(B)).
+- **J: one valid configuration, t60_proj_g2.**
+  - It meets V3 only through G1/G2: (e2) is signal-organized globally (G3 = 1) with background sub-lobes.
+  - **Cause:** the interaction carries a background-cluster mean shift outside span(B), which X_B never shows (about 9% of the signal variance). Coherence can't see it.
+  - **Did not replicate:** on confirmation seeds 3 and 4 (label-free α 37 and 29), (e2) passed the frozen G1–G3 thresholds.
+- **J main runs:**
+  - (e2) beats (c) on signal accuracy, G1, G2 and G3, consistent across 3 seeds.
+  - (c) beats the oracle same-cluster control on signal accuracy by +0.39 (0.86 vs 0.47), consistent across 3 seeds. This is REPORT.md Next steps #1: ξ_B's neighborhood structure, not same-cluster repulsion alone, carries (c)'s gain.
+- **Predictions:** P1 not confirmed; P2 not confirmed (descriptive); P3 not applicable for J and K.
+- **Next:** center J's interaction (Δ − E[Δ | z_b]); test the configurations with a high global/local ratio while keeping V2; judge "cPCA fails" across all α representatives.

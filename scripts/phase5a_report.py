@@ -6,7 +6,8 @@ Per design: the confirmation table (mean [min, max] over the confirmation seeds)
 the Design J grid plot.
 
 Run with the cne-bg env (after the main runs):  python scripts/phase5a_report.py
-Outputs: results/phase5a/tables_{J,K}.md, embeddings_{J,K}.png, grid_J.png, comparisons.json.
+Outputs: results/phase5a/tables_{J,K}.md, embeddings_{J,K}.png, grid_J.png, comparisons.json, k_calibration.md,
+predictions_status.md.
 """
 import csv
 import json
@@ -148,9 +149,10 @@ def embedding_figure(design, selection, cal):
             ax.scatter(*e.T, c=y, s=0.6, alpha=0.5, cmap="tab10", vmin=0, vmax=9, edgecolor="none", rasterized=True)
             ax.set_aspect("equal")
             ax.axis("off")
-            ax.set_title(f"{run} by {lab}: acc {float(r['acc_s']):.2f}, WC {float(r['WC']):.2f}, "
+            ax.set_title(f"{run} by {lab}: signal acc {float(r['acc_s']):.2f}, WC {float(r['WC']):.2f}, "
                          f"G1 {float(r['G1']):.2f}", fontsize=6.5)
     fig.suptitle(f"Design {design}, selection seed 0", fontsize=9)
+    fig.tight_layout()
     fig.savefig(OUT / f"embeddings_{design}.png", dpi=110, bbox_inches="tight")
     plt.close(fig)
 
@@ -224,14 +226,90 @@ def design_tables(design, cal):
     return {"preregistered": pre_res, "descriptive": desc_res, "selection": selection}
 
 
+def k_calibration_figure(cal):
+    """Design K, selection seed 0, from the calibration embeddings."""
+    t = make("K", 0, cal["rho"]["K"]["rho"]).truth
+    rows = {r["seed"]: r for r in read("k_validity.csv")}
+    runs = ["a", "e2", "e3", "e2_k20", "e2_k40"]
+    fig, axes = plt.subplots(len(runs), 2, figsize=(5, 2.5 * len(runs)))
+    for ax_row, run in zip(axes, runs):
+        e = np.load(OUT / "embeddings" / f"K_seed0_{run}.npy")
+        for ax, (y, lab) in zip(ax_row, ((t["y_s"], "y_s"), (t["y_b"], "y_b"))):
+            ax.scatter(*e.T, c=y, s=0.6, alpha=0.5, cmap="tab10", vmin=0, vmax=9, edgecolor="none", rasterized=True)
+            ax.set_aspect("equal")
+            ax.axis("off")
+            ax.set_title(f"{run} by {lab}: WC {float(rows['0'][f'{run}_WC']):.2f}", fontsize=7)
+    fig.suptitle("Design K, selection seed 0 (calibration)", fontsize=9)
+    fig.tight_layout()
+    fig.savefig(OUT / "embeddings_K_calibration.png", dpi=110, bbox_inches="tight")
+    plt.close(fig)
+
+
+def k_calibration_table():
+    """Design K calibration runs per seed (K stopped at V3-K, so these are its only embeddings)."""
+    rows = read("k_validity.csv")
+    runs = ["a", "e2", "e3", "e2_k20", "e2_k40"]
+    out = ["# Design K calibration runs (selection seeds 0–2)", "",
+           "(e2-k20) and (e2-k40) use the same label-free α as (e2), with the top 20 and top 40 cPCA components. "
+           "V3-K is defined with the 10-component (e2) only.", "",
+           "| run | WC | signal acc | G1 (ill-posed for K) | G2 (ill-posed for K) |", "|---|---|---|---|---|"]
+    for run in runs:
+        cells = [fmt(np.array([float(r[f"{run}_{m}"]) for r in rows])) for m in ("WC", "acc_s", "G1", "G2")]
+        out.append(f"| {NAMES.get(run, run)} | " + " | ".join(cells) + " |")
+    out += ["", f"α selected per seed: {', '.join(f'{float(r['selected_alpha']):.3g}' for r in rows)}. "
+            f"10-D WC at the selected α: {', '.join(f'{float(r['selected_10d']):.3f}' for r in rows)}; "
+            f"at the oracle α: {', '.join(f'{float(r['oracle_10d']):.3f}' for r in rows)}."]
+    (OUT / "k_calibration.md").write_text("\n".join(out) + "\n")
+
+
+def predictions_status(cal, res):
+    """P1-P3 from results/phase5a/predictions.md, judged from the generated results (never revised)."""
+    grid = {}
+    for r in read("grid_J.csv"):
+        grid.setdefault(r["config"], []).append(r)
+    true = (lambda rs, keys: all(r[k] == "True" for r in rs for k in keys))
+    proj_both = [n for n, rs in grid.items() if rs[0]["projected"] == "True" and rs[0]["theta"] != "0"
+                 and true(rs, ("V3", "V4"))]
+    valid = [n for n, rs in grid.items() if true(rs, ("V1", "V2", "V3", "V4"))]
+    valid_unproj = [n for n in valid if grid[n][0]["projected"] == "False"]
+    p1 = "not confirmed" if proj_both else "confirmed"
+    p2 = "not applicable" if not valid else ("confirmed" if len(valid_unproj) == len(valid) else "not confirmed")
+    chosen = cal["chosen_J"]
+    p3_j = "not applicable (the chosen J configuration is projected)" if chosen["projected"] else "pending"
+    if not chosen["projected"] and "J" in res:
+        cmp = next(r for r in res["J"]["preregistered"] if r["y"] == "e2" and r["metric"] == "WC")
+        conf = read("runs_J_confirmation.csv")
+        c_run = res["J"]["preregistered"][0]["x"]
+        g1_pass = {run: all(float(r["G1"]) >= V3_J["G1"] for r in conf if r["run"] == run) for run in (c_run, "e2")}
+        ok = cmp["x_better_consistent"] and not any(g1_pass.values())
+        p3_j = "confirmed" if ok else "not confirmed"
+    k_rows = read("k_validity.csv")
+    p3_k = ("not applicable (Design K stopped at calibration: V3-K failed on every seed, so (c) was never run)"
+            if not any(r["V3"] == "True" for r in k_rows) else "pending")
+    out = ["| prediction | status when committed | outcome | evidence |", "|---|---|---|---|",
+           f"| P1: J projected configurations fail V3 only where coherence (V4) is low | pre-registered | **{p1}** "
+           f"| projected configurations meeting V3 and V4 on every selection seed: "
+           f"{', '.join(proj_both) if proj_both else 'none'} |",
+           f"| P2: any valid J configuration is unprojected | descriptive, added after results | **{p2}** "
+           f"| valid configurations: {', '.join(valid) if valid else 'none'} |",
+           f"| P3 (J): (c) beats (e2) on WC; neither passes G1 | pre-registered | **{p3_j}** | chosen configuration "
+           f"{chosen['config']} |",
+           f"| P3 (K): (c) beats (e2) on WC; neither passes G1 | pre-registered | **{p3_k}** | (e2) WC on selection "
+           f"seeds: {', '.join(f'{float(r['e2_WC']):.3f}' for r in k_rows)} |"]
+    (OUT / "predictions_status.md").write_text("\n".join(out) + "\n")
+
+
 def main():
     cal = json.loads((OUT / "calibration.json").read_text())
     grid_figure()
+    k_calibration_table()
+    k_calibration_figure(cal)
     res = {}
     for design in ("J", "K"):
         if (OUT / f"runs_{design}_confirmation.csv").exists():
             res[design] = design_tables(design, cal)
     (OUT / "comparisons.json").write_text(json.dumps(res, indent=2))
+    predictions_status(cal, res)
 
 
 if __name__ == "__main__":
