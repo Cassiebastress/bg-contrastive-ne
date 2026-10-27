@@ -1,0 +1,49 @@
+{
+  "environment": {
+    "python": "3.12.15",
+    "platform": "macOS-14.3-arm64-arm-64bit",
+    "cpu_model": "Apple M3",
+    "cpu_count": 8,
+    "torch": "2.14.1",
+    "torch_num_threads": 4,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "2408ff381b2316e9f4588a8501236ec20979471d",
+      "dirty": false
+    }
+  },
+  "level": "easy",
+  "seed": 0,
+  "rows_identical": true,
+  "embeddings_identical": {
+    "stage1": true,
+    "a": true,
+    "b_m1": true,
+    "b_m2": true,
+    "b_m5": true,
+    "b_m10": true,
+    "b_m20": true,
+    "c_m1": true,
+    "c_m2": true,
+    "c_m5": true,
+    "c_m10": true,
+    "c_m20": true,
+    "d": true
+  },
+  "all_identical": true
+}
