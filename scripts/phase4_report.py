@@ -203,6 +203,59 @@ def write_tables(levels, data, verdicts, selections):
     (OUT / "tables.md").write_text("\n".join(parts))
 
 
+def stress_outputs():
+    """Stress test (graph-level hiding), not used for any choice: tables and a seed-0 figure, if results exist."""
+    path = OUT / "stress" / "runs_stress.csv"
+    if not path.exists():
+        return
+    with open(path) as f:
+        rows = list(csv.DictReader(f))
+    summary = json.loads((OUT / "stress" / "summary_stress.json").read_text())
+    settings = summary["settings"]
+    parts = ["# Stress test (graph-level hiding), not used for any choice", "",
+             "Stress datasets: rho = 0.1 at every level, seeds 0-2. Settings frozen in stress_settings.json from the "
+             "main selection seeds before any stress fit. Values are mean [min, max] over seeds.", ""]
+    for level in LEVELS:
+        lr = [r for r in rows if r["level"] == level]
+        if not lr:
+            continue
+        diag = [summary["checks"][f"{level}/seed{s}"] for s in (0, 1, 2)]
+        highd = ", ".join(f"{d['highd_acc_s_phase1']:.3f}" for d in diag)
+        excess = ", ".join(f"{d['xi_b_diagnostics']['same_s_excess']:+.3f}" for d in diag)
+        same_b = ", ".join(f"{d['xi_b_diagnostics']['same_b_xi']:.3f}" for d in diag)
+        unhealthy = sorted({u for d in diag for u in d["unhealthy_runs"]})
+        sel = {"m_star_c": settings[level]["m_star_c"], "best_b": settings[level]["best_b"]}
+        v = verdict([r for r in lr if r["group"] != "ref"], sel)
+        parts += [f"## {level}", "",
+                  f"High-D X_T signal kNN accuracy (seeds 0-2, Phase 1 record): {highd}. "
+                  f"xi_B same-y_b precision: {same_b}; same-y_s excess: {excess}. "
+                  f"Unhealthy runs: {', '.join(unhealthy) or 'none'}.", "",
+                  run_table(lr), "", comparison_table(v), "",
+                  f"Pre-registered criterion applied descriptively: **{'met' if v['success'] else 'not met'}**.", ""]
+    (OUT / "stress" / "tables_stress.md").write_text("\n".join(parts))
+
+    levels = [lv for lv in LEVELS if any(r["level"] == lv for r in rows)]
+    runs = {lv: settings[lv]["runs"] for lv in levels}
+    ncol = max(len(r) for r in runs.values())
+    fig, axes = plt.subplots(2 * len(levels), ncol, figsize=(2.4 * ncol, 2.4 * 2 * len(levels)), squeeze=False)
+    for i, level in enumerate(levels):
+        t = make_dataset(level, seed=0, signal_to_background=0.1).truth
+        for j in range(ncol):
+            for k, (y, name) in enumerate(((t["y_s"], "y_s"), (t["y_b"], "y_b"))):
+                ax = axes[2 * i + k, j]
+                if j >= len(runs[level]):
+                    ax.axis("off")
+                    continue
+                run = runs[level][j]
+                r = next(x for x in rows if x["level"] == level and int(x["seed"]) == 0 and x["run"] == run)
+                e = np.load(OUT / "stress" / "embeddings" / f"{level}_stress_seed0_{run}.npy")
+                metric = "acc_s" if name == "y_s" else "acc_b"
+                scatter(ax, e, y, f"{level} {run}: by {name} ({float(r[metric]):.2f})")
+    fig.suptitle("Stress test (graph-level hiding), seed 0, not used for any choice", fontsize=9)
+    fig.savefig(OUT / "stress" / "stress_embeddings.png", dpi=110, bbox_inches="tight")
+    plt.close(fig)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--stress-settings", action="store_true")
@@ -244,6 +297,8 @@ def main():
     curves(levels, data, METRICS, "metrics_vs_mB.png")
     curves(levels, data, [("mean_phi", "mean phi over fixed pairs (lower = more expanded)"),
                           ("embd_std", "embedding std")], "scale_vs_mB.png", logy=("mean_phi",))
+
+    stress_outputs()
 
     for level in levels:
         for stage, v in verdicts[level].items():
