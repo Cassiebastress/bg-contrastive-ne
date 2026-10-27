@@ -352,3 +352,17 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
   - no collapse or fragmentation flags.
 - **Recall and Spearman are near zero in absolute terms** (fine-grained target; global layout set by islands). Signal accuracy carries the interpretation.
 - **Main next step:** cross-background attraction, for example a kNN graph in a background-suppressed metric.
+
+# Phase 5 prep: global metrics and the cPCA baseline (`REPORT_phase5prep.md`, `results/phase5prep/`)
+
+- **Spec:** `Phase_5_Plan.md`.
+- **Global metrics G1–G3** (`eval/global_metrics.py`) were validated before use. Phase 4 runs score G1 ≈ 0, G2 ≈ 1 and G3 "shares signal" = 0; the signal-only reference scores ≈ 0.82, ≈ 0.17 and 1. The thresholds, set by the project owner, were frozen in `23459ff` before any cPCA result.
+- **Reference package `contrastive` 1.2.0.** It is a single module with no declared license, so it was installed `--no-deps`, not vendored. Its automatic α selection:
+  - **affinity:** the product of the principal-angle cosines between the 2-D column spaces of the *projected target data* (QR of X_T·V), not of the feature-space directions;
+  - **clustering:** spectral clustering into 4 groups with numpy's global generator; the cluster containing α = 0 is dropped, each other cluster contributes its exemplar (largest summed affinity), and α = 0 is added back;
+  - **defaults to override:** it standardizes unless `standardize=False`, and uses `eig`, not `eigh`.
+
+  Our `baselines/cpca.py` mirrors this, using `eigh`, sign fixing and an explicit `random_state`. On easy seed 0 it matches the package to within 8.7·10⁻¹¹ rad, with identical representatives.
+- **Result:** cPCA → Neg-t-SNE / UMAP reaches about the signal-only reference on all three levels (signal accuracy about 0.98, G1 about 0.81) and passes all four frozen criteria. It beats (c) on every metric, consistently across the paired seeds.
+- **Why (data diagnostic):** the share of signal variance lying in directions where the background has no variance is 100% (easy), 50% (medium) and 17–35% (hard). The synthetic levels are linearly favorable to cPCA. The next method needs a benchmark where the signal is not linearly separable from the background in order to show value beyond cPCA.
+- **Installing umap-learn / contrastive** changed no existing package, and the Phase 4 bit-identity check still passes.
