@@ -7,6 +7,7 @@ Steps (run in order):
   --step k        Design K at rho_K: V1, V2, V3-K (coherence reported).
   --step summary  grid_J.md (prediction + generated tables), validity.md, and the chosen J configuration.
   --step freeze   preregistration.md from calibration.json (commit before any (b), (c) or oracle-control run).
+  --step diagnostics  descriptive data diagnostics from the clean generator components (no embeddings).
 
 Run with the cne-bg env:  caffeinate -i python scripts/phase5a_calibrate.py --step <step>
 Outputs: results/phase5a/rho_sweep.csv, grid_J.csv, k_validity.csv, calibration.json, grid_J.md, validity.md.
@@ -28,6 +29,7 @@ from common.benchmark import (EXTRA_COMPONENTS, GRID, METRICS, RHO_GRID, SELECTI
                               score, v1, v2, v3_j, v3_k, v4)
 from common.experiment import VALIDITY
 from common.repro import assert_committed, environment_info
+from eval.benchmark_metrics import coherence, signal_background_geometry
 from eval.metrics import knn_accuracy
 
 OUT = ROOT / "results" / "phase5a"
@@ -372,7 +374,10 @@ All metrics use k = 15 and the true labels. kNN accuracies use the existing clas
 - (o): the oracle same-cluster control. m_B extra negatives are drawn uniformly from the other members of the head's
   true background cluster. It is an oracle: it uses labels.
 - (b), (c) and (o) each run at m_B ∈ {{1, 2, 5, 10, 20}} and share one Stage 1 per seed.
-- (e2): cPCA → Neg-t-SNE. (e3): cPCA → UMAP. Both use the label-free α of Phase 5 prep.
+- (e2): cPCA → Neg-t-SNE on the top 10 components. (e3): cPCA → UMAP on the same input. Both use the label-free α of
+  Phase 5 prep.
+- Design K only: (e2-k20) and (e2-k40), cPCA → Neg-t-SNE on the top 20 and top 40 components at the same α as (e2).
+  V3-K stays defined with the 10-component (e2).
 
 ## Selection (seeds 0–2)
 
@@ -381,7 +386,7 @@ m_B. The selection metric is signal accuracy for J and WC for K.
 
 ## Confirmation (fresh seeds from 3)
 
-- **Runs:** (a), best (b), best (c), best (o), (e2) and (e3).
+- **Runs:** (a), best (b), best (c), best (o), (e2) and (e3); for K also (e2-k20) and (e2-k40).
 - **Exclusion:** a seed is excluded if it fails V1 ((a) signal accuracy ≤ 0.50 and (a) background accuracy ≥ 0.90), V2
   (detectability ≥ 0.85), or, for J, V4 (coherence ≥ 0.5). These criteria use the data and (a) only, never (e2).
   The next seed is then drawn, until 3 valid seeds exist. More than 2 exclusions in a design means stop and report.
@@ -395,9 +400,14 @@ m_B. The selection metric is signal accuracy for J and WC for K.
 - **Design J:** (c) vs (e2), and (c) vs (o), each on signal accuracy, G1, G2 (lower is better) and G3 "shares
   signal", reported separately. The frozen thresholds G1 ≥ 0.50, G2 ≤ 0.50 and G3 "shares signal" ≥ 0.50 are also
   checked per seed for every run.
-- **Design K:** (c) vs (e2), and (c) vs (o), on WC (primary). Signal accuracy is secondary. G1–G3 are reported but
-  marked ill-posed for K: same-label groups in different clusters are unrelated.
+- **Design K:** (c) vs (e2), (c) vs (e2-k20), (c) vs (e2-k40), and (c) vs (o), on WC (primary). Signal accuracy is
+  secondary. (c) "beats cPCA" only if it is consistent across 3 paired seeds against each of (e2), (e2-k20) and
+  (e2-k40). G1–G3 are reported but marked ill-posed for K: same-label groups in different clusters are unrelated.
 - **Descriptive only** (no verdict): (c) vs (a), (c) vs best (b), and (c) vs (e3).
+
+## Predictions
+
+`results/phase5a/predictions.md` (P1–P3) is reported as confirmed, not confirmed or not applicable, unrevised.
 
 ## Stop and report
 
@@ -410,12 +420,55 @@ m_B. The selection metric is signal accuracy for J and WC for K.
     print(text)
 
 
+def step_diagnostics():
+    """Descriptive data diagnostics from the generators' clean components (no embeddings), every J configuration and
+    K, selection seeds 0-2: data_diagnostics.csv and data_diagnostics.md."""
+    cal = load_cal()
+    rows = []
+    for design, configs in (("J", GRID), ("K", [None])):
+        for c in configs:
+            for seed in SELECTION_SEEDS:
+                ds = make(design, seed, cal["rho"][design]["rho"], c)
+                t = ds.truth
+                row = {"design": design, "config": config_name(c) if c else "K", "seed": seed,
+                       **signal_background_geometry(t["signal_T"], t["B"], ds.X_B, t["y_b_background"]),
+                       "coherence": coherence(ds.X_T, t["y_s"], t["y_b"])}
+                rows.append(row)
+    write_csv(OUT / "data_diagnostics.csv", rows)
+    rows = read_csv(OUT / "data_diagnostics.csv")
+    out = ["# Phase 5a data diagnostics (descriptive)", "",
+           "Computed from the generators' clean components on selection seeds 0–2, with no embeddings. Each cell is "
+           "the mean [min, max] over seeds.", "",
+           "- **Signal variance in span(B):** the fraction of the clean signal's variance inside the background map's "
+           "span.",
+           "- **Background variance along the signal:** the clean signal's top principal directions (those explaining "
+           "90% of its variance) are taken first. Along them, the global background variance over all of X_B is "
+           "compared with the mean within-background-cluster variance.",
+           "- **Rationale:** cPCA can only use directions with low *global* background variance, while ξ_B, built from "
+           "background neighborhoods, effectively uses directions with low *local* background variance. "
+           "Configurations with a large global/local ratio are where (c) is predicted to have an advantage.",
+           "- **Caveat on coherence:** it measures alignment in ambient coordinates, so it can call a signal "
+           "incoherent even when the signal is consistent in the background's own frame (for example, with a curved "
+           "background). V4 is unchanged; this caveat applies to every low-coherence result.", "",
+           "| configuration | signal var in span(B) | signal directions (90%) | global bg var | mean within-cluster "
+           "bg var | global / local | coherence |", "|---|---|---|---|---|---|---|"]
+    for name in dict.fromkeys(r["config"] for r in rows):
+        rs = [r for r in rows if r["config"] == name]
+        n_dirs = sorted({int(r["n_signal_directions"]) for r in rs})
+        out.append(f"| {name} | {_f(rs, 'frac_signal_var_in_span_B')} | {', '.join(map(str, n_dirs))} "
+                   f"| {_f(rs, 'bg_global_var')} | {_f(rs, 'bg_local_var')} | {_f(rs, 'bg_global_local_ratio')} "
+                   f"| {_f(rs, 'coherence')} |")
+    (OUT / "data_diagnostics.md").write_text("\n".join(out) + "\n")
+    print("\n".join(out))
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--step", choices=["rho", "grid", "k", "summary", "freeze"], required=True)
+    parser.add_argument("--step", choices=["rho", "grid", "k", "summary", "freeze", "diagnostics"], required=True)
     args = parser.parse_args()
     EMB.mkdir(parents=True, exist_ok=True)
-    {"rho": step_rho, "grid": step_grid, "k": step_k, "summary": step_summary, "freeze": step_freeze}[args.step]()
+    {"rho": step_rho, "grid": step_grid, "k": step_k, "summary": step_summary, "freeze": step_freeze,
+     "diagnostics": step_diagnostics}[args.step]()
 
 
 if __name__ == "__main__":

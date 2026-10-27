@@ -3,7 +3,7 @@ import numpy as np
 
 from data.synthetic import make_dataset
 from data.synthetic_k import make_k
-from eval.benchmark_metrics import coherence, within_cluster_accuracy
+from eval.benchmark_metrics import coherence, signal_background_geometry, within_cluster_accuracy
 
 rng = np.random.default_rng(0)
 
@@ -39,3 +39,16 @@ def test_coherence_on_generators():
     k = make_k(seed=0, rho=0.2, n_T=3000, n_B=10)
     assert coherence(easy.X_T, easy.truth["y_s"], easy.truth["y_b"]) > 0.8
     assert abs(coherence(k.X_T, k.truth["y_s"], k.truth["y_b"])) < 0.2
+
+
+def test_signal_background_geometry():
+    easy = make_dataset("easy", n_T=3000, n_B=3000, seed=0, signal_to_background=0.2)
+    t = easy.truth
+    out = signal_background_geometry(t["S_T"], t["B"], easy.X_B, t["y_b_background"])
+    # signal orthogonal to span(B): only the isotropic noise (variance 0.01 per direction) lies along it
+    assert out["frac_signal_var_in_span_B"] < 1e-20 and out["n_signal_directions"] == 3
+    assert abs(out["bg_global_local_ratio"] - 1) < 0.1 and abs(out["bg_global_var"] - 0.03) < 0.005
+    # a signal along a background direction sees the between-cluster spread globally, only sigma_b = 1 locally
+    b0 = t["B"][:, :1]
+    inside = signal_background_geometry(t["Bg_T"] @ b0 @ b0.T, t["B"], easy.X_B, t["y_b_background"])
+    assert inside["frac_signal_var_in_span_B"] > 0.99 and inside["bg_global_local_ratio"] > 10
