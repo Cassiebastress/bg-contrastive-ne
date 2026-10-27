@@ -33,13 +33,14 @@ ROW_FIELDS = ["level", "stage", "seed", "run", "group", "bg_mode", "m_B", "s", "
 
 
 def run_spec(label):
-    """Stage 2 keyword arguments for a run label: a, d, b_m<m> (uniform_extra), c_m<m> (xi_b)."""
+    """Stage 2 keyword arguments for a run label: a, d, b_m<m> (uniform_extra), c_m<m> (xi_b), o_m<m> (oracle
+    same-cluster control, Phase 5a)."""
     if label == "a":
         return {"bg_mode": "none"}
     if label == "d":
         return {"bg_mode": "none", "s": 0}
     group, m = label.split("_m")
-    return {"bg_mode": {"b": "uniform_extra", "c": "xi_b"}[group], "m_B": int(m)}
+    return {"bg_mode": {"b": "uniform_extra", "c": "xi_b", "o": "oracle_cluster"}[group], "m_B": int(m)}
 
 
 @dataclass
@@ -50,14 +51,22 @@ class Context:
     G: object
     xi: object
     s_ranks: np.ndarray
+    oracle_xi: object = None
 
 
 def prepare(level, seed, rho, k_B=15, L=30):
     """Dataset, exact target kNN graph, xi_B, and the S_T distance ranks used by every run of this (level, seed)."""
     setup_determinism(seed)
     ds = make_dataset(level, seed=seed, signal_to_background=rho)
-    return Context(level=level, seed=seed, ds=ds, G=knn_graph(ds.X_T, k=K_GRAPH),
-                   xi=build_xi_b(ds.X_T, ds.X_B, k_B=k_B, L=L, seed=seed), s_ranks=pair_distance_ranks(ds.truth["S_T"]))
+    return prepare_dataset(ds, level, seed, k_B=k_B, L=L)
+
+
+def prepare_dataset(ds, label, seed, k_B=15, L=30, oracle_xi=None):
+    """Context for an already generated dataset (call setup_determinism(seed) before generating it). s_ranks is None
+    when the dataset has no clean S_T."""
+    s_ranks = pair_distance_ranks(ds.truth["S_T"]) if "S_T" in ds.truth else None
+    return Context(level=label, seed=seed, ds=ds, G=knn_graph(ds.X_T, k=K_GRAPH),
+                   xi=build_xi_b(ds.X_T, ds.X_B, k_B=k_B, L=L, seed=seed), s_ranks=s_ranks, oracle_xi=oracle_xi)
 
 
 def score(X, ctx):
@@ -86,7 +95,9 @@ def run_stage1(ctx):
 
 
 def run_stage2(ctx, stage1, label):
-    return stage2(stage1["embd"], ctx.G, ctx.seed, xi=ctx.xi, **run_spec(label))
+    spec = run_spec(label)
+    xi = ctx.oracle_xi if spec["bg_mode"] == "oracle_cluster" else ctx.xi
+    return stage2(stage1["embd"], ctx.G, ctx.seed, xi=xi, **spec)
 
 
 def fit_row(ctx, stage, run, group, fit, a_std=None):

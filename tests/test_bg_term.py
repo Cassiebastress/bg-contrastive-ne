@@ -11,7 +11,7 @@ from common.embed import fit_neg, pca_init, stage2, two_stage
 from common.knn import knn_graph
 from common.repro import setup_determinism
 from data.synthetic import MAIN_RHO, make_dataset
-from method.bg_term import BackgroundTerm
+from method.bg_term import BackgroundTerm, same_cluster_xi
 from method.xi_b import XiB, build_xi_b
 
 cne_core = sys.modules["cne.cne"]
@@ -200,3 +200,47 @@ def test_bad_arguments(setup):
         BackgroundTerm("uniform_extra", 2.5, n=10)
     with pytest.raises(ValueError):
         BackgroundTerm("uniform_extra", 2, gamma=-1, n=10)
+
+
+# 9. oracle same-cluster control (Phase 5a): the xi_B sampling path over same_cluster_xi(y_b)
+def test_same_cluster_xi_rows():
+    y_b = np.array([0, 1, 0, 2, 1, 0, 2, 2, 0])
+    xi = same_cluster_xi(y_b)
+    for i in range(len(y_b)):
+        row = xi.indices[xi.indptr[i]:xi.indptr[i + 1]]
+        assert set(row.tolist()) == set(np.flatnonzero(y_b == y_b[i]).tolist()) - {i}
+        assert np.allclose(xi.probs[xi.indptr[i]:xi.indptr[i + 1]], 1.0 / len(row))
+
+
+def test_oracle_sampler_same_cluster_uniform():
+    y_b = np.repeat(np.arange(4), 25)
+    hook = BackgroundTerm("oracle_cluster", 1, n=100, xi=same_cluster_xi(y_b), seed=0)
+    for i in [0, 37, 99]:
+        tails, valid = hook.sample(torch.full((100_000,), i))
+        assert valid.all() and not (tails == i).any() and (y_b[tails.numpy()] == y_b[i]).all()
+        counts = np.bincount(tails.ravel().numpy(), minlength=100)[y_b == y_b[i]]
+        assert chisquare(counts[counts > 0]).pvalue > 1e-4 and (counts > 0).sum() == 24
+
+
+@pytest.mark.parametrize("aggregation", ["sum", "mean"])
+def test_oracle_negative_weighted_like_xi_negative(aggregation):
+    """With the same single tail, oracle_cluster and xi_b give identical loss and gradient (shared code path), so the
+    equivalence with a uniform in-batch negative (test 6) carries over."""
+    Y = torch.tensor([[0.3, -0.2], [1.1, 0.4]])
+    item, neigh = torch.tensor([0]), torch.tensor([1])
+    out = {}
+    for mode in ("xi_b", "oracle_cluster"):
+        model = torch.nn.Embedding.from_pretrained(Y.clone()).requires_grad_(True)
+        criterion = _criterion(aggregation, negative_samples=2)
+        criterion.neigh_inds = torch.tensor([[1, 1, 1]])
+        xi = same_cluster_xi(np.array([0, 0])) if mode == "oracle_cluster" else _tiny_xi([[1], [0]], n=2)
+        bg = BackgroundTerm(mode, 1, gamma=1.0, n=2, xi=xi)(item, neigh, model(torch.cat([item, neigh])), model,
+                                                            criterion, 0)
+        out[mode] = (float(bg.detach()), torch.autograd.grad(bg, model.weight)[0].numpy())
+    assert out["xi_b"][0] == out["oracle_cluster"][0]
+    np.testing.assert_array_equal(out["xi_b"][1], out["oracle_cluster"][1])
+
+
+def test_oracle_needs_xi():
+    with pytest.raises(ValueError):
+        BackgroundTerm("oracle_cluster", 5, n=10)

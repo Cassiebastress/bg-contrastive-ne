@@ -1,7 +1,8 @@
 """Background-negative term for Stage 2 of Neg-t-SNE (Plan §4), used as the trainer's `batch_hook`.
 
-For each directed edge in a batch with head i, m_B background tails are drawn (from xi_B(i, .) or uniformly from all
-other target points) and repelled with the package's own Neg-t-SNE repulsion: the same Cauchy kernel, constant c
+For each directed edge in a batch with head i, m_B background tails are drawn (from xi_B(i, .), uniformly from all
+other target points, or, for the oracle control, uniformly from the other members of i's true background cluster via
+`same_cluster_xi`) and repelled with the package's own Neg-t-SNE repulsion: the same Cauchy kernel, constant c
 (`criterion.spec_param`), eps and clamps. The term joins the batch loss with the package's aggregation, so per edge
 
     L_ij = (existing attraction and uniform repulsion) - gamma * sum_b log(1 - phi_ib / (phi_ib + c)).
@@ -12,7 +13,10 @@ torch.Generator, so the global torch RNG that drives the edge shuffle and the pa
 import numpy as np
 import torch
 
-BG_MODES = ("none", "xi_b", "uniform_extra")
+from method.xi_b import XiB
+
+BG_MODES = ("none", "xi_b", "uniform_extra", "oracle_cluster")
+CSR_MODES = ("xi_b", "oracle_cluster")  # modes that sample tails from a per-row distribution (an XiB)
 LOG_KEYS = ("attraction", "uniform_repulsion", "bg_repulsion", "bg_weighted", "n_edges", "n_masked_heads",
             "n_batches", "n_nonfinite_batches")
 
@@ -27,16 +31,16 @@ class BackgroundTerm:
             raise ValueError(f"gamma must be >= 0, got {gamma}")
         if bg_mode != "none" and n is None:
             raise ValueError("n (number of target points) is required for a background term")
-        if bg_mode == "xi_b":
+        if bg_mode in CSR_MODES:
             if xi is None:
-                raise ValueError("bg_mode='xi_b' needs xi (a method.xi_b.XiB)")
+                raise ValueError(f"bg_mode={bg_mode!r} needs xi (a method.xi_b.XiB)")
             if xi.n != n:
                 raise ValueError(f"xi has {xi.n} rows but n={n}")
         self.bg_mode, self.m_B, self.gamma, self.n, self.seed = bg_mode, int(m_B), float(gamma), n, seed
         self.active = bg_mode != "none" and self.m_B > 0
         # derived seed: a generator seeded with the bare run seed would replay the global torch stream
         self.generator = torch.Generator().manual_seed(int(np.random.SeedSequence([seed, 1]).generate_state(1)[0]))
-        if bg_mode == "xi_b":
+        if bg_mode in CSR_MODES:
             lengths = xi.row_lengths()
             cdf = np.zeros(len(xi.probs), dtype=np.float64)
             for i in np.flatnonzero(lengths):
@@ -56,7 +60,7 @@ class BackgroundTerm:
         """Background tails for each head: (b, m_B) target indices, and a (b,) mask of heads that have tails."""
         heads = heads.long()
         b = len(heads)
-        if self.bg_mode == "xi_b":
+        if self.bg_mode in CSR_MODES:
             u = torch.rand((b, self.m_B), generator=self.generator, dtype=torch.float64)
             pos = torch.searchsorted(self.cdf, heads[:, None].double() + u, right=True)
             valid = ~self.empty[heads]
@@ -112,3 +116,16 @@ class BackgroundTerm:
         out["bg_share"] = [w / (a + u + w) if a + u + w > 0 else 0.0
                            for a, u, w in zip(out["attraction"], out["uniform_repulsion"], out["bg_weighted"])]
         return out
+
+
+def same_cluster_xi(y_b):
+    """Oracle control (labels!): an XiB whose row i is uniform over the other members of i's true background cluster."""
+    y_b = np.asarray(y_b)
+    members = {c: np.flatnonzero(y_b == c) for c in np.unique(y_b)}
+    rows = [members[c][members[c] != i] for i, c in enumerate(y_b)]
+    lengths = np.array([len(r) for r in rows], dtype=np.int64)
+    probs = np.concatenate([np.full(len(r), 1.0 / len(r)) for r in rows])
+    return XiB(indptr=np.concatenate([[0], np.cumsum(lengths)]).astype(np.int64),
+               indices=np.concatenate(rows).astype(np.int64), jaccard=probs.copy(), probs=probs,
+               params={"n_T": len(y_b), "kind": "oracle same-cluster (true y_b)",
+                       "n_empty_rows": int((lengths == 0).sum())})

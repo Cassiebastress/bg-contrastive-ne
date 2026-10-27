@@ -135,7 +135,7 @@ def make_dataset(level, n_T=5000, n_B=5000, D=50, seed=0, signal_to_background=1
     X_T = (S_T + Bg_T + eps_T).astype(np.float32)
     X_B = (B(z_b_background) + eps_B).astype(np.float32)
 
-    truth = {"y_s": y_s, "y_b": y_b, "y_b_background": y_b_background, "S_T": S_T, "Bg_T": Bg_T,
+    truth = {"y_s": y_s, "y_b": y_b, "y_b_background": y_b_background, "S_T": S_T, "Bg_T": Bg_T, "eps_T": eps_T,
              "z_s": z_s, "z_b": z_b, "A": A, "B": B_mat}
     params = {"level": level, "n_T": n_T, "n_B": n_B, "D": D, "seed": seed, "signal_to_background": rho, **p,
               "min_center_distance_b": _min_center_distance(centers_b),

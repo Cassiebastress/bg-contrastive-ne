@@ -22,12 +22,10 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import umap
 from scipy.linalg import subspace_angles
 
 from baselines import cpca
-from common.embed import pca_init, two_stage
-from common.knn import knn_graph
+from baselines.cpca_embed import embed_e2, embed_e3
 from common.repro import environment_info, setup_determinism
 from data.synthetic import LEVELS, MAIN_RHO, make_dataset
 from eval.global_metrics import global_scores
@@ -52,15 +50,6 @@ def score(X, t):
     g = global_scores(X, t["y_s"], t["y_b"])
     return {"acc_s": knn_accuracy(X, t["y_s"]), "recall_s": knn_recall(X, t["S_T"]), "G1": g["G1"], "G2": g["G2"],
             **{k: g[k] for k in ("G3_shares_signal", "G3_shares_background", "G3_neither")}}
-
-
-def embed_e2(Z10, seed):
-    Z = Z10.astype(np.float32)
-    return two_stage(pca_init(Z), knn_graph(Z, k=15), seed)[1]["embd"]
-
-
-def embed_e3(Z10, seed):
-    return umap.UMAP(n_neighbors=15, min_dist=0.1, random_state=seed).fit_transform(Z10.astype(np.float32))
 
 
 def emb_path(level, seed, run, alpha):
