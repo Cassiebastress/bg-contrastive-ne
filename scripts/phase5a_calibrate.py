@@ -335,6 +335,24 @@ def step_freeze():
         stop("no valid Design J configuration: report the grid instead of freezing")
     j = (f"θ = {c['theta']}°, Δ {'projected off span(B)' if c['projected'] else 'not projected'}, MLP gain "
          f"g = {c['gain']:g} (configuration {c['config']}), ρ_J = {cal['rho']['J']['rho']:.6g}")
+    k_rows = read_csv(OUT / "k_validity.csv")
+    k_wc = [float(r["e2_WC"]) for r in k_rows]
+    k_status = ("**Design K is stopped.** It failed V3-K on every selection seed ((e2) WC "
+                f"{min(k_wc):.3f}–{max(k_wc):.3f} > {V3_K_MAX_WC:.2f}), so it has no main runs. The K rules below are "
+                "kept as written but are not applied." if not any(_b(r["V3"]) for r in k_rows)
+                else "Design K passed calibration.")
+    jr = [r for r in read_csv(OUT / "grid_J.csv") if r["config"] == c["config"]]
+
+    def rng(key):
+        v = [float(r[key]) for r in jr]
+        return f"{min(v):.3f}–{max(v):.3f}"
+
+    j_caveat = ("**Known caveat for J** (selection seeds 0–2): the chosen configuration meets V3 only through the "
+                f"G1/G2 thresholds. (e2) has G1 {rng('e2_G1')} and G2 {rng('e2_G2')}, but signal accuracy "
+                f"{rng('e2_acc_s')}, WC {rng('e2_WC')} and G3 shares signal {rng('e2_G3_shares_signal')}. On seed 0, "
+                "its embedding is organized by signal globally, with background sub-lobes inside each signal "
+                "blob. The interaction term, averaged over the signal, depends on the background cluster: a "
+                "background main effect outside span(B) that X_B never shows, so cPCA cannot remove it.")
     text = f"""# Phase 5a pre-registration (frozen before any (b), (c) or oracle-control run)
 
 ## Datasets
@@ -351,6 +369,11 @@ on seeds 0–2.
 In J, Ã z_s and Δ̃ are each scaled to unit total variance per dataset; the scale factors are recorded per seed.
 
 n_T = n_B = 5000 and D = 50. Selection seeds are 0–2; confirmation seeds start at 3.
+
+## Status at the freeze (from the calibration CSVs)
+
+- {k_status}
+- {j_caveat}
 
 ## Metrics
 
