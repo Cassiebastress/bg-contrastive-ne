@@ -2,8 +2,10 @@
 
   --stage selection     seeds 0-2: Stage 1 + all 12 Stage 2 runs [(a), (b) and (c) at m_B in {1,2,5,10,20}, (d)];
                         then the pre-registered selection rule -> results/phase4/selection_{level}.json
-  --stage confirmation  fresh seeds 3-5 (requires the committed selection): (a), (d), (c) at m*_c, (b) at m*_c, and
-                        (b) at each per-metric best m_B
+  --stage confirmation  fresh seeds from 3 (requires the committed selection): (a), (d), (c) at m*_c, (b) at m*_c,
+                        and (b) at each per-metric best m_B. A seed whose dataset fails the validity check (judged
+                        from (a) and the oracle only) is excluded and the next seed is drawn, until 3 valid seeds;
+                        more than 2 exclusions stops the level.
   --recheck             determinism check: rerun selection seed 0 and compare with the saved rows and embeddings
 
 Checks (Plan §6, stop and report on failure): dataset and xi_B hashes against Phases 1-2 (seeds 0-2); (a) reproduces
@@ -35,6 +37,8 @@ from eval.xi_b_diag import diagnose
 
 OUT = ROOT / "results" / "phase4"
 SEEDS = {"selection": [0, 1, 2], "confirmation": [3, 4, 5]}
+N_CONFIRM, FIRST_CONFIRM_SEED = 3, 3
+MAX_EXCLUDED = 2  # Plan §5: more excluded confirmation seeds than this means rho is miscalibrated -> stop
 
 
 def read_csv(path):
@@ -119,17 +123,19 @@ def run_seed(level, stage, seed, labels, save=True):
             np.savez(OUT / "logs" / f"{level}_{stage}_seed{seed}_{label}.npz", **epoch_arrays(fit))
         if not healthy(row):
             stop(f"{level} seed {seed} {label}: non-finite or exploding (std growth {row['max_std_growth']:.2f})")
+        if stage == "confirmation" and label == "a":
+            # exclusion rule (Plan §5): validity is judged from (a) and the oracle only, before any other run
+            checks["validity"] = {"emb_acc_b": row["acc_b"], "emb_acc_s": row["acc_s"],
+                                  "oracle_acc_s": checks["oracle_acc_s"],
+                                  "valid": validity(row, checks["oracle_acc_s"])}
+            if not checks["validity"]["valid"]:
+                print(f"{level} confirmation seed={seed}: EXCLUDED, not a valid test {checks['validity']}", flush=True)
+                return rows, checks, embds
     a_row = next(r for r in rows if r["run"] == "a")
     if stage == "selection":
         checks["phase1_sanity"] = phase1_sanity(a_row)
         if not checks["phase1_sanity"]["match"]:
             stop(f"{level} seed {seed}: (a) does not reproduce Phase 1 accuracies {checks['phase1_sanity']}")
-    else:
-        checks["validity"] = {"emb_acc_b": a_row["acc_b"], "emb_acc_s": a_row["acc_s"],
-                              "oracle_acc_s": checks["oracle_acc_s"],
-                              "valid": validity(a_row, checks["oracle_acc_s"])}
-        if not checks["validity"]["valid"]:
-            stop(f"{level} seed {seed}: fresh dataset is not a valid test {checks['validity']}")
     if save:
         np.save(OUT / "embeddings" / f"{level}_{stage}_seed{seed}_stage1.npy", s1["embd"])
     return rows, checks, embds
@@ -172,14 +178,25 @@ def main():
     else:
         labels = SELECTION_RUNS
 
-    rows, checks = [], {}
-    for seed in SEEDS[stage]:
+    rows, checks, used, excluded = [], {}, [], []
+    seed = 0 if stage == "selection" else FIRST_CONFIRM_SEED
+    while len(used) < (len(SEEDS["selection"]) if stage == "selection" else N_CONFIRM):
         seed_rows, checks[seed], _ = run_seed(level, stage, seed, labels)
-        rows += seed_rows
-        write_csv(OUT / f"runs_{level}_{stage}.csv", rows)  # after every seed, so partial progress is kept
+        if stage == "confirmation" and not checks[seed]["validity"]["valid"]:
+            # excluded seeds never enter the run table or any comparison (Plan §5)
+            excluded.append({"seed": seed, "validity": checks[seed]["validity"],
+                             "rows": [r for r in seed_rows if r["group"] != "ref"]})
+            if len(excluded) > MAX_EXCLUDED:
+                stop(f"{level}: {len(excluded)} confirmation seeds excluded before {N_CONFIRM} valid ones; "
+                     f"rho is likely miscalibrated for this level")
+        else:
+            rows += seed_rows
+            used.append(seed)
+            write_csv(OUT / f"runs_{level}_{stage}.csv", rows)  # after every seed, so partial progress is kept
+        seed += 1
 
     summary = {"environment": environment_info(), "level": level, "stage": stage, "rho": MAIN_RHO[level],
-               "seeds": SEEDS[stage], "runs": labels, "checks": checks}
+               "seeds": used, "excluded_seeds": excluded, "runs": labels, "checks": checks}
     if stage == "selection":
         selected = select_settings([r for r in rows if r["group"] != "ref"])
         (OUT / f"selection_{level}.json").write_text(json.dumps({"level": level, **selected}, indent=2))

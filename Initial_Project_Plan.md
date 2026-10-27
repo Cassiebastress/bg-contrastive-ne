@@ -238,6 +238,10 @@ Success criterion: for some m_B, (c) improves signal kNN accuracy and signal kNN
   - (a) reproduces the Phase 1 accuracies exactly;
   - every run is finite, with std growth ≤ 10×;
   - a rerun of easy seed 0 is bit-identical.
+- **Excluding invalid confirmation seeds** (added after hard seed 3 failed validity, before any other hard confirmation result existed):
+  - A confirmation seed is excluded if its dataset fails the validity check, judged from (a) and the oracle only. Draw the next seed until 3 valid ones exist.
+  - **Cap:** if more than 2 seeds are excluded for a level before 3 valid ones are found, stop and report rather than continuing. That would mean ρ is miscalibrated for that level.
+  - Excluded seeds are listed in REPORT.md with their validity numbers. If (c) or (b) already ran on an excluded seed, those results appear only in the exclusion note (`results/phase4/excluded_runs_note.md`), never in a comparison.
 - **Stress settings:** `results/phase4/stress_settings.json` (per level: m*_c and the best (b), plus (a) and (d)) is committed before any stress fit.
 
 **Stress test (graph-level hiding):**
