@@ -18,7 +18,7 @@
     },
     "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
     "project_git": {
-      "head": "857d5858d7aca92274f64aba13e6a9717dc54366",
+      "head": "4971b3e37fc950b4608deb1caab9de1bdd324ead",
       "dirty": true
     }
   },
@@ -108,6 +108,172 @@
           "acc_b": 1.0,
           "recall_s": 0.003591111111111111,
           "spearman_s": 0.0009798305262274628
+        }
+      }
+    },
+    "medium": {
+      "level": "medium",
+      "m_star_c": 20,
+      "best_b": {
+        "acc_s": 20,
+        "recall_s": 20
+      },
+      "rule": "highest mean over selection seeds 0-2 (acc_s for c; per primary metric for b); ties -> smaller m_B",
+      "means": {
+        "a": {
+          "acc_s": 0.3756,
+          "acc_b": 1.0,
+          "recall_s": 0.0037022222222222226,
+          "spearman_s": 0.0038034453159502407
+        },
+        "b_m1": {
+          "acc_s": 0.3788666666666667,
+          "acc_b": 1.0,
+          "recall_s": 0.003786666666666667,
+          "spearman_s": 0.003964165239499964
+        },
+        "b_m2": {
+          "acc_s": 0.3801333333333334,
+          "acc_b": 1.0,
+          "recall_s": 0.003626666666666667,
+          "spearman_s": 0.004043227599955742
+        },
+        "b_m5": {
+          "acc_s": 0.38453333333333334,
+          "acc_b": 1.0,
+          "recall_s": 0.003693333333333333,
+          "spearman_s": 0.004489207061156103
+        },
+        "b_m10": {
+          "acc_s": 0.38833333333333336,
+          "acc_b": 1.0,
+          "recall_s": 0.003955555555555556,
+          "spearman_s": 0.004502198054457502
+        },
+        "b_m20": {
+          "acc_s": 0.40086666666666665,
+          "acc_b": 1.0,
+          "recall_s": 0.004088888888888889,
+          "spearman_s": 0.004574080671805768
+        },
+        "c_m1": {
+          "acc_s": 0.41606666666666675,
+          "acc_b": 1.0,
+          "recall_s": 0.004262222222222222,
+          "spearman_s": 0.0048843773262861176
+        },
+        "c_m2": {
+          "acc_s": 0.4622,
+          "acc_b": 1.0,
+          "recall_s": 0.004866666666666668,
+          "spearman_s": 0.005722429696227342
+        },
+        "c_m5": {
+          "acc_s": 0.5189333333333334,
+          "acc_b": 1.0,
+          "recall_s": 0.005533333333333334,
+          "spearman_s": 0.007317824754192366
+        },
+        "c_m10": {
+          "acc_s": 0.5526,
+          "acc_b": 1.0,
+          "recall_s": 0.005835555555555556,
+          "spearman_s": 0.008047006665247831
+        },
+        "c_m20": {
+          "acc_s": 0.5606,
+          "acc_b": 0.9984666666666667,
+          "recall_s": 0.0061066666666666665,
+          "spearman_s": 0.010427299753120947
+        },
+        "d": {
+          "acc_s": 0.3897333333333333,
+          "acc_b": 1.0,
+          "recall_s": 0.0038666666666666663,
+          "spearman_s": 0.004592408222893792
+        }
+      }
+    },
+    "hard": {
+      "level": "hard",
+      "m_star_c": 10,
+      "best_b": {
+        "acc_s": 20,
+        "recall_s": 20
+      },
+      "rule": "highest mean over selection seeds 0-2 (acc_s for c; per primary metric for b); ties -> smaller m_B",
+      "means": {
+        "a": {
+          "acc_s": 0.35253333333333337,
+          "acc_b": 1.0,
+          "recall_s": 0.003937777777777778,
+          "spearman_s": 0.0020567740792028512
+        },
+        "b_m1": {
+          "acc_s": 0.3578666666666666,
+          "acc_b": 1.0,
+          "recall_s": 0.004008888888888889,
+          "spearman_s": 0.0021517070221338786
+        },
+        "b_m2": {
+          "acc_s": 0.3610666666666667,
+          "acc_b": 1.0,
+          "recall_s": 0.00404,
+          "spearman_s": 0.002381542614644768
+        },
+        "b_m5": {
+          "acc_s": 0.3682,
+          "acc_b": 1.0,
+          "recall_s": 0.004111111111111111,
+          "spearman_s": 0.0022243939142086526
+        },
+        "b_m10": {
+          "acc_s": 0.3814,
+          "acc_b": 1.0,
+          "recall_s": 0.0044533333333333334,
+          "spearman_s": 0.002540862780570838
+        },
+        "b_m20": {
+          "acc_s": 0.41546666666666665,
+          "acc_b": 1.0,
+          "recall_s": 0.004666666666666666,
+          "spearman_s": 0.0023085420224230988
+        },
+        "c_m1": {
+          "acc_s": 0.6056666666666667,
+          "acc_b": 1.0,
+          "recall_s": 0.00748,
+          "spearman_s": 0.006075547921249636
+        },
+        "c_m2": {
+          "acc_s": 0.7130000000000001,
+          "acc_b": 1.0,
+          "recall_s": 0.00996888888888889,
+          "spearman_s": 0.010542715131821137
+        },
+        "c_m5": {
+          "acc_s": 0.7922666666666666,
+          "acc_b": 1.0,
+          "recall_s": 0.011142222222222225,
+          "spearman_s": 0.016289761988276835
+        },
+        "c_m10": {
+          "acc_s": 0.836,
+          "acc_b": 1.0,
+          "recall_s": 0.01275111111111111,
+          "spearman_s": 0.017227819438808568
+        },
+        "c_m20": {
+          "acc_s": 0.8264666666666666,
+          "acc_b": 0.9999333333333333,
+          "recall_s": 0.012097777777777777,
+          "spearman_s": 0.01888914247086243
+        },
+        "d": {
+          "acc_s": 0.37213333333333337,
+          "acc_b": 1.0,
+          "recall_s": 0.004306666666666667,
+          "spearman_s": 0.0025237166965306006
         }
       }
     }
@@ -439,6 +605,614 @@
               3,
               4,
               5
+            ],
+            "per_seed": [
+              -0.0,
+              -0.0,
+              -0.0
+            ],
+            "mean_diff": 0.0,
+            "consistent": false
+          }
+        ],
+        "c_flagged": false,
+        "success": false
+      }
+    },
+    "medium": {
+      "selection": {
+        "c_run": "c_m20",
+        "comparisons": [
+          {
+            "x": "c_m20",
+            "y": "a",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.201,
+              0.17539999999999994,
+              0.17859999999999998
+            ],
+            "mean_diff": 0.18499999999999997,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "b_m20",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.17939999999999995,
+              0.14499999999999996,
+              0.15480000000000005
+            ],
+            "mean_diff": 0.1597333333333333,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "d",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.19239999999999996,
+              0.15559999999999996,
+              0.16460000000000002
+            ],
+            "mean_diff": 0.17086666666666664,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "a",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.0031066666666666673,
+              0.00164,
+              0.0024666666666666665
+            ],
+            "mean_diff": 0.0024044444444444447,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "b_m20",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.002693333333333334,
+              0.0011599999999999996,
+              0.0022
+            ],
+            "mean_diff": 0.002017777777777778,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "d",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.0032400000000000003,
+              0.0014933333333333335,
+              0.001986666666666667
+            ],
+            "mean_diff": 0.0022400000000000002,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "a",
+            "metric": "acc_b",
+            "higher_is_better": false,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.0018000000000000238,
+              0.00039999999999995595,
+              0.0024000000000000687
+            ],
+            "mean_diff": 0.0015333333333333494,
+            "consistent": true
+          }
+        ],
+        "c_flagged": false,
+        "success": true
+      },
+      "confirmation": {
+        "c_run": "c_m20",
+        "comparisons": [
+          {
+            "x": "c_m20",
+            "y": "a",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.22719999999999996,
+              0.19719999999999988,
+              0.21780000000000005
+            ],
+            "mean_diff": 0.21406666666666663,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "b_m20",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.18099999999999994,
+              0.16859999999999986,
+              0.18159999999999998
+            ],
+            "mean_diff": 0.1770666666666666,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "d",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.20639999999999992,
+              0.1975999999999999,
+              0.18899999999999995
+            ],
+            "mean_diff": 0.19766666666666657,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "a",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.00284,
+              0.0019999999999999996,
+              0.0017866666666666664
+            ],
+            "mean_diff": 0.0022088888888888887,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "b_m20",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.00236,
+              0.0018533333333333327,
+              0.0015866666666666668
+            ],
+            "mean_diff": 0.0019333333333333331,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "d",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.0029066666666666668,
+              0.0015999999999999999,
+              0.0018933333333333337
+            ],
+            "mean_diff": 0.0021333333333333334,
+            "consistent": true
+          },
+          {
+            "x": "c_m20",
+            "y": "a",
+            "metric": "acc_b",
+            "higher_is_better": false,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.0014000000000000679,
+              0.0016000000000000458,
+              0.0025999999999999357
+            ],
+            "mean_diff": 0.0018666666666666831,
+            "consistent": true
+          }
+        ],
+        "c_flagged": false,
+        "success": true
+      }
+    },
+    "hard": {
+      "selection": {
+        "c_run": "c_m10",
+        "comparisons": [
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.488,
+              0.5014,
+              0.4609999999999998
+            ],
+            "mean_diff": 0.48346666666666654,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m10",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.4504,
+              0.4757999999999999,
+              0.4375999999999999
+            ],
+            "mean_diff": 0.45459999999999995,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m20",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.4178,
+              0.44699999999999995,
+              0.39679999999999976
+            ],
+            "mean_diff": 0.42053333333333326,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "d",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.45899999999999996,
+              0.4826,
+              0.44999999999999984
+            ],
+            "mean_diff": 0.46386666666666665,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.008693333333333332,
+              0.009386666666666668,
+              0.00836
+            ],
+            "mean_diff": 0.008813333333333333,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m10",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.008266666666666665,
+              0.009093333333333335,
+              0.007533333333333333
+            ],
+            "mean_diff": 0.008297777777777777,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m20",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.00788,
+              0.008946666666666669,
+              0.0074266666666666665
+            ],
+            "mean_diff": 0.008084444444444444,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "d",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.00852,
+              0.009013333333333335,
+              0.0078
+            ],
+            "mean_diff": 0.008444444444444444,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "acc_b",
+            "higher_is_better": false,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              -0.0,
+              -0.0,
+              -0.0
+            ],
+            "mean_diff": 0.0,
+            "consistent": false
+          }
+        ],
+        "c_flagged": false,
+        "success": false
+      },
+      "confirmation": {
+        "c_run": "c_m10",
+        "comparisons": [
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              4,
+              5,
+              6
+            ],
+            "per_seed": [
+              0.504,
+              0.5522,
+              0.5072000000000001
+            ],
+            "mean_diff": 0.5211333333333333,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m10",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              4,
+              5,
+              6
+            ],
+            "per_seed": [
+              0.47239999999999993,
+              0.4918,
+              0.46440000000000015
+            ],
+            "mean_diff": 0.4762,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m20",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              4,
+              5,
+              6
+            ],
+            "per_seed": [
+              0.44359999999999994,
+              0.4386,
+              0.4358000000000001
+            ],
+            "mean_diff": 0.43933333333333335,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "d",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              4,
+              5,
+              6
+            ],
+            "per_seed": [
+              0.4788,
+              0.5082,
+              0.4740000000000001
+            ],
+            "mean_diff": 0.48700000000000004,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              4,
+              5,
+              6
+            ],
+            "per_seed": [
+              0.00912,
+              0.011706666666666666,
+              0.009053333333333333
+            ],
+            "mean_diff": 0.00996,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m10",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              4,
+              5,
+              6
+            ],
+            "per_seed": [
+              0.00868,
+              0.011013333333333333,
+              0.0086
+            ],
+            "mean_diff": 0.00943111111111111,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m20",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              4,
+              5,
+              6
+            ],
+            "per_seed": [
+              0.008253333333333333,
+              0.010199999999999999,
+              0.008213333333333333
+            ],
+            "mean_diff": 0.008888888888888889,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "d",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              4,
+              5,
+              6
+            ],
+            "per_seed": [
+              0.008666666666666666,
+              0.011106666666666666,
+              0.008866666666666667
+            ],
+            "mean_diff": 0.009546666666666667,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "acc_b",
+            "higher_is_better": false,
+            "seeds": [
+              4,
+              5,
+              6
             ],
             "per_seed": [
               -0.0,

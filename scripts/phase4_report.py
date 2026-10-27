@@ -22,7 +22,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from common.experiment import M_BS, PRIMARY, ROW_FIELDS, verdict
+from common.experiment import M_BS, PRIMARY, ROW_FIELDS, paired, verdict
 from common.repro import environment_info
 from data.synthetic import LEVELS, MAIN_RHO, make_dataset
 
@@ -211,6 +211,45 @@ def write_tables(levels, data, verdicts, selections):
     (OUT / "tables.md").write_text("\n".join(parts))
 
 
+def headline_and_posthoc(levels, data, verdicts, selections):
+    """results/phase4/headline.md (pre-registered verdicts, confirmation seeds) and posthoc.md (clearly labeled
+    post-hoc view of the pre-registered global metrics for (a), best (b), (c), (d))."""
+    head = ["| level | confirmation seeds | (a) plain | best (b) uniform_extra | (d) s=0 | (c) xi_b "
+            "| (c) background acc | pre-registered success |", "|---|---|---|---|---|---|---|---|"]
+    post = ["# Post-hoc (not pre-registered as a decision rule): global metrics on the confirmation seeds", "",
+            "Signal kNN recall and signal distance Spearman against S_T are pre-registered metrics; this view of them "
+            "for (a), best (b), (c) and (d) was added after the verdicts. Recall chance level is 15/4999 = "
+            "0.0030. Values are mean [min, max] over the confirmation seeds; differences are (c) minus the other "
+            "run, per seed.",
+            ""]
+    for level in levels:
+        rows = [r for r in data[level]["confirmation"] if r["group"] != "ref"]
+        if not rows:
+            continue
+        sel, v = selections[level], verdicts[level]["confirmation"]
+        c, b = f"c_m{sel['m_star_c']}", f"b_m{sel['best_b']['acc_s']}"
+        seeds = ", ".join(str(x) for x in sorted({int(r["seed"]) for r in rows}))
+        cell = {run: fmt(values(rows, run, "acc_s"), "acc_s") for run in ("a", b, "d", c)}
+        head.append(f"| {level} | {seeds} | {cell['a']} | {cell[b]} (m_B={b[3:]}) | {cell['d']} | {cell[c]} "
+                    f"(m_B={c[3:]}) | {fmt(values(rows, c, 'acc_b'), 'acc_b')} | {'yes' if v['success'] else 'no'} |")
+        post += [f"## {level} (confirmation seeds {seeds})", "",
+                 "| run | signal recall | signal Spearman | background acc |", "|---|---|---|---|"]
+        for run in ("a", b, c, "d"):
+            post.append(f"| {run_name(run)} | {fmt(values(rows, run, 'recall_s'), 'recall_s')} "
+                        f"| {fmt(values(rows, run, 'spearman_s'), 'spearman_s')} "
+                        f"| {fmt(values(rows, run, 'acc_b'), 'acc_b')} |")
+        post += ["", "| (c) minus | signal recall per seed | consistent | signal Spearman per seed | consistent |",
+                 "|---|---|---|---|---|"]
+        for y in ("a", b, "d"):
+            pr, ps = paired(rows, c, y, "recall_s"), paired(rows, c, y, "spearman_s")
+            post.append(f"| {run_name(y)} | {', '.join(f'{d:+.4f}' for d in pr['per_seed'])} "
+                        f"| {'yes' if pr['consistent'] else 'no'} | {', '.join(f'{d:+.4f}' for d in ps['per_seed'])} "
+                        f"| {'yes' if ps['consistent'] else 'no'} |")
+        post.append("")
+    (OUT / "headline.md").write_text("\n".join(head) + "\n")
+    (OUT / "posthoc.md").write_text("\n".join(post))
+
+
 def stress_outputs():
     """Stress test (graph-level hiding), not used for any choice: tables and a seed-0 figure, if results exist."""
     path = OUT / "stress" / "runs_stress.csv"
@@ -299,6 +338,7 @@ def main():
          "selections": selections, "verdicts": verdicts}, indent=2))
 
     write_tables(levels, data, verdicts, selections)
+    headline_and_posthoc(levels, data, verdicts, selections)
     for level in levels:
         embedding_grid(level, data[level]["selection"])
         allseeds_grid(level, selections[level], data[level])
