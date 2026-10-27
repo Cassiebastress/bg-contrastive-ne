@@ -219,3 +219,4 @@ Run with the cne-bg environment, in this order:
 - The rerun of J selection seed 0 is bit-identical in every row and embedding (`results/phase5a/recheck_J.json`).
 - The Phase 4 easy recheck stayed bit-identical after this phase's code changes (`results/phase5a/phase4_recheck_after_5a_changes.json`).
 - Every results JSON records the environment.
+- **Dirty flag:** `summary_J_confirmation.json` and `recheck_J.json` record `dirty: true` at commit `2aa4462`. During those runs, the only uncommitted edits were to the report scripts (`scripts/phase5a_report.py`, `scripts/phase5a_assemble.py`), which the runs do not import. No file the runs import differs from `2aa4462`, except a function appended to `eval/benchmark_metrics.py` after the runs finished (`65cf9ed`).
