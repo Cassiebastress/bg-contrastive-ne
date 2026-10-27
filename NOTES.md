@@ -386,4 +386,10 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
   - (e2) beats (c) on signal accuracy, G1, G2 and G3, consistent across 3 seeds.
   - (c) beats the oracle same-cluster control on signal accuracy by +0.39 (0.86 vs 0.47), consistent across 3 seeds. This is REPORT.md Next steps #1: ξ_B's neighborhood structure, not same-cluster repulsion alone, carries (c)'s gain.
 - **Predictions:** P1 not confirmed; P2 not confirmed (descriptive); P3 not applicable for J and K.
-- **Next:** center J's interaction (Δ − E[Δ | z_b]); test the configurations with a high global/local ratio while keeping V2; judge "cPCA fails" across all α representatives.
+- **Extension:** (o) at m_B 40/80 peaks at 40 (0.48 on the selection seeds). At 40, (c) still beats (o) by +0.36 signal accuracy on every confirmation seed.
+- **Global/local ratio:** dominated by a 2–10% tilt of the signal into span(B); cPCA keeps the other 90%+. What decides whether cPCA fails is the fraction of the signal outside high-global-variance directions (at least 87% everywhere here).
+- **Next:**
+  1. Design L: the signal entirely inside span(B), along between-cluster directions, with tight clusters.
+  2. Judge V3 across all α representatives.
+  3. Pre-register a non-local global metric (e.g. G1 at k = 200) alongside G3.
+  4. Center J's interaction (lower priority).
