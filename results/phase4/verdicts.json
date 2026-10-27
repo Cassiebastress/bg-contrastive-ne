@@ -1,0 +1,457 @@
+{
+  "environment": {
+    "python": "3.12.15",
+    "platform": "macOS-14.3-arm64-arm-64bit",
+    "cpu_model": "Apple M3",
+    "cpu_count": 8,
+    "torch": "2.14.1",
+    "torch_num_threads": 4,
+    "torch_deterministic_algorithms": false,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "857d5858d7aca92274f64aba13e6a9717dc54366",
+      "dirty": true
+    }
+  },
+  "primary_metrics": [
+    "acc_s",
+    "recall_s"
+  ],
+  "verdict_stage": "confirmation (seeds 3-5)",
+  "selections": {
+    "easy": {
+      "level": "easy",
+      "m_star_c": 10,
+      "best_b": {
+        "acc_s": 20,
+        "recall_s": 20
+      },
+      "rule": "highest mean over selection seeds 0-2 (acc_s for c; per primary metric for b); ties -> smaller m_B",
+      "means": {
+        "a": {
+          "acc_s": 0.30293333333333333,
+          "acc_b": 1.0,
+          "recall_s": 0.00308,
+          "spearman_s": 0.0007702419842076962
+        },
+        "b_m1": {
+          "acc_s": 0.3051333333333333,
+          "acc_b": 1.0,
+          "recall_s": 0.0030088888888888886,
+          "spearman_s": 0.0020675954840175515
+        },
+        "b_m2": {
+          "acc_s": 0.3055333333333334,
+          "acc_b": 1.0,
+          "recall_s": 0.003128888888888889,
+          "spearman_s": 0.0012329526802219335
+        },
+        "b_m5": {
+          "acc_s": 0.3238666666666667,
+          "acc_b": 1.0,
+          "recall_s": 0.003431111111111111,
+          "spearman_s": 0.0012116698834927695
+        },
+        "b_m10": {
+          "acc_s": 0.3286,
+          "acc_b": 1.0,
+          "recall_s": 0.0036355555555555555,
+          "spearman_s": 0.0012785016861957957
+        },
+        "b_m20": {
+          "acc_s": 0.35980000000000006,
+          "acc_b": 1.0,
+          "recall_s": 0.003924444444444445,
+          "spearman_s": 0.0007163264918163999
+        },
+        "c_m1": {
+          "acc_s": 0.5907999999999999,
+          "acc_b": 1.0,
+          "recall_s": 0.006506666666666667,
+          "spearman_s": 0.00713472014809723
+        },
+        "c_m2": {
+          "acc_s": 0.8179333333333334,
+          "acc_b": 1.0,
+          "recall_s": 0.011737777777777778,
+          "spearman_s": 0.01623103326673693
+        },
+        "c_m5": {
+          "acc_s": 0.8855333333333334,
+          "acc_b": 1.0,
+          "recall_s": 0.014288888888888887,
+          "spearman_s": 0.01791767120741575
+        },
+        "c_m10": {
+          "acc_s": 0.8882666666666665,
+          "acc_b": 1.0,
+          "recall_s": 0.01436,
+          "spearman_s": 0.019525669353270665
+        },
+        "c_m20": {
+          "acc_s": 0.8785333333333333,
+          "acc_b": 1.0,
+          "recall_s": 0.013879999999999998,
+          "spearman_s": 0.01857898664651936
+        },
+        "d": {
+          "acc_s": 0.33413333333333334,
+          "acc_b": 1.0,
+          "recall_s": 0.003591111111111111,
+          "spearman_s": 0.0009798305262274628
+        }
+      }
+    }
+  },
+  "verdicts": {
+    "easy": {
+      "selection": {
+        "c_run": "c_m10",
+        "comparisons": [
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.6059999999999999,
+              0.5826,
+              0.5673999999999999
+            ],
+            "mean_diff": 0.5853333333333333,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m10",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.5771999999999999,
+              0.5551999999999999,
+              0.5466
+            ],
+            "mean_diff": 0.5596666666666666,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m20",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.5362,
+              0.5233999999999999,
+              0.5257999999999999
+            ],
+            "mean_diff": 0.5284666666666666,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "d",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.571,
+              0.5492,
+              0.5422
+            ],
+            "mean_diff": 0.5541333333333334,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.010893333333333333,
+              0.011519999999999999,
+              0.011426666666666667
+            ],
+            "mean_diff": 0.01128,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m10",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.010573333333333334,
+              0.011106666666666667,
+              0.010493333333333334
+            ],
+            "mean_diff": 0.010724444444444444,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m20",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.010173333333333333,
+              0.010839999999999999,
+              0.010293333333333333
+            ],
+            "mean_diff": 0.010435555555555554,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "d",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              0.01056,
+              0.011106666666666667,
+              0.01064
+            ],
+            "mean_diff": 0.010768888888888889,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "acc_b",
+            "higher_is_better": false,
+            "seeds": [
+              0,
+              1,
+              2
+            ],
+            "per_seed": [
+              -0.0,
+              -0.0,
+              -0.0
+            ],
+            "mean_diff": 0.0,
+            "consistent": false
+          }
+        ],
+        "c_flagged": false,
+        "success": false
+      },
+      "confirmation": {
+        "c_run": "c_m10",
+        "comparisons": [
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.5886,
+              0.5892,
+              0.5681999999999999
+            ],
+            "mean_diff": 0.582,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m10",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.5432,
+              0.5379999999999998,
+              0.5406
+            ],
+            "mean_diff": 0.5406,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m20",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.519,
+              0.4891999999999999,
+              0.5129999999999999
+            ],
+            "mean_diff": 0.5070666666666667,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "d",
+            "metric": "acc_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.5558000000000001,
+              0.5469999999999999,
+              0.5408
+            ],
+            "mean_diff": 0.5478666666666666,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.0102,
+              0.010906666666666667,
+              0.011546666666666667
+            ],
+            "mean_diff": 0.010884444444444447,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m10",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.010186666666666667,
+              0.010600000000000002,
+              0.011293333333333332
+            ],
+            "mean_diff": 0.010693333333333332,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "b_m20",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.010093333333333334,
+              0.010653333333333334,
+              0.0112
+            ],
+            "mean_diff": 0.01064888888888889,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "d",
+            "metric": "recall_s",
+            "higher_is_better": true,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              0.010440000000000001,
+              0.010986666666666667,
+              0.011053333333333333
+            ],
+            "mean_diff": 0.010826666666666667,
+            "consistent": true
+          },
+          {
+            "x": "c_m10",
+            "y": "a",
+            "metric": "acc_b",
+            "higher_is_better": false,
+            "seeds": [
+              3,
+              4,
+              5
+            ],
+            "per_seed": [
+              -0.0,
+              -0.0,
+              -0.0
+            ],
+            "mean_diff": 0.0,
+            "consistent": false
+          }
+        ],
+        "c_flagged": false,
+        "success": false
+      }
+    }
+  }
+}

@@ -132,8 +132,8 @@ def curves(levels, data, key_metrics, fname, logy=()):
             ax.set_xlabel("m_B (extra negatives per edge)", fontsize=8)
             ax.spines[["top", "right"]].set_visible(False)
     axes[0, -1].legend(fontsize=6, frameon=False)
-    fig.text(0.5, -0.01, "open squares: confirmation seeds 3-5 (mean, min-max) at the selected m_B", ha="center",
-             fontsize=8)
+    fig.suptitle("lines and bands: selection seeds 0-2 (mean, min-max); "
+                 "open squares: confirmation seeds 3-5 (mean, min-max) at the selected m_B", fontsize=9, y=1.02)
     fig.savefig(OUT / fname, dpi=120, bbox_inches="tight")
     plt.close(fig)
 
