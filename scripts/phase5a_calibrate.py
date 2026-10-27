@@ -29,7 +29,7 @@ from common.benchmark import (EXTRA_COMPONENTS, GRID, METRICS, RHO_GRID, SELECTI
                               score, v1, v2, v3_j, v3_k, v4)
 from common.experiment import VALIDITY
 from common.repro import assert_committed, environment_info
-from eval.benchmark_metrics import coherence, signal_background_geometry
+from eval.benchmark_metrics import background_main_effect_share, coherence, signal_background_geometry
 from eval.metrics import knn_accuracy
 
 OUT = ROOT / "results" / "phase5a"
@@ -455,7 +455,8 @@ def step_diagnostics():
                 t = ds.truth
                 row = {"design": design, "config": config_name(c) if c else "K", "seed": seed,
                        **signal_background_geometry(t["signal_T"], t["B"], ds.X_B, t["y_b_background"]),
-                       "coherence": coherence(ds.X_T, t["y_s"], t["y_b"])}
+                       "coherence": coherence(ds.X_T, t["y_s"], t["y_b"]),
+                       "bg_main_effect_share": background_main_effect_share(t["signal_T"], t["y_b"])}
                 rows.append(row)
     write_csv(OUT / "data_diagnostics.csv", rows)
     rows = read_csv(OUT / "data_diagnostics.csv")
@@ -470,17 +471,21 @@ def step_diagnostics():
            "- **Rationale:** cPCA can only use directions with low *global* background variance, while ξ_B, built from "
            "background neighborhoods, effectively uses directions with low *local* background variance. "
            "Configurations with a large global/local ratio are where (c) is predicted to have an advantage.",
+           "- **Background main effect in the signal** (added after the grid results): the share of the clean "
+           "signal's variance explained by the target's background-cluster means. Coherence subtracts those means, "
+           "so it cannot see this effect. In J, the interaction term carries it outside span(B), where X_B never "
+           "shows it.",
            "- **Caveat on coherence:** it measures alignment in ambient coordinates, so it can call a signal "
            "incoherent even when the signal is consistent in the background's own frame (for example, with a curved "
            "background). V4 is unchanged; this caveat applies to every low-coherence result.", "",
            "| configuration | signal var in span(B) | signal directions (90%) | global bg var | mean within-cluster "
-           "bg var | global / local | coherence |", "|---|---|---|---|---|---|---|"]
+           "bg var | global / local | coherence | background main effect |", "|---|---|---|---|---|---|---|---|"]
     for name in dict.fromkeys(r["config"] for r in rows):
         rs = [r for r in rows if r["config"] == name]
         n_dirs = sorted({int(r["n_signal_directions"]) for r in rs})
         out.append(f"| {name} | {_f(rs, 'frac_signal_var_in_span_B')} | {', '.join(map(str, n_dirs))} "
                    f"| {_f(rs, 'bg_global_var')} | {_f(rs, 'bg_local_var')} | {_f(rs, 'bg_global_local_ratio')} "
-                   f"| {_f(rs, 'coherence')} |")
+                   f"| {_f(rs, 'coherence')} | {_f(rs, 'bg_main_effect_share')} |")
     (OUT / "data_diagnostics.md").write_text("\n".join(out) + "\n")
     print("\n".join(out))
 

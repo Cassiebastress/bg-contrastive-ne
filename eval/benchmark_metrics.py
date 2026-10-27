@@ -12,6 +12,9 @@
   with low global background variance; xi_B, built from background neighborhoods, effectively uses directions with low
   local background variance. A large global/local ratio marks where (c) is predicted to have an advantage.
 
+- background_main_effect_share (data diagnostic): the share of the clean signal's variance explained by the target's
+  background-cluster means. Coherence subtracts these means, so it cannot see this effect.
+
 Labels are ground truth, used for evaluation only.
 """
 import numpy as np
@@ -51,3 +54,9 @@ def signal_background_geometry(signal, B, X_B, y_b_background, var_frac=0.9):
     local_var = float(np.mean([P[y_b_background == c].var(axis=0).sum() for c in np.unique(y_b_background)]))
     return {"frac_signal_var_in_span_B": float(((S @ B) ** 2).sum() / total), "n_signal_directions": n,
             "bg_global_var": global_var, "bg_local_var": local_var, "bg_global_local_ratio": global_var / local_var}
+
+
+def background_main_effect_share(signal, y_b):
+    S = signal - signal.mean(axis=0)
+    between = sum((y_b == c).sum() * (S[y_b == c].mean(axis=0) ** 2).sum() for c in np.unique(y_b))
+    return float(between / (S ** 2).sum())

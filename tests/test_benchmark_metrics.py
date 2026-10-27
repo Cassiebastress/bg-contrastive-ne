@@ -3,7 +3,8 @@ import numpy as np
 
 from data.synthetic import make_dataset
 from data.synthetic_k import make_k
-from eval.benchmark_metrics import coherence, signal_background_geometry, within_cluster_accuracy
+from eval.benchmark_metrics import (background_main_effect_share, coherence, signal_background_geometry,
+                                    within_cluster_accuracy)
 
 rng = np.random.default_rng(0)
 
@@ -52,3 +53,11 @@ def test_signal_background_geometry():
     b0 = t["B"][:, :1]
     inside = signal_background_geometry(t["Bg_T"] @ b0 @ b0.T, t["B"], easy.X_B, t["y_b_background"])
     assert inside["frac_signal_var_in_span_B"] > 0.99 and inside["bg_global_local_ratio"] > 10
+
+
+def test_background_main_effect_share():
+    y_s, y_b = _cells()
+    shift = np.eye(3)[y_b] * 2.0  # a pure background-cluster offset
+    sig = np.eye(4)[y_s]
+    assert background_main_effect_share(shift, y_b) > 0.999
+    assert background_main_effect_share(np.hstack([sig, 0 * shift]), y_b) < 1e-12
