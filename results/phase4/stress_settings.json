@@ -1,0 +1,44 @@
+{
+  "rule": "frozen from selection_{level}.json before any stress fit; no tuning on stress data",
+  "settings": {
+    "easy": {
+      "runs": [
+        "a",
+        "d",
+        "c_m10",
+        "b_m20"
+      ],
+      "m_star_c": 10,
+      "best_b": {
+        "acc_s": 20,
+        "recall_s": 20
+      }
+    },
+    "medium": {
+      "runs": [
+        "a",
+        "d",
+        "c_m20",
+        "b_m20"
+      ],
+      "m_star_c": 20,
+      "best_b": {
+        "acc_s": 20,
+        "recall_s": 20
+      }
+    },
+    "hard": {
+      "runs": [
+        "a",
+        "d",
+        "c_m10",
+        "b_m20"
+      ],
+      "m_star_c": 10,
+      "best_b": {
+        "acc_s": 20,
+        "recall_s": 20
+      }
+    }
+  }
+}

@@ -327,3 +327,28 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
   - Stage 2 grows from about 12 s (m_B = 0) to about 51 s (m_B = 20).
   - The 12 Stage 2 runs per (level, seed) take about 5 min, so about 45 min for 3 levels × 3 seeds, plus the stress test at the end.
 - **Runtimes exclude sleep.** Runtimes were timed with `time.time()`, which counts laptop sleep: one rerun recorded about 7500 s for a 51 s fit. Since `150285d` they use `time.perf_counter()` (`mach_absolute_time` on macOS, which pauses during sleep). The table above comes from that commit. All three smoke runs gave identical results apart from the environment block and runtimes.
+
+# Phase 4: experiment (`REPORT.md`, `results/phase4/`)
+
+- **Protocol:**
+  - pre-registered in plan §5 and `common/experiment.py`, committed before any result (`dad1c09`);
+  - selection on seeds 0–2, with `selection_{level}.json` committed before confirmation;
+  - the verdict uses fresh confirmation seeds.
+- **Verdicts:**
+
+  | level | verdict | (c) signal accuracy | best control |
+  |---|---|---|---|
+  | easy | not met | 0.89 | 0.39 |
+  | medium | met | 0.58 | 0.41 |
+  | hard | not met | 0.87 | 0.43 |
+
+  The only failing clause is "background accuracy drops". Background negatives add only repulsion, and no kNN edges join islands, so islands can't merge. Medium's pass rests on about 10 boundary points (background accuracy 0.997–0.999), not on background suppression.
+- **Mechanism:** inside each background island, kNN attraction mostly joins same-signal points, while ξ_B repulsion is nearly signal-blind. The island therefore sorts into signal sectors (4 per island on easy and hard). Uniform extra negatives mostly land in other, already distant islands, so they do almost nothing within an island.
+- **Hard seed 3 failed validity:** (a) reached 0.5126 > 0.50. The user set an exclusion rule: draw the next seed, stop if more than 2 are excluded per level, and list excluded runs only in `results/phase4/excluded_runs_note.md`. Hard confirmation used seeds 4–6.
+- **Checks:**
+  - (a) reproduces the Phase 1 accuracies exactly;
+  - all hashes match;
+  - a rerun of easy seed 0 is bit-identical;
+  - no collapse or fragmentation flags.
+- **Recall and Spearman are near zero in absolute terms** (fine-grained target; global layout set by islands). Signal accuracy carries the interpretation.
+- **Main next step:** cross-background attraction, for example a kNN graph in a background-suppressed metric.
