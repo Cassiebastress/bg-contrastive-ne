@@ -1,8 +1,10 @@
-"""Phase 5a metrics for benchmarks whose signal may differ between background clusters.
+"""Phase 5a-5b metrics for benchmarks whose signal may differ between background clusters.
 
 - within_cluster_accuracy (WC): signal kNN accuracy computed inside each true background cluster separately (the same
   classifier as signal accuracy: k = 15, stratified 5-fold CV, seed 0), size-weighted over clusters. It measures local
   signal separation whatever the global layout. On high-D X_T it is the "signal detectability" diagnostic.
+  per_cluster_wc returns the per-cluster accuracies it averages.
+- g1_k200: G1 (eval/global_metrics.py) with k = 200 neighbors, a less local companion (Phase 5b, descriptive).
 - coherence: whether "same signal" points the same way in every background cluster. For cell (k, g),
   d_kg = mean of X over the cell - mean of X over cluster k; coherence is the mean over g and over cluster pairs
   k != k' of cos(d_kg, d_k'g). Additive designs give about 1; independent cluster-specific signal maps give about 0.
@@ -11,7 +13,6 @@
   90% of its variance), globally over all of X_B vs the mean within background cluster. cPCA can only use directions
   with low global background variance; xi_B, built from background neighborhoods, effectively uses directions with low
   local background variance. A large global/local ratio marks where (c) is predicted to have an advantage.
-
 - background_main_effect_share (data diagnostic): the share of the clean signal's variance explained by the target's
   background-cluster means. Coherence subtracts these means, so it cannot see this effect.
 
@@ -19,14 +20,26 @@ Labels are ground truth, used for evaluation only.
 """
 import numpy as np
 
+from eval.global_metrics import cross_cluster_same_signal_rate
 from eval.metrics import knn_accuracy
 
 
-def within_cluster_accuracy(X, y_s, y_b, k=15):
+def per_cluster_wc(X, y_s, y_b, k=15):
+    """Signal kNN accuracy inside each true background cluster (in np.unique(y_b) order), and the cluster sizes."""
     clusters = np.unique(y_b)
     sizes = np.array([(y_b == c).sum() for c in clusters])
     accs = np.array([knn_accuracy(X[y_b == c], y_s[y_b == c], k=k) for c in clusters])
+    return accs, sizes
+
+
+def within_cluster_accuracy(X, y_s, y_b, k=15):
+    accs, sizes = per_cluster_wc(X, y_s, y_b, k=k)
     return float((sizes * accs).sum() / sizes.sum())
+
+
+def g1_k200(X, y_s, y_b):
+    """G1 with k = 200 neighbors: a less local companion of G1 (Phase 5b, descriptive)."""
+    return cross_cluster_same_signal_rate(X, y_s, y_b, k=200)
 
 
 def coherence(X, y_s, y_b):
