@@ -1,0 +1,62 @@
+{
+  "rho": {
+    "cyclic": {
+      "rho": 0.2,
+      "rule": "Phase 1: largest rho on the grid valid on seed 0 (emb acc_b >= 0.90, emb acc_s <= 0.50, oracle acc_s >= 0.95), confirmed on seeds 0-2",
+      "grid": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.7,
+        1.0
+      ]
+    },
+    "between": {
+      "rho": 0.2,
+      "rule": "Phase 1: largest rho on the grid valid on seed 0 (emb acc_b >= 0.90, emb acc_s <= 0.50, oracle acc_s >= 0.95), confirmed on seeds 0-2",
+      "grid": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.7,
+        1.0
+      ]
+    }
+  },
+  "environment": {
+    "python": "3.12.15",
+    "platform": "macOS-14.3-arm64-arm-64bit",
+    "cpu_model": "Apple M3",
+    "cpu_count": 8,
+    "torch": "2.14.1",
+    "torch_num_threads": 4,
+    "torch_deterministic_algorithms": false,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "2fb8b7ac6141fde5686304b1c4ae8d69dea3ed0a",
+      "dirty": false
+    }
+  },
+  "valid": {
+    "cyclic": true,
+    "between": true
+  }
+}
