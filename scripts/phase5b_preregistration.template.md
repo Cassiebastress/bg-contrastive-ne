@@ -33,7 +33,7 @@ For each of (b), (c) and (o), the m_B with the highest mean WC; ties go to the s
 
 ## Confirmation (fresh seeds from 3)
 
-- **Runs:** (a), best (b), best (c), best (o), (e2), (e3) and all cPCA variants.
+- **Runs:** (a), best (b), best (c), best (o), (e2), (e3) and all cPCA variants. Also, as descriptive runs: every labeled linear projection, embedded (L-cyclic: the 64 Q-block subsets with U; L-between: U, and U ∪ V).
 - **Exclusion:** a seed is excluded if it fails V1 ((a) signal accuracy ≤ 0.50 and (a) background accuracy ≥ 0.90), V2 (detectability ≥ 0.85) or V2b (high-D signal kNN accuracy ≥ 0.65). These criteria use the data and (a) only. The next seed is drawn until 3 valid seeds exist; more than 2 exclusions means stop.
 
 ## Pre-registered comparisons (confirmation seeds, on WC; "consistent across 3 paired seeds")
@@ -43,7 +43,9 @@ For each of (b), (c) and (o), the m_B with the highest mean WC; ties go to the s
 3. (c) vs (o).
 4. (c) vs (b).
 
-**Framing for L-cyclic:** does (c) beat every "linear projection → standard Neg-t-SNE" pipeline, including the label-chosen ones? The embedded linear ceilings from calibration are reported alongside.
+**Framing for L-cyclic:** does (c) beat every "linear projection → standard Neg-t-SNE" pipeline, including the label-chosen ones?
+
+**Descriptive** (no verdict): (c) vs the per-seed embedded linear ceiling on the confirmation seeds, under the same paired rule.
 
 ## Predictions
 

@@ -5,9 +5,10 @@
                         seeds come from calibration (results/phase5b/ceilings_{variant}.csv). Selection rule: highest
                         mean WC per group; ties -> smaller m_B -> selection_{variant}.json
   --stage confirmation  fresh seeds from 3 (requires the committed selection): (a), best (b), best (c), best (o), (e2),
-                        (e3) and every cPCA variant (alpha representative x k in {3, 5, 10, 20}, plus the per-k
-                        oracle alpha). A seed failing V1, V2 or V2b (data and (a) only) is excluded and the next seed
-                        drawn, until 3 valid seeds; more than 2 exclusions stops the design.
+                        (e3), every cPCA variant (alpha representative x k in {3, 5, 10, 20}, plus the per-k
+                        oracle alpha) and, descriptive, every labeled linear projection embedded. A seed failing
+                        V1, V2 or V2b (data and (a) only) is excluded and the next seed drawn, until 3 valid seeds;
+                        more than 2 exclusions stops the design.
   --recheck             determinism: rerun selection seed 0 and compare rows and embeddings bit for bit
 
 Checks (stop and report on failure): xi_B gates on every seed; every Stage 2 run finite with std growth <= 10x.
@@ -28,7 +29,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from common.benchmark import SELECTION_SEEDS, cpca_runs
-from common.benchmark_l import V2_MIN_DETECTABILITY, V2B_MIN_GRAPH_SIGNAL, XI_GATES, cpca_variants, embed, score
+from common.benchmark_l import (V2_MIN_DETECTABILITY, V2B_MIN_GRAPH_SIGNAL, XI_GATES, clean_reveals, cpca_variants,
+                                embed, projections, score)
 from common.experiment import (COLLAPSE_STD_RATIO, FRAGMENT_FRAC, FRAGMENT_SMALL, K_GRAPH, VALIDITY, epoch_arrays,
                                healthy, prepare_dataset, run_stage1, run_stage2)
 from common.repro import assert_committed, environment_info, setup_determinism
@@ -174,6 +176,16 @@ def run_seed(variant, stage, seed, labels, cal, save=True, variants=False):
             embds[v["label"]] = E
         best = max((r for r in rows if r["group"] == "cpca"), key=lambda r: r["WC"])
         print(f"L-{variant} {stage} seed={seed} best cPCA variant {best['run']} WC {best['WC']:.3f}", flush=True)
+        # descriptive: the embedded linear ceiling (labeled projections) on this seed too
+        for name, subset, basis in projections(ctx.ds):
+            E = embed(ctx.ds.X_T.astype(np.float64) @ basis, seed)
+            rows.append(embedding_row(variant, stage, seed, f"lin_{name}", E, t, k=basis.shape[1],
+                                      cpca_source=f"clean reveals {clean_reveals(subset)}"
+                                      if variant == "cyclic" else ""))
+            rows[-1]["group"] = "linear"
+            embds[f"lin_{name}"] = E
+        best = max((r for r in rows if r["group"] == "linear"), key=lambda r: r["WC"])
+        print(f"L-{variant} {stage} seed={seed} best linear projection {best['run']} WC {best['WC']:.3f}", flush=True)
     if save:
         for label, e in embds.items():
             np.save(OUT / "embeddings" / f"{variant}_{stage}_seed{seed}_{label}.npy", e)
