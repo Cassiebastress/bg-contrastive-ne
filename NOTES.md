@@ -405,7 +405,10 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
 - **(c) vs (o) and (b):** (c) wins on both designs, by about +0.22 and +0.39.
 - **Predictions:** P1–P5 all confirmed.
 - **Compute:** run on the laptop; the selection chain drained the battery (runs now use `caffeinate -s` and start only on AC). Selection summaries are dirty only through an untracked, unimported report script.
+- **Limits:** L-cyclic is adversarial (shows capability, not prevalence). No local/piecewise linear baseline was run, though background clusters are recoverable without labels (ξ_B same-y_b precision 1.000), so cluster-then-cPCA may solve L-cyclic.
 - **Next:**
-  1. Move compute to the Math Slurm cluster (account YANG-2026); the GPU path is untested.
-  2. A label-free rule for both α and k for cPCA.
-  3. A design where the high-D kNN graph itself is poor, to see whether (c) is limited by the graph (its WC sits just under detectability here).
+  1. Local-cPCA baseline: k-means on X_B (K by silhouette over 2–10), nearest-cluster assignment of target points, cPCA per cluster (label-free α, k ∈ {3, 5, 10}), embedded with (a)'s two-stage Neg-t-SNE; plus an oracle version with true clusters.
+  2. A non-adversarial Design L: random per-cluster nuisance and signal subspaces inside a shared lower-dimensional space, so overlaps occur by chance.
+  3. Move compute to the Math Slurm cluster (account YANG-2026); the GPU path is untested.
+  4. A label-free rule for both α and k for cPCA.
+  5. A design where the high-D kNN graph itself is poor, to see whether (c) is limited by the graph (its WC sits just under detectability here).

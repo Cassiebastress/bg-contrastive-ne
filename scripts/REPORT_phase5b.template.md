@@ -134,14 +134,22 @@ Selection seed 0, colored by signal group y_s (left) and background cluster y_b 
 - **(b) and (o) were selected at the top of their m_B grids** (40 and 80) on both designs, and their selection-seed mean WC was still rising: by +0.06 to +0.08 for (b) from m_B = 20 to 40, and by +0.01 to +0.02 for (o) from 40 to 80. Larger m_B was not tried, so their best possible WC is unknown; (b)'s trend is far below (c), and (o)'s gain is flattening.
 - **The best cPCA variant is chosen with labels per seed,** so it is an upper bound on what cPCA can do. The label-free comparison is (c) vs (e2).
 - **The linear projections on the confirmation seeds are descriptive.** They were added before the freeze (`2fb8b7a`), but no verdict depends on them.
-- **Synthetic data only,** with discrete, balanced background clusters, as in all earlier phases. The cyclic construction is adversarial by design.
+- **L-cyclic is adversarial by construction.** Every cluster's nuisance block is exactly another cluster's signal block. The result shows that (c) *can* beat every global linear pipeline, not how often such structure occurs in real data.
+- **No piecewise or local linear baseline was run.** Every competitor applies one global projection to all points. But the background clusters are recoverable without labels (ξ_B's same-y_b precision is 1.000 on every seed), so a cluster-then-cPCA pipeline, with a different projection per cluster, may solve L-cyclic.
+- **Synthetic data only,** with discrete, balanced background clusters, as in all earlier phases.
 - **Dirty flag:** both selection summaries record `dirty: true` at `9c35a0b`. The only uncommitted file was the then-untracked `scripts/phase5b_report.py`, which the runs do not import; tracked code was identical to `9c35a0b`. The confirmation summaries and rechecks record a clean tree.
 
 ## Next steps
 
-1. **Move compute to the Math Slurm cluster** (account YANG-2026). The GPU path is untested: the ξ_B sampling code has only run on CPU, and results will not be bit-identical to the Mac's.
-2. **A label-free rule for (α, k).** L-between shows cPCA needs both chosen well. Test whether a rule that also picks k (for example, from the cPCA eigenvalue gap) recovers the signal without labels.
-3. **Judge (c) against its ceiling.** (c)'s WC sits just below detectability on both designs; a design where the high-D kNN graph itself is poor would show whether (c) is limited by the graph.
+1. **A local-cPCA baseline.**
+   - Cluster X_B without labels: k-means, with the number of clusters chosen by a label-free rule such as silhouette over K ∈ {2, …, 10}.
+   - Assign each target point to its nearest background cluster, and run cPCA within each cluster: label-free α per cluster, k ∈ {3, 5, 10}.
+   - Embed with (a)'s two-stage Neg-t-SNE.
+   - Also run an oracle version that uses the true clusters.
+2. **A non-adversarial Design L variant.** Draw each cluster's nuisance and signal subspaces at random inside a shared lower-dimensional space, so that overlaps occur by chance rather than by construction.
+3. **Move compute to the Math Slurm cluster** (account YANG-2026). The GPU path is untested: the ξ_B sampling code has only run on CPU, and results will not be bit-identical to the Mac's.
+4. **A label-free rule for (α, k).** L-between shows cPCA needs both chosen well. Test whether a rule that also picks k (for example, from the cPCA eigenvalue gap) recovers the signal without labels.
+5. **Judge (c) against its ceiling.** (c)'s WC sits just below detectability on both designs; a design where the high-D kNN graph itself is poor would show whether (c) is limited by the graph.
 
 ## Reproducibility
 
