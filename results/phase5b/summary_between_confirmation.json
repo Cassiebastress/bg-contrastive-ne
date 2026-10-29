@@ -1,0 +1,364 @@
+{
+  "environment": {
+    "python": "3.12.15",
+    "platform": "macOS-14.3-arm64-arm-64bit",
+    "cpu_model": "Apple M3",
+    "cpu_count": 8,
+    "torch": "2.14.1",
+    "torch_num_threads": 4,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "81d6cc1e3b47029b2ffa0aefabf0c36c7a586413",
+      "dirty": false
+    }
+  },
+  "variant": "between",
+  "stage": "confirmation",
+  "seeds": [
+    3,
+    4,
+    5
+  ],
+  "excluded_seeds": [],
+  "runs": [
+    "a",
+    "b_m40",
+    "c_m10",
+    "o_m80",
+    "e2",
+    "e3"
+  ],
+  "checks": {
+    "3": {
+      "sha256_X_T": "d0281830211b49d5f46454ef52fe7946670dca5982f4260d69396ed260d8a9e6",
+      "sha256_X_B": "893c63bf5ab876f00a2e8dbf40be1a775c80675bdb271acef942afce168c7a35",
+      "xi_b": "2c2e73473d357d2fe14c0083eae4b164ca4d00797d20f7cb00710daea0ae9ea4",
+      "params": {
+        "design": "L-between",
+        "variant": "between",
+        "n_T": 5000,
+        "n_B": 5000,
+        "D": 50,
+        "seed": 3,
+        "rho": 0.2,
+        "sigma_w": 1.2909944487358056,
+        "noise_std": 0.1,
+        "edge_b": 30.0,
+        "edge_s": 6.0,
+        "map_info": {}
+      },
+      "detectability": 0.9241751302214847,
+      "graph_signal": 0.9238000000000002,
+      "xi_b_diagnostics": {
+        "same_b_xi": 1.0,
+        "same_s_xi": 0.28984963924220064,
+        "same_s_excess": 0.039893407995951397,
+        "same_b_xi_uniform_heads": 1.0,
+        "same_s_xi_uniform_heads": 0.2878838396453564,
+        "same_b_uniform": 0.1665000200040008,
+        "same_s_uniform": 0.24995623124624924,
+        "same_b_knn": 1.0,
+        "same_s_knn": 0.6808346683430333,
+        "len_min": 27,
+        "len_median": 35.0,
+        "len_p90": 43.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.9032,
+        "frac_capped_rows": 0.0002,
+        "bgdist_xi": 0.8535592103181049,
+        "bgdist_same_b_random": 2.86060883191307,
+        "bgdist_knn": 0.9630629489651372,
+        "spearman_jaccard_bgdist": -0.516132914356198,
+        "frac_knn_edges_in_xi": 0.7213209498509521,
+        "xi_mass_on_knn": 0.4893725269756019,
+        "xi_mass_on_knn_same_s": 0.2663282824304956,
+        "xi_mass_on_knn_diff_s": 0.22304424454510627,
+        "sha256": "2c2e73473d357d2fe14c0083eae4b164ca4d00797d20f7cb00710daea0ae9ea4",
+        "gate_same_b": true,
+        "gate_same_s": true
+      },
+      "validity": {
+        "a_acc_s": 0.349,
+        "a_acc_b": 1.0,
+        "detectability": 0.9241751302214847,
+        "graph_signal": 0.9238000000000002,
+        "V1": true,
+        "V2": true,
+        "V2b": true,
+        "valid": true
+      },
+      "alpha": {
+        "selected_alpha": 2.1544346900318834,
+        "representatives": [
+          0.0,
+          1.0608183551394483,
+          2.1544346900318834,
+          22.854638641349908
+        ],
+        "variance_ratios": [
+          1.0026686158658482,
+          1.080964447513697,
+          1.2763860935327749,
+          1.1889239896158557
+        ],
+        "oracle_alpha": 0.8376776400682918,
+        "oracle_10d": 0.9285778125676359,
+        "selected_10d": 0.25418993146237645,
+        "oracle_criterion": "10-D WC"
+      },
+      "cpca_variants": {
+        "selected_alpha": 2.1544346900318834,
+        "representatives": [
+          0.0,
+          1.0608183551394483,
+          2.1544346900318834,
+          22.854638641349908
+        ],
+        "variance_ratios": [
+          1.0026686158658482,
+          1.080964447513697,
+          1.2763860935327749,
+          1.1889239896158557
+        ]
+      }
+    },
+    "4": {
+      "sha256_X_T": "c5162840877d5d81bac3d252f36fc8331d3c80141be5bc241a8cc351d2d6b0cd",
+      "sha256_X_B": "69a46f1831d5ee2c7ced811269649a3714a914089e15e446e66889b1e7ea9721",
+      "xi_b": "05caae9717f6427fe80729420f101f001f860d5d07e51bbec46e6007394a2291",
+      "params": {
+        "design": "L-between",
+        "variant": "between",
+        "n_T": 5000,
+        "n_B": 5000,
+        "D": 50,
+        "seed": 4,
+        "rho": 0.2,
+        "sigma_w": 1.2909944487358056,
+        "noise_std": 0.1,
+        "edge_b": 30.0,
+        "edge_s": 6.0,
+        "map_info": {}
+      },
+      "detectability": 0.9154051136281655,
+      "graph_signal": 0.915,
+      "xi_b_diagnostics": {
+        "same_b_xi": 1.0,
+        "same_s_xi": 0.28705298076168784,
+        "same_s_excess": 0.037056021369809455,
+        "same_b_xi_uniform_heads": 1.0,
+        "same_s_xi_uniform_heads": 0.2853710351040501,
+        "same_b_uniform": 0.1665000200040008,
+        "same_s_uniform": 0.24999695939187838,
+        "same_b_knn": 1.0,
+        "same_s_knn": 0.6659530217763641,
+        "len_min": 28,
+        "len_median": 35.0,
+        "len_p90": 43.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.9056,
+        "frac_capped_rows": 0.0008,
+        "bgdist_xi": 0.8709299991492677,
+        "bgdist_same_b_random": 2.9274196038742115,
+        "bgdist_knn": 0.9740192023477472,
+        "spearman_jaccard_bgdist": -0.49232061198182725,
+        "frac_knn_edges_in_xi": 0.7341774732892913,
+        "xi_mass_on_knn": 0.4959232146587774,
+        "xi_mass_on_knn_same_s": 0.26361975270643795,
+        "xi_mass_on_knn_diff_s": 0.23230346195233947,
+        "sha256": "05caae9717f6427fe80729420f101f001f860d5d07e51bbec46e6007394a2291",
+        "gate_same_b": true,
+        "gate_same_s": true
+      },
+      "validity": {
+        "a_acc_s": 0.337,
+        "a_acc_b": 1.0,
+        "detectability": 0.9154051136281655,
+        "graph_signal": 0.915,
+        "V1": true,
+        "V2": true,
+        "V2b": true,
+        "valid": true
+      },
+      "alpha": {
+        "selected_alpha": 1.7012542798525891,
+        "representatives": [
+          0.0,
+          1.7012542798525891,
+          5.541020330009492,
+          28.942661247167518
+        ],
+        "variance_ratios": [
+          1.0043077398010436,
+          1.2758637116705522,
+          1.217457466879134,
+          1.1702080621534865
+        ],
+        "oracle_alpha": 0.1,
+        "oracle_10d": 0.9142027039896111,
+        "selected_10d": 0.2437778385397879,
+        "oracle_criterion": "10-D WC"
+      },
+      "cpca_variants": {
+        "selected_alpha": 1.7012542798525891,
+        "representatives": [
+          0.0,
+          1.7012542798525891,
+          5.541020330009492,
+          28.942661247167518
+        ],
+        "variance_ratios": [
+          1.0043077398010436,
+          1.2758637116705522,
+          1.217457466879134,
+          1.1702080621534865
+        ]
+      }
+    },
+    "5": {
+      "sha256_X_T": "0645f8bde1b06f7fd4bef7a17d01e78366b8876f13385b89108b76ee37573812",
+      "sha256_X_B": "39e4516b0965e3dd3735aed1964e7de7c95a432de69b739bc589869734b119b7",
+      "xi_b": "b4c5764fac0f267fbe5d0df13c2732429cf9752f0d0297a87b8883193651ccb5",
+      "params": {
+        "design": "L-between",
+        "variant": "between",
+        "n_T": 5000,
+        "n_B": 5000,
+        "D": 50,
+        "seed": 5,
+        "rho": 0.2,
+        "sigma_w": 1.2909944487358056,
+        "noise_std": 0.1,
+        "edge_b": 30.0,
+        "edge_s": 6.0,
+        "map_info": {}
+      },
+      "detectability": 0.9187984128129283,
+      "graph_signal": 0.9128000000000001,
+      "xi_b_diagnostics": {
+        "same_b_xi": 1.0,
+        "same_s_xi": 0.28647665677093553,
+        "same_s_excess": 0.036554832406062554,
+        "same_b_xi_uniform_heads": 1.0,
+        "same_s_xi_uniform_heads": 0.28433222517681866,
+        "same_b_uniform": 0.1665000200040008,
+        "same_s_uniform": 0.24992182436487298,
+        "same_b_knn": 1.0,
+        "same_s_knn": 0.6690717668340075,
+        "len_min": 25,
+        "len_median": 35.0,
+        "len_p90": 43.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.902,
+        "frac_capped_rows": 0.0006,
+        "bgdist_xi": 0.8658927534874802,
+        "bgdist_same_b_random": 2.916162017292132,
+        "bgdist_knn": 0.9701364172254527,
+        "spearman_jaccard_bgdist": -0.5036973415860737,
+        "frac_knn_edges_in_xi": 0.7268754700107721,
+        "xi_mass_on_knn": 0.49347821232210465,
+        "xi_mass_on_knn_same_s": 0.2626051222112649,
+        "xi_mass_on_knn_diff_s": 0.23087309011083973,
+        "sha256": "b4c5764fac0f267fbe5d0df13c2732429cf9752f0d0297a87b8883193651ccb5",
+        "gate_same_b": true,
+        "gate_same_s": true
+      },
+      "validity": {
+        "a_acc_s": 0.34540000000000004,
+        "a_acc_b": 1.0,
+        "detectability": 0.9187984128129283,
+        "graph_signal": 0.9128000000000001,
+        "V1": true,
+        "V2": true,
+        "V2b": true,
+        "valid": true
+      },
+      "alpha": {
+        "selected_alpha": 1.3433993325989002,
+        "representatives": [
+          0.0,
+          1.3433993325989002,
+          2.728333376486768,
+          28.942661247167518
+        ],
+        "variance_ratios": [
+          1.00379936990635,
+          1.2952421491875865,
+          1.2352751122985142,
+          1.1832903504567074
+        ],
+        "oracle_alpha": 0.3257020655659783,
+        "oracle_10d": 0.9207933727725275,
+        "selected_10d": 0.24676919414183682,
+        "oracle_criterion": "10-D WC"
+      },
+      "cpca_variants": {
+        "selected_alpha": 1.3433993325989002,
+        "representatives": [
+          0.0,
+          1.3433993325989002,
+          2.728333376486768,
+          28.942661247167518
+        ],
+        "variance_ratios": [
+          1.00379936990635,
+          1.2952421491875865,
+          1.2352751122985142,
+          1.1832903504567074
+        ]
+      }
+    }
+  },
+  "selection": {
+    "variant": "between",
+    "metric": "WC",
+    "best_m_B": {
+      "b": 40,
+      "c": 10,
+      "o": 80
+    },
+    "means": {
+      "a": 0.3472547565110742,
+      "b_m1": 0.3527934165404132,
+      "b_m2": 0.3610564519154462,
+      "b_m5": 0.37725721857489836,
+      "b_m10": 0.4119239963446601,
+      "b_m20": 0.45732216434600675,
+      "b_m40": 0.5158579486809513,
+      "c_m1": 0.6515229752543107,
+      "c_m2": 0.8112011903903037,
+      "c_m5": 0.9023245706178006,
+      "c_m10": 0.9223220003366759,
+      "c_m20": 0.9170606618089123,
+      "c_m40": 0.8803104518673496,
+      "o_m1": 0.3828498949089773,
+      "o_m2": 0.41685952624870737,
+      "o_m5": 0.49112170502368757,
+      "o_m10": 0.5635905254551138,
+      "o_m20": 0.6282617175287978,
+      "o_m40": 0.6695215708342351,
+      "o_m80": 0.6861195339441598,
+      "e2": 0.24785599836471636,
+      "e3": 0.25519393502152327
+    },
+    "rule": "highest mean WC over selection seeds 0-2 per group; ties -> smaller m_B"
+  }
+}
