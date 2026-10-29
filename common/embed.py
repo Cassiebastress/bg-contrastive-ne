@@ -1,4 +1,5 @@
 """Neg-t-SNE fitting helpers shared by all phases: explicit init, single fits, and the two-stage schedule (Plan §4)."""
+import os
 import sys
 import time
 
@@ -15,6 +16,9 @@ cne_core = sys.modules["cne.cne"]  # module holding ContrastiveEmbedding and new
 
 N1, N2 = 250, 500
 N_SCALE_PAIRS = 100_000
+# Explicit device: the package's "auto" would pick CUDA on a GPU node, where method/bg_term.py (CPU tensors) is
+# untested. On the Mac "auto" already resolved to "cpu", so the default changes nothing there.
+DEVICE = os.environ.get("CNE_DEVICE", "cpu")
 
 
 def rescale_init(Y):
@@ -69,7 +73,7 @@ def fit_neg(init, graph, seed, batch_hook=None, **kwargs):
     cne_core.new_lr = recording_new_lr
     try:
         embedder = cne.CNE(loss_mode="neg", seed=seed, callback=callback, save_freq=1, batch_hook=batch_hook,
-                           **kwargs)
+                           **{"device": DEVICE, **kwargs})
         t0 = time.perf_counter()  # pauses while the machine sleeps (mach_absolute_time on macOS)
         embd = embedder.fit_transform(init=init, graph=graph)
         runtime = time.perf_counter() - t0

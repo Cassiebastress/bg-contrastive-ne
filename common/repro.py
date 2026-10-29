@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 UPSTREAM_COMMIT = "d5f0b530f35be4d6247300a601fb5a860bc0a1c8"
 
 # Fixed torch thread count (Apple M3: 4 performance + 4 efficiency cores; 4 is also torch's default here).
-# If exact-equality checks fail, retry with 1 before investigating further.
-NUM_THREADS = 4
+# If exact-equality checks fail, retry with 1 before investigating further. CNE_NUM_THREADS overrides it (cluster).
+NUM_THREADS = int(os.environ.get("CNE_NUM_THREADS", 4))
 
 
 def setup_determinism(seed, num_threads=NUM_THREADS):
@@ -65,6 +65,12 @@ def environment_info():
                       "contrastive", "umap-learn", "numba", "llvmlite", "pynndescent"]},
         "contrastive_ne_upstream_commit": UPSTREAM_COMMIT,
         "project_git": _git_head(),
+        # node name only inside a Slurm job (cluster node names are not personal; a laptop's can be)
+        "hostname": platform.node() if os.environ.get("SLURM_JOB_ID") else None,
+        "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
+        "cne_device": os.environ.get("CNE_DEVICE", "cpu"),
+        "cuda": torch.version.cuda if torch.cuda.is_available() else None,
+        "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
     }
 
 
