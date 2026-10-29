@@ -24,7 +24,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from common.benchmark_l import WC_BAR
+from common.benchmark_l import K_LIST, WC_BAR
 from common.experiment import paired
 from data.synthetic_l import make_l
 
@@ -109,6 +109,26 @@ def per_cluster_table(rows, runs):
     return "\n".join(out)
 
 
+def cpca_grid(rows, summary):
+    """Every cPCA variant grouped by alpha range and k: per-seed best WC in each cell, mean [min, max] over seeds."""
+    cp = [r for r in rows if r["group"] == "cpca"]
+    chosen = {seed: c["alpha"]["selected_alpha"] for seed, c in summary["checks"].items()}
+    buckets = [("α < 1 (best)", lambda r: float(r["alpha"]) < 1),
+               ("α > 1 (best)", lambda r: float(r["alpha"]) > 1),
+               ("label-free α", lambda r: np.isclose(float(r["alpha"]), chosen[r["seed"]]))]
+    out = ["Each cell: the per-seed best WC among the variants in that α range at that k, then mean [min, max] over "
+           "seeds. The label-free row is the selected α at each k ((e2) is its k = 10 entry, embedded separately).", "",
+           "| α | " + " | ".join(f"k = {k}" for k in K_LIST) + " |", "|---" * (len(K_LIST) + 1) + "|"]
+    for name, keep in buckets:
+        cells = []
+        for k in K_LIST:
+            best = [max((float(r["WC"]) for r in cp if r["seed"] == s and int(r["k"]) == k and keep(r)), default=None)
+                    for s in chosen]
+            cells.append(fmt([b for b in best if b is not None]))
+        out.append(f"| {name} | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
 def xi_table(summary):
     out = ["| seed | ξ_B same-y_b precision | same-y_s excess | detectability | graph signal |",
            "|---|---|---|---|---|"]
@@ -147,9 +167,9 @@ def figure(variant, selection, cal):
             ax.scatter(*e.T, c=y, s=0.6, alpha=0.5, cmap="tab10", vmin=0, vmax=9, edgecolor="none", rasterized=True)
             ax.set_aspect("equal")
             ax.axis("off")
-            ax.set_title(f"{run} by {lab}: WC {wc:.2f}", fontsize=6.5)
+            ax.set_title(f"{run}\nby {lab}: WC {wc:.2f}", fontsize=6.5)
     fig.suptitle(f"L-{variant}, selection seed 0", fontsize=9)
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 1, 0.99))
     fig.savefig(OUT / f"embeddings_{variant}.png", dpi=110, bbox_inches="tight")
     plt.close(fig)
 
@@ -157,7 +177,8 @@ def figure(variant, selection, cal):
 def design_tables(variant, cal):
     selection = json.loads((OUT / f"selection_{variant}.json").read_text())
     best = selection["best_m_B"]
-    conf = with_best(read(f"runs_{variant}_confirmation.csv"))
+    raw = read(f"runs_{variant}_confirmation.csv")
+    conf = with_best(raw)
     sel = read(f"runs_{variant}_selection.csv")
     summary = json.loads((OUT / f"summary_{variant}_confirmation.json").read_text())
     sel_summary = json.loads((OUT / f"summary_{variant}_selection.json").read_text())
@@ -174,6 +195,7 @@ def design_tables(variant, cal):
              pre, "", "## Descriptive comparisons on WC (no verdict)", "", desc, "",
              "## Per-cluster WC (confirmation seeds)", "",
              per_cluster_table(conf, [c, "e2", "best_cpca", "best_linear"]), "",
+             "## cPCA variants by α and k (confirmation seeds)", "", cpca_grid(raw, summary), "",
              "## ξ_B diagnostics and data checks (confirmation seeds)", "", xi_table(summary), "",
              "## Excluded seeds", "", excluded_note(summary), "",
              "## Appendix: selection seeds 0–2, every run", "",

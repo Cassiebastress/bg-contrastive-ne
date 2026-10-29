@@ -393,3 +393,19 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
   2. Judge V3 across all α representatives.
   3. Pre-register a non-local global metric (e.g. G1 at k = 200) alongside G3.
   4. Center J's interaction (lower priority).
+
+# Phase 5b: Design L, where linear suppression is structurally limited (`REPORT_phase5b.md`, `results/phase5b/`)
+
+- **Spec:** given by the project owner in conversation and summarized in REPORT_phase5b.md "Design". In plan review, the linear and cPCA ceilings moved to the embedding level (the spec's high-D ceiling could not pass V3 when V2 held); P1 moved with them, before any Design L result.
+- **Generator** (`data/synthetic_l.py`): six balanced clusters, identical in X_T and X_B, so C_T − C_B is the signal covariance. L-cyclic: cluster k's signal block Q_k is cluster k−1's nuisance block. L-between: the signal lies in W ⊂ U (between-cluster span), the nuisance in V. ρ = 0.2 for both.
+- **Ceilings** (`common/benchmark_l.py`): every labeled projection and cPCA variant is embedded with (a)'s two-stage Neg-t-SNE and scored on WC; high-D versions are descriptive.
+- **Selection** (WC): L-cyclic b 40, c 20, o 80; L-between b 40, c 10, o 80. (b) and (o) at the top of their grids.
+- **L-cyclic:** (c) 0.914 beats best cPCA (0.530) and the best labeled linear projection (0.624, always an alternating subset that reveals 3 of 6 clusters), consistent across 3 seeds. (c) reveals all 6 clusters.
+- **L-between:** best cPCA (0.989) beats (c) (0.914) on every seed. Label-free cPCA fails (0.255) on α (it picks α > 1 on every seed) **and** on k: at k = 10 even the best α < 1 gives 0.35, because components 6–10 bring in the nuisance V. Only α < 1 with k ≤ 5 (often plain PCA) works.
+- **(c) vs (o) and (b):** (c) wins on both designs, by about +0.22 and +0.39.
+- **Predictions:** P1–P5 all confirmed.
+- **Compute:** run on the laptop; the selection chain drained the battery (runs now use `caffeinate -s` and start only on AC). Selection summaries are dirty only through an untracked, unimported report script.
+- **Next:**
+  1. Move compute to the Math Slurm cluster (account YANG-2026); the GPU path is untested.
+  2. A label-free rule for both α and k for cPCA.
+  3. A design where the high-D kNN graph itself is poor, to see whether (c) is limited by the graph (its WC sits just under detectability here).
