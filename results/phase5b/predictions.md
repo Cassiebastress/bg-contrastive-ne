@@ -23,3 +23,22 @@ The spec defined the linear ceiling as the high-D kNN WC of the projected data, 
 - **P3 (L-between):** label-free (e2) fails V3 (WC ≤ 0.80): it selects α > 1, which suppresses U and the signal with it. The cPCA oracle ceiling is high: at least 0.90 on every selection seed (embedding level).
 - **P4 (L-between):** (c) beats label-free (e2) on WC but does not beat best cPCA.
 - **P5 (both designs):** (c) beats (o) and (b) on WC.
+
+## Added after the Phase 5b main results, before any local-cPCA result
+
+Every competitor in the main runs applied one global projection. This section pre-registers a local (cluster-then-cPCA) baseline, `baselines/local_cpca.py`, run by `scripts/phase5b_local_cpca.py` on the main runs' confirmation seeds (3, 4, 5) of both variants. It changes no verdict above.
+
+| term | meaning |
+|---|---|
+| label-free local cPCA | k-means on X_B for K ∈ {2, …, 10}, K by the largest silhouette (ties → smaller K); each target point to the nearest centroid; cPCA within each cluster at that cluster's label-free α; top k directions; Z = [local coordinates \| s · one-hot(cluster)] with s = 10 × the largest distance of a target point from its cluster's center in the local coordinates (so no kNN edge crosses clusters; checked); embedded with (a)'s two-stage Neg-t-SNE |
+| oracle local cPCA | the same, with the true background clusters of X_B and X_T |
+| k | 3, 5 and 10, each a separate run |
+
+**Verdicts** are separate for each k (and, where stated, per version and per design), with no combined verdict. "Beats" means consistent across 3 paired confirmation seeds, as above. (c)'s rows are the committed confirmation runs.
+
+- **P6 (L-cyclic):** oracle local cPCA reaches WC ≥ 0.90 on every confirmation seed. Verdict per k.
+- **P7 (both designs):**
+  - **(a)** label-free clustering of X_B selects K = 6 with ARI = 1.0 against the true background labels on every seed. Verdict per design.
+  - **(b)** label-free local cPCA is within 0.02 WC of the oracle version (|difference| ≤ 0.02) on every seed. Verdict per design × k.
+- **P8 (L-cyclic):** local cPCA beats (c) on WC. Verdict per version × k.
+- **P9 (L-between):** local cPCA reaches WC ≥ 0.90 on every confirmation seed. Verdict per version × k.
