@@ -58,7 +58,11 @@ Tables marked **(generated)** are copied verbatim from `results/phase5b/*.md` by
    - So on L-between, best cPCA beats (c) by 0.07–0.08 on every seed (means 0.989 vs 0.914), as predicted (P4).
 3. **(c) beats the oracle same-cluster control and uniform negatives on both designs,** consistently across 3 paired seeds: by +0.21 / +0.22 over (o) at m_B = 80 and by +0.39 over (b) at m_B = 40. This repeats Phase 5a's finding for (o) on WC.
 4. **All five predictions confirmed** (P1–P5; table below). P1: the embedding-level linear ceiling was 0.627 on the selection seeds, inside the predicted 0.5–0.7, and 0.624 on the confirmation seeds.
-5. **(c) reaches about the high-D detectability.** Its WC (0.91) is close to the high-D WC of X_T (0.92) on both designs. Interpretation (not tested): ξ_B removes most of the background's hold on the embedding but cannot do better than the high-D kNN graph it embeds, while a projection that drops the nuisance dimensions (U on L-between) can.
+5. **Extension (added after the main results): a local, cluster-then-cPCA baseline beats (c) on both designs.**
+   - Label-free k-means on X_B recovers the 6 background clusters exactly (K = 6, ARI 1.000, every seed). cPCA run within each cluster at its own label-free α reaches WC 0.984–0.992 at every k ∈ {3, 5, 10}, with label-free and true clusters alike.
+   - On L-cyclic, that is +0.07 to +0.08 above (c) on every seed. Predictions P6–P9 were all confirmed.
+   - So the answer to question 1 holds only for *global* linear pipelines. With discrete, well-separated background clusters, a piecewise-linear pipeline that needs no labels does better than (c). See "Extension: local cPCA" below.
+6. **(c) reaches about the high-D detectability.** Its WC (0.91) is close to the high-D WC of X_T (0.92) on both designs. Interpretation (not tested): ξ_B removes most of the background's hold on the embedding but cannot do better than the high-D kNN graph it embeds, while a projection that drops the nuisance dimensions (U on L-between) can.
 
 ## Design
 
@@ -104,6 +108,29 @@ The predictions as committed are in `results/phase5b/predictions.md` (`04a1450`)
 | P4 (L-between): (c) beats (e2) but not best cPCA | **confirmed** | vs (e2): consistent; vs best cPCA: not consistent |
 | P5 (L-cyclic): (c) beats (o) and (b) on WC | **confirmed** | vs (o): consistent; vs (b): consistent |
 | P5 (L-between): (c) beats (o) and (b) on WC | **confirmed** | vs (o): consistent; vs (b): consistent |
+| P6 (L-cyclic, k = 3): oracle local cPCA WC ≥ 0.90 | **confirmed** | WC per seed 0.990, 0.989, 0.989 |
+| P6 (L-cyclic, k = 5): oracle local cPCA WC ≥ 0.90 | **confirmed** | WC per seed 0.991, 0.989, 0.989 |
+| P6 (L-cyclic, k = 10): oracle local cPCA WC ≥ 0.90 | **confirmed** | WC per seed 0.991, 0.989, 0.989 |
+| P7a (L-cyclic): label-free clustering selects K = 6 with ARI = 1.0 | **confirmed** | K 6, 6, 6; ARI 1.000, 1.000, 1.000 |
+| P7b (L-cyclic, k = 3): label-free within 0.02 WC of oracle | **confirmed** | label-free − oracle per seed: -0.000, -0.000, +0.000 |
+| P7b (L-cyclic, k = 5): label-free within 0.02 WC of oracle | **confirmed** | label-free − oracle per seed: +0.000, +0.000, -0.000 |
+| P7b (L-cyclic, k = 10): label-free within 0.02 WC of oracle | **confirmed** | label-free − oracle per seed: -0.000, -0.000, +0.000 |
+| P7a (L-between): label-free clustering selects K = 6 with ARI = 1.0 | **confirmed** | K 6, 6, 6; ARI 1.000, 1.000, 1.000 |
+| P7b (L-between, k = 3): label-free within 0.02 WC of oracle | **confirmed** | label-free − oracle per seed: +0.000, -0.000, -0.001 |
+| P7b (L-between, k = 5): label-free within 0.02 WC of oracle | **confirmed** | label-free − oracle per seed: +0.000, -0.000, +0.000 |
+| P7b (L-between, k = 10): label-free within 0.02 WC of oracle | **confirmed** | label-free − oracle per seed: +0.000, -0.000, -0.000 |
+| P8 (L-cyclic, labelfree, k = 3): local cPCA beats (c) on WC | **confirmed** | local − (c) per seed: +0.076, +0.077, +0.073 |
+| P8 (L-cyclic, labelfree, k = 5): local cPCA beats (c) on WC | **confirmed** | local − (c) per seed: +0.077, +0.077, +0.073 |
+| P8 (L-cyclic, labelfree, k = 10): local cPCA beats (c) on WC | **confirmed** | local − (c) per seed: +0.076, +0.077, +0.072 |
+| P8 (L-cyclic, oracle, k = 3): local cPCA beats (c) on WC | **confirmed** | local − (c) per seed: +0.077, +0.078, +0.073 |
+| P8 (L-cyclic, oracle, k = 5): local cPCA beats (c) on WC | **confirmed** | local − (c) per seed: +0.077, +0.077, +0.073 |
+| P8 (L-cyclic, oracle, k = 10): local cPCA beats (c) on WC | **confirmed** | local − (c) per seed: +0.077, +0.077, +0.072 |
+| P9 (L-between, labelfree, k = 3): local cPCA WC ≥ 0.90 | **confirmed** | WC per seed 0.991, 0.984, 0.987 |
+| P9 (L-between, labelfree, k = 5): local cPCA WC ≥ 0.90 | **confirmed** | WC per seed 0.991, 0.985, 0.988 |
+| P9 (L-between, labelfree, k = 10): local cPCA WC ≥ 0.90 | **confirmed** | WC per seed 0.992, 0.987, 0.987 |
+| P9 (L-between, oracle, k = 3): local cPCA WC ≥ 0.90 | **confirmed** | WC per seed 0.991, 0.984, 0.988 |
+| P9 (L-between, oracle, k = 5): local cPCA WC ≥ 0.90 | **confirmed** | WC per seed 0.991, 0.986, 0.988 |
+| P9 (L-between, oracle, k = 10): local cPCA WC ≥ 0.90 | **confirmed** | WC per seed 0.992, 0.988, 0.988 |
 
 ### Calibration (generated)
 
@@ -420,6 +447,166 @@ Selection seed 0, colored by signal group y_s (left) and background cluster y_b 
 
 ![L-between embeddings](results/phase5b/embeddings_between.png)
 
+## Extension: local cPCA (added after the main results)
+
+**Why it was run.** Every competitor in the main runs applies one global projection, but the background clusters can be recovered without labels. This baseline was added at review, after the main results, with predictions P6–P9 committed before any of its results (`a791d9b`). It changes no verdict above.
+
+**Method** (`baselines/local_cpca.py`, `scripts/phase5b_local_cpca.py`), on the main runs' confirmation seeds 3–5 (datasets verified by hash):
+- **Label-free version:** k-means on X_B for K ∈ {2, …, 10}, keeping the K with the largest silhouette, and each target point assigned to the nearest centroid.
+- **Oracle version:** the true background clusters of X_B and X_T.
+- **Per cluster:** cPCA at that cluster's label-free α, top k ∈ {3, 5, 10} directions.
+- **Embedding:** Z = [local coordinates | s · one-hot(cluster)] is embedded once with (a)'s two-stage Neg-t-SNE. s = 10 × the largest local radius, which ensures that no kNN edge crosses clusters (checked: 0 on every run).
+
+**Results.**
+- **Clustering:** label-free clustering found K = 6 with ARI 1.000 on every seed of both designs, so the label-free and oracle versions differ by at most 0.001 WC.
+- **α:** every cluster's label-free α was above 1 (1.7 to 58.8). Within a cluster the background varies only in that cluster's nuisance block, so subtracting it removes the nuisance and keeps the signal.
+- **Embedding layout (descriptive, from the figures):** the embeddings are 24 tight islands, one per cluster × signal group. The islands of one background cluster are not reliably placed together, because the one-hot offsets make all clusters equidistant. WC and G2 are local, so they do not register this.
+- **Determinism:** both reruns of seed 3 were bit-identical (`results/phase5b/recheck_{cyclic,between}_local_cpca.json`).
+
+### Local cPCA on L-cyclic (generated)
+
+#### Confirmation seeds: mean [min, max]
+
+| run | WC | signal acc | G1 | G1 at k = 200 | G2 | G3 shares signal | flagged seeds |
+|---|---|---|---|---|---|---|---|
+| (c) ξ_B negatives, m_B = 20 | 0.914 [0.912, 0.916] | 0.914 [0.912, 0.917] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.001] | 1.000 [1.000, 1.000] | 0.000 [0.000, 0.000] | 0/3 |
+| best cPCA variant (labels; per-seed max) | 0.530 [0.500, 0.551] | 0.518 [0.496, 0.540] | 0.014 [0.000, 0.032] | 0.019 [0.000, 0.043] | 0.958 [0.895, 1.000] | 0.000 [0.000, 0.000] | 0/3 |
+| best labeled linear projection (descriptive; per-seed max) | 0.624 [0.619, 0.628] | 0.622 [0.615, 0.633] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.000 [0.000, 0.000] | 0/3 |
+| local cPCA, label-free clusters, k = 3 | 0.989 [0.989, 0.990] | 0.990 [0.989, 0.990] | 0.000 [0.000, 0.000] | 0.001 [0.000, 0.002] | 1.000 [1.000, 1.000] | 0.028 [0.000, 0.083] | — |
+| local cPCA, label-free clusters, k = 5 | 0.990 [0.989, 0.991] | 0.990 [0.989, 0.991] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.000 [0.000, 0.000] | — |
+| local cPCA, label-free clusters, k = 10 | 0.989 [0.988, 0.990] | 0.989 [0.988, 0.990] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.014 [0.000, 0.042] | — |
+| local cPCA, oracle clusters, k = 3 | 0.990 [0.989, 0.990] | 0.990 [0.989, 0.990] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.000 [0.000, 0.000] | — |
+| local cPCA, oracle clusters, k = 5 | 0.990 [0.989, 0.991] | 0.990 [0.989, 0.991] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.028 [0.000, 0.042] | — |
+| local cPCA, oracle clusters, k = 10 | 0.989 [0.989, 0.991] | 0.989 [0.989, 0.991] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.001] | 1.000 [1.000, 1.000] | 0.028 [0.000, 0.083] | — |
+
+#### Pre-registered comparisons on WC
+
+| comparison | per-seed WC difference (x − y) | mean | verdict |
+|---|---|---|---|
+| (c) vs local cPCA, label-free clusters, k = 3 | -0.076, -0.077, -0.073 | -0.076 | local cPCA, label-free clusters, k = 3 better, consistent across 3 paired seeds |
+| (c) vs local cPCA, label-free clusters, k = 5 | -0.077, -0.077, -0.073 | -0.076 | local cPCA, label-free clusters, k = 5 better, consistent across 3 paired seeds |
+| (c) vs local cPCA, label-free clusters, k = 10 | -0.076, -0.077, -0.072 | -0.075 | local cPCA, label-free clusters, k = 10 better, consistent across 3 paired seeds |
+| (c) vs local cPCA, oracle clusters, k = 3 | -0.077, -0.078, -0.073 | -0.076 | local cPCA, oracle clusters, k = 3 better, consistent across 3 paired seeds |
+| (c) vs local cPCA, oracle clusters, k = 5 | -0.077, -0.077, -0.073 | -0.076 | local cPCA, oracle clusters, k = 5 better, consistent across 3 paired seeds |
+| (c) vs local cPCA, oracle clusters, k = 10 | -0.077, -0.077, -0.072 | -0.075 | local cPCA, oracle clusters, k = 10 better, consistent across 3 paired seeds |
+
+#### Per-cluster WC
+
+Per-cluster WC; a cluster counts as revealed if its WC ≥ 0.80.
+
+| seed | run | per-cluster WC (clusters 0–5) | revealed |
+|---|---|---|---|
+| 3 | (c) ξ_B negatives, m_B = 20 | 0.94, 0.92, 0.88, 0.88, 0.93, 0.94 | 0,1,2,3,4,5 |
+| 3 | local cPCA, label-free clusters, k = 3 | 0.99, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 3 | local cPCA, label-free clusters, k = 5 | 0.99, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 3 | local cPCA, label-free clusters, k = 10 | 0.98, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 3 | local cPCA, oracle clusters, k = 3 | 0.99, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 3 | local cPCA, oracle clusters, k = 5 | 0.99, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 3 | local cPCA, oracle clusters, k = 10 | 0.98, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 4 | (c) ξ_B negatives, m_B = 20 | 0.90, 0.94, 0.94, 0.86, 0.92, 0.92 | 0,1,2,3,4,5 |
+| 4 | local cPCA, label-free clusters, k = 3 | 0.98, 1.00, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 4 | local cPCA, label-free clusters, k = 5 | 0.98, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 4 | local cPCA, label-free clusters, k = 10 | 0.98, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 4 | local cPCA, oracle clusters, k = 3 | 0.98, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 4 | local cPCA, oracle clusters, k = 5 | 0.98, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 4 | local cPCA, oracle clusters, k = 10 | 0.98, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 5 | (c) ξ_B negatives, m_B = 20 | 0.88, 0.91, 0.93, 0.93, 0.92, 0.92 | 0,1,2,3,4,5 |
+| 5 | local cPCA, label-free clusters, k = 3 | 0.99, 0.98, 1.00, 0.98, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 5 | local cPCA, label-free clusters, k = 5 | 0.99, 0.98, 1.00, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 5 | local cPCA, label-free clusters, k = 10 | 0.99, 0.98, 1.00, 0.98, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 5 | local cPCA, oracle clusters, k = 3 | 0.99, 0.98, 1.00, 0.98, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 5 | local cPCA, oracle clusters, k = 5 | 0.99, 0.98, 1.00, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 5 | local cPCA, oracle clusters, k = 10 | 0.99, 0.98, 1.00, 0.98, 0.99, 0.99 | 0,1,2,3,4,5 |
+
+#### Clusters and α
+
+K and the ARI (labels used for evaluation only) of the label-free clustering; the per-cluster label-free α; the one-hot scale s; and the largest fraction of kNN edges (k = 15) crossing clusters in the joint representation (0 by construction, checked).
+
+| seed | version | K | ARI (background) | ARI (target) | per-cluster α | s at k = 3, 5, 10 | cross-cluster kNN edges |
+|---|---|---|---|---|---|---|---|
+| 3 | labelfree | 6 | 1.000 | 1.000 | 2.15, 11.3, 7.02, 46.4, 28.9, 22.9 | 16.1, 16.1, 16.3 | 0.000 |
+| 3 | oracle | 6 | — | — | 7.02, 2.15, 46.4, 28.9, 22.9, 11.3 | 16.1, 16.1, 16.3 | 0.000 |
+| 4 | labelfree | 6 | 1.000 | 1.000 | 36.7, 28.9, 22.9, 46.4, 46.4, 7.02 | 16.2, 16.3, 16.4 | 0.000 |
+| 4 | oracle | 6 | — | — | 36.7, 46.4, 7.02, 46.4, 28.9, 22.9 | 16.2, 16.3, 16.4 | 0.000 |
+| 5 | labelfree | 6 | 1.000 | 1.000 | 7.02, 3.46, 18, 8.89, 28.9, 36.7 | 15.4, 15.4, 15.5 | 0.000 |
+| 5 | oracle | 6 | — | — | 18, 3.46, 8.89, 36.7, 7.02, 28.9 | 15.4, 15.4, 15.5 | 0.000 |
+
+### Local cPCA on L-between (generated)
+
+#### Confirmation seeds: mean [min, max]
+
+| run | WC | signal acc | G1 | G1 at k = 200 | G2 | G3 shares signal | flagged seeds |
+|---|---|---|---|---|---|---|---|
+| (c) ξ_B negatives, m_B = 10 | 0.914 [0.910, 0.921] | 0.915 [0.911, 0.921] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.000 [0.000, 0.000] | 0/3 |
+| best cPCA variant (labels; per-seed max) | 0.989 [0.988, 0.992] | 0.989 [0.988, 0.992] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.000 [0.000, 0.000] | 0/3 |
+| best labeled linear projection (descriptive; per-seed max) | 0.989 [0.988, 0.991] | 0.989 [0.988, 0.991] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.000 [0.000, 0.000] | 0/3 |
+| local cPCA, label-free clusters, k = 3 | 0.987 [0.984, 0.991] | 0.987 [0.984, 0.991] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.000 [0.000, 0.000] | — |
+| local cPCA, label-free clusters, k = 5 | 0.988 [0.985, 0.991] | 0.988 [0.985, 0.991] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.028 [0.000, 0.042] | — |
+| local cPCA, label-free clusters, k = 10 | 0.989 [0.987, 0.992] | 0.989 [0.987, 0.992] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.014 [0.000, 0.042] | — |
+| local cPCA, oracle clusters, k = 3 | 0.988 [0.984, 0.991] | 0.988 [0.984, 0.991] | 0.000 [0.000, 0.000] | 0.001 [0.000, 0.003] | 1.000 [1.000, 1.000] | 0.014 [0.000, 0.042] | — |
+| local cPCA, oracle clusters, k = 5 | 0.988 [0.986, 0.991] | 0.988 [0.986, 0.991] | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.000 [1.000, 1.000] | 0.000 [0.000, 0.000] | — |
+| local cPCA, oracle clusters, k = 10 | 0.989 [0.988, 0.992] | 0.989 [0.988, 0.992] | 0.000 [0.000, 0.000] | 0.001 [0.000, 0.002] | 1.000 [1.000, 1.000] | 0.028 [0.000, 0.042] | — |
+
+#### Pre-registered comparisons on WC
+
+| comparison | per-seed WC difference (x − y) | mean | verdict |
+|---|---|---|---|
+| (c) vs local cPCA, label-free clusters, k = 3 | -0.070, -0.073, -0.077 | -0.073 | local cPCA, label-free clusters, k = 3 better, consistent across 3 paired seeds |
+| (c) vs local cPCA, label-free clusters, k = 5 | -0.070, -0.074, -0.078 | -0.074 | local cPCA, label-free clusters, k = 5 better, consistent across 3 paired seeds |
+| (c) vs local cPCA, label-free clusters, k = 10 | -0.071, -0.076, -0.077 | -0.075 | local cPCA, label-free clusters, k = 10 better, consistent across 3 paired seeds |
+| (c) vs local cPCA, oracle clusters, k = 3 | -0.070, -0.073, -0.078 | -0.074 | local cPCA, oracle clusters, k = 3 better, consistent across 3 paired seeds |
+| (c) vs local cPCA, oracle clusters, k = 5 | -0.070, -0.075, -0.078 | -0.074 | local cPCA, oracle clusters, k = 5 better, consistent across 3 paired seeds |
+| (c) vs local cPCA, oracle clusters, k = 10 | -0.070, -0.077, -0.077 | -0.075 | local cPCA, oracle clusters, k = 10 better, consistent across 3 paired seeds |
+
+#### Per-cluster WC
+
+Per-cluster WC; a cluster counts as revealed if its WC ≥ 0.80.
+
+| seed | run | per-cluster WC (clusters 0–5) | revealed |
+|---|---|---|---|
+| 3 | (c) ξ_B negatives, m_B = 10 | 0.92, 0.94, 0.92, 0.87, 0.93, 0.94 | 0,1,2,3,4,5 |
+| 3 | local cPCA, label-free clusters, k = 3 | 0.99, 0.99, 0.99, 1.00, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 3 | local cPCA, label-free clusters, k = 5 | 0.99, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 3 | local cPCA, label-free clusters, k = 10 | 0.99, 0.99, 0.99, 0.99, 1.00, 0.99 | 0,1,2,3,4,5 |
+| 3 | local cPCA, oracle clusters, k = 3 | 0.99, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 3 | local cPCA, oracle clusters, k = 5 | 0.99, 0.99, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 3 | local cPCA, oracle clusters, k = 10 | 0.99, 0.99, 0.99, 0.99, 1.00, 0.99 | 0,1,2,3,4,5 |
+| 4 | (c) ξ_B negatives, m_B = 10 | 0.92, 0.91, 0.91, 0.88, 0.92, 0.94 | 0,1,2,3,4,5 |
+| 4 | local cPCA, label-free clusters, k = 3 | 0.99, 0.99, 0.99, 0.97, 0.98, 0.99 | 0,1,2,3,4,5 |
+| 4 | local cPCA, label-free clusters, k = 5 | 0.98, 0.99, 0.98, 0.98, 0.98, 0.99 | 0,1,2,3,4,5 |
+| 4 | local cPCA, label-free clusters, k = 10 | 0.99, 0.99, 0.99, 0.98, 0.98, 0.99 | 0,1,2,3,4,5 |
+| 4 | local cPCA, oracle clusters, k = 3 | 0.99, 0.99, 0.99, 0.97, 0.98, 0.99 | 0,1,2,3,4,5 |
+| 4 | local cPCA, oracle clusters, k = 5 | 0.98, 0.99, 0.98, 0.98, 0.98, 0.99 | 0,1,2,3,4,5 |
+| 4 | local cPCA, oracle clusters, k = 10 | 0.99, 0.99, 0.99, 0.98, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 5 | (c) ξ_B negatives, m_B = 10 | 0.87, 0.93, 0.94, 0.92, 0.89, 0.93 | 0,1,2,3,4,5 |
+| 5 | local cPCA, label-free clusters, k = 3 | 0.99, 0.98, 0.99, 0.98, 0.99, 0.98 | 0,1,2,3,4,5 |
+| 5 | local cPCA, label-free clusters, k = 5 | 0.99, 0.98, 1.00, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 5 | local cPCA, label-free clusters, k = 10 | 0.99, 0.98, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 5 | local cPCA, oracle clusters, k = 3 | 0.99, 0.98, 1.00, 0.98, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 5 | local cPCA, oracle clusters, k = 5 | 0.99, 0.98, 1.00, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+| 5 | local cPCA, oracle clusters, k = 10 | 0.99, 0.98, 0.99, 0.99, 0.99, 0.99 | 0,1,2,3,4,5 |
+
+#### Clusters and α
+
+K and the ARI (labels used for evaluation only) of the label-free clustering; the per-cluster label-free α; the one-hot scale s; and the largest fraction of kNN edges (k = 15) crossing clusters in the joint representation (0 by construction, checked).
+
+| seed | version | K | ARI (background) | ARI (target) | per-cluster α | s at k = 3, 5, 10 | cross-cluster kNN edges |
+|---|---|---|---|---|---|---|---|
+| 3 | labelfree | 6 | 1.000 | 1.000 | 5.54, 8.89, 11.3, 8.89, 1.7, 11.3 | 15.6, 15.7, 16.2 | 0.000 |
+| 3 | oracle | 6 | — | — | 8.89, 5.54, 1.7, 11.3, 11.3, 8.89 | 15.6, 15.7, 16.2 | 0.000 |
+| 4 | labelfree | 6 | 1.000 | 1.000 | 14.3, 58.8, 46.4, 58.8, 8.89, 14.3 | 15.1, 15.4, 15.6 | 0.000 |
+| 4 | oracle | 6 | — | — | 14.3, 8.89, 14.3, 58.8, 58.8, 46.4 | 15.1, 15.4, 15.6 | 0.000 |
+| 5 | labelfree | 6 | 1.000 | 1.000 | 11.3, 22.9, 28.9, 5.54, 11.3, 11.3 | 14.4, 14.4, 14.7 | 0.000 |
+| 5 | oracle | 6 | — | — | 28.9, 22.9, 5.54, 11.3, 11.3, 11.3 | 14.4, 14.4, 14.7 | 0.000 |
+
+### Figures (confirmation seed 3)
+
+Each figure shows, top to bottom: (c), the best global cPCA variant, then local cPCA at k = 3 with label-free and with true clusters.
+
+![L-cyclic local cPCA](results/phase5b/embeddings_cyclic_local_cpca.png)
+
+![L-between local cPCA](results/phase5b/embeddings_between_local_cpca.png)
+
 ## Interpretation
 
 - **Why L-cyclic defeats every linear pipeline.** Revealing cluster k's signal needs Q_k, and keeping Q_k also keeps cluster k−1's nuisance. A subset can avoid that conflict for at most every other cluster, which is why the best subsets are alternating and reveal exactly 3 of 6 clusters (P1). cPCA has no labels to find even those subsets: near α = 1 its top directions are the signal blocks, and in the data each block also carries another cluster's nuisance.
@@ -433,17 +620,13 @@ Selection seed 0, colored by signal group y_s (left) and background cluster y_b 
 - **The best cPCA variant is chosen with labels per seed,** so it is an upper bound on what cPCA can do. The label-free comparison is (c) vs (e2).
 - **The linear projections on the confirmation seeds are descriptive.** They were added before the freeze (`2fb8b7a`), but no verdict depends on them.
 - **L-cyclic is adversarial by construction.** Every cluster's nuisance block is exactly another cluster's signal block. The result shows that (c) *can* beat every global linear pipeline, not how often such structure occurs in real data.
-- **No piecewise or local linear baseline was run.** Every competitor applies one global projection to all points. But the background clusters are recoverable without labels (ξ_B's same-y_b precision is 1.000 on every seed), so a cluster-then-cPCA pipeline, with a different projection per cluster, may solve L-cyclic.
+- **No piecewise or local linear baseline was run in the main experiment.** Every competitor applies one global projection to all points. But the background clusters are recoverable without labels (ξ_B's same-y_b precision is 1.000 on every seed), so a cluster-then-cPCA pipeline, with a different projection per cluster, may solve L-cyclic. *Extension, added after the main results:* it does. Local cPCA beats (c) on both designs (see "Extension: local cPCA"). Design L's discrete, well-separated clusters make the clustering step exact, which is the most favorable case for it.
 - **Synthetic data only,** with discrete, balanced background clusters, as in all earlier phases.
 - **Dirty flag:** both selection summaries record `dirty: true` at `9c35a0b`. The only uncommitted file was the then-untracked `scripts/phase5b_report.py`, which the runs do not import; tracked code was identical to `9c35a0b`. The confirmation summaries and rechecks record a clean tree.
 
 ## Next steps
 
-1. **A local-cPCA baseline.**
-   - Cluster X_B without labels: k-means, with the number of clusters chosen by a label-free rule such as silhouette over K ∈ {2, …, 10}.
-   - Assign each target point to its nearest background cluster, and run cPCA within each cluster: label-free α per cluster, k ∈ {3, 5, 10}.
-   - Embed with (a)'s two-stage Neg-t-SNE.
-   - Also run an oracle version that uses the true clusters.
+1. **A local-cPCA baseline.** *Done as the extension above:* it beats (c) on both designs. A follow-up suggestion (not part of the reviewed next steps): a design where (c) could still have an edge needs background structure that clustering cannot carve into linear pieces, such as a continuous or curved background, or nuisance that changes direction within a cluster.
 2. **A non-adversarial Design L variant.** Draw each cluster's nuisance and signal subspaces at random inside a shared lower-dimensional space, so that overlaps occur by chance rather than by construction.
 3. **Move compute to the Math Slurm cluster** (account YANG-2026). The GPU path is untested: the ξ_B sampling code has only run on CPU, and results will not be bit-identical to the Mac's.
 4. **A label-free rule for (α, k).** L-between shows cPCA needs both chosen well. Test whether a rule that also picks k (for example, from the cPCA eigenvalue gap) recovers the signal without labels.
@@ -464,6 +647,10 @@ Run with the cne-bg environment, in this order:
     python scripts/phase5b_run.py --design cyclic --recheck
     python scripts/phase5b_run.py --design between --stage confirmation
     python scripts/phase5b_run.py --design between --recheck
+    python scripts/phase5b_local_cpca.py --design cyclic
+    python scripts/phase5b_local_cpca.py --design between
+    python scripts/phase5b_local_cpca.py --design cyclic --recheck
+    python scripts/phase5b_local_cpca.py --design between --recheck
     python scripts/phase5b_report.py
     python scripts/phase5b_assemble.py
 
@@ -474,6 +661,7 @@ Run with the cne-bg environment, in this order:
 - Freeze: `9c35a0b`, before any (b), (c) or (o) run.
 - Selection: `65b919a`.
 - Confirmation: `81d6cc1` (L-cyclic), `a7928b3` (L-between).
+- Extension: predictions P6–P9 and the local-cPCA code `a791d9b`, before any local result; results `8fc5e5f`.
 
 **Checks:**
 - The reruns of selection seed 0 are bit-identical in every row and embedding, for both variants (`results/phase5b/recheck_{cyclic,between}.json`).

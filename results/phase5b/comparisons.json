@@ -121,6 +121,82 @@
         "e3": 0.39747053411249794
       },
       "rule": "highest mean WC over selection seeds 0-2 per group; ties -> smaller m_B"
+    },
+    "local": {
+      "comparisons": [
+        {
+          "x": "c_m20",
+          "y": "local_labelfree_k3",
+          "per_seed": [
+            -0.07640686097684135,
+            -0.0771866503138301,
+            -0.07300632710482657
+          ],
+          "mean": -0.07553327946516601,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        },
+        {
+          "x": "c_m20",
+          "y": "local_labelfree_k5",
+          "per_seed": [
+            -0.07740951446504563,
+            -0.07738953755140321,
+            -0.07280440227977802
+          ],
+          "mean": -0.07586781809874228,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        },
+        {
+          "x": "c_m20",
+          "y": "local_labelfree_k10",
+          "per_seed": [
+            -0.07640758386840762,
+            -0.07679121419810986,
+            -0.0724082461582859
+          ],
+          "mean": -0.07520234807493446,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        },
+        {
+          "x": "c_m20",
+          "y": "local_oracle_k3",
+          "per_seed": [
+            -0.07660758386840771,
+            -0.07758905850948705,
+            -0.07260488132169418
+          ],
+          "mean": -0.07560050789986299,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        },
+        {
+          "x": "c_m20",
+          "y": "local_oracle_k5",
+          "per_seed": [
+            -0.07720879157347948,
+            -0.07718977707236141,
+            -0.07300512517134417
+          ],
+          "mean": -0.07580123127239502,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        },
+        {
+          "x": "c_m20",
+          "y": "local_oracle_k10",
+          "per_seed": [
+            -0.07680782771805772,
+            -0.07719169901161538,
+            -0.0724082461582859
+          ],
+          "mean": -0.07546925762931966,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        }
+      ]
     }
   },
   "between": {
@@ -245,6 +321,82 @@
         "e3": 0.25519393502152327
       },
       "rule": "highest mean WC over selection seeds 0-2 per group; ties -> smaller m_B"
+    },
+    "local": {
+      "comparisons": [
+        {
+          "x": "c_m10",
+          "y": "local_labelfree_k3",
+          "per_seed": [
+            -0.0702106514681482,
+            -0.07279599451699015,
+            -0.07660322776134487
+          ],
+          "mean": -0.07320329124882774,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        },
+        {
+          "x": "c_m10",
+          "y": "local_labelfree_k5",
+          "per_seed": [
+            -0.06980992857658186,
+            -0.0741919226607024,
+            -0.07760107062982458
+          ],
+          "mean": -0.07386764062236961,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        },
+        {
+          "x": "c_m10",
+          "y": "local_labelfree_k10",
+          "per_seed": [
+            -0.0708128215857442,
+            -0.07618953322271127,
+            -0.07680154534304884
+          ],
+          "mean": -0.07460130005050143,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        },
+        {
+          "x": "c_m10",
+          "y": "local_oracle_k3",
+          "per_seed": [
+            -0.06981257196450485,
+            -0.07319720077916447,
+            -0.07780323641872888
+          ],
+          "mean": -0.07360433638746607,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        },
+        {
+          "x": "c_m10",
+          "y": "local_oracle_k5",
+          "per_seed": [
+            -0.06961137003102236,
+            -0.07459216651035261,
+            -0.07760107062982458
+          ],
+          "mean": -0.07393486905706652,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        },
+        {
+          "x": "c_m10",
+          "y": "local_oracle_k10",
+          "per_seed": [
+            -0.07041450256114279,
+            -0.07659097900584366,
+            -0.07720082678017459
+          ],
+          "mean": -0.07473543611572035,
+          "x_better_consistent": false,
+          "y_better_consistent": true
+        }
+      ]
     }
   }
 }

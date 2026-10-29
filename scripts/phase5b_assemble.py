@@ -20,7 +20,9 @@ def body(path, demote=2):
 def main():
     parts = {"predictions": (P5B / "predictions_status.md").read_text().strip(),
              "calibration": body(P5B / "calibration.md"), "tables_cyclic": body(P5B / "tables_cyclic.md"),
-             "tables_between": body(P5B / "tables_between.md")}
+             "tables_between": body(P5B / "tables_between.md"),
+             "tables_cyclic_local": body(P5B / "tables_cyclic_local_cpca.md"),
+             "tables_between_local": body(P5B / "tables_between_local_cpca.md")}
     text = (ROOT / "scripts" / "REPORT_phase5b.template.md").read_text()
     for name, content in parts.items():
         text = text.replace("{{" + name + "}}", content)

@@ -58,7 +58,11 @@ Tables marked **(generated)** are copied verbatim from `results/phase5b/*.md` by
    - So on L-between, best cPCA beats (c) by 0.07–0.08 on every seed (means 0.989 vs 0.914), as predicted (P4).
 3. **(c) beats the oracle same-cluster control and uniform negatives on both designs,** consistently across 3 paired seeds: by +0.21 / +0.22 over (o) at m_B = 80 and by +0.39 over (b) at m_B = 40. This repeats Phase 5a's finding for (o) on WC.
 4. **All five predictions confirmed** (P1–P5; table below). P1: the embedding-level linear ceiling was 0.627 on the selection seeds, inside the predicted 0.5–0.7, and 0.624 on the confirmation seeds.
-5. **(c) reaches about the high-D detectability.** Its WC (0.91) is close to the high-D WC of X_T (0.92) on both designs. Interpretation (not tested): ξ_B removes most of the background's hold on the embedding but cannot do better than the high-D kNN graph it embeds, while a projection that drops the nuisance dimensions (U on L-between) can.
+5. **Extension (added after the main results): a local, cluster-then-cPCA baseline beats (c) on both designs.**
+   - Label-free k-means on X_B recovers the 6 background clusters exactly (K = 6, ARI 1.000, every seed). cPCA run within each cluster at its own label-free α reaches WC 0.984–0.992 at every k ∈ {3, 5, 10}, with label-free and true clusters alike.
+   - On L-cyclic, that is +0.07 to +0.08 above (c) on every seed. Predictions P6–P9 were all confirmed.
+   - So the answer to question 1 holds only for *global* linear pipelines. With discrete, well-separated background clusters, a piecewise-linear pipeline that needs no labels does better than (c). See "Extension: local cPCA" below.
+6. **(c) reaches about the high-D detectability.** Its WC (0.91) is close to the high-D WC of X_T (0.92) on both designs. Interpretation (not tested): ξ_B removes most of the background's hold on the embedding but cannot do better than the high-D kNN graph it embeds, while a projection that drops the nuisance dimensions (U on L-between) can.
 
 ## Design
 
@@ -122,6 +126,38 @@ Selection seed 0, colored by signal group y_s (left) and background cluster y_b 
 
 ![L-between embeddings](results/phase5b/embeddings_between.png)
 
+## Extension: local cPCA (added after the main results)
+
+**Why it was run.** Every competitor in the main runs applies one global projection, but the background clusters can be recovered without labels. This baseline was added at review, after the main results, with predictions P6–P9 committed before any of its results (`a791d9b`). It changes no verdict above.
+
+**Method** (`baselines/local_cpca.py`, `scripts/phase5b_local_cpca.py`), on the main runs' confirmation seeds 3–5 (datasets verified by hash):
+- **Label-free version:** k-means on X_B for K ∈ {2, …, 10}, keeping the K with the largest silhouette, and each target point assigned to the nearest centroid.
+- **Oracle version:** the true background clusters of X_B and X_T.
+- **Per cluster:** cPCA at that cluster's label-free α, top k ∈ {3, 5, 10} directions.
+- **Embedding:** Z = [local coordinates | s · one-hot(cluster)] is embedded once with (a)'s two-stage Neg-t-SNE. s = 10 × the largest local radius, which ensures that no kNN edge crosses clusters (checked: 0 on every run).
+
+**Results.**
+- **Clustering:** label-free clustering found K = 6 with ARI 1.000 on every seed of both designs, so the label-free and oracle versions differ by at most 0.001 WC.
+- **α:** every cluster's label-free α was above 1 (1.7 to 58.8). Within a cluster the background varies only in that cluster's nuisance block, so subtracting it removes the nuisance and keeps the signal.
+- **Embedding layout (descriptive, from the figures):** the embeddings are 24 tight islands, one per cluster × signal group. The islands of one background cluster are not reliably placed together, because the one-hot offsets make all clusters equidistant. WC and G2 are local, so they do not register this.
+- **Determinism:** both reruns of seed 3 were bit-identical (`results/phase5b/recheck_{cyclic,between}_local_cpca.json`).
+
+### Local cPCA on L-cyclic (generated)
+
+{{tables_cyclic_local}}
+
+### Local cPCA on L-between (generated)
+
+{{tables_between_local}}
+
+### Figures (confirmation seed 3)
+
+Each figure shows, top to bottom: (c), the best global cPCA variant, then local cPCA at k = 3 with label-free and with true clusters.
+
+![L-cyclic local cPCA](results/phase5b/embeddings_cyclic_local_cpca.png)
+
+![L-between local cPCA](results/phase5b/embeddings_between_local_cpca.png)
+
 ## Interpretation
 
 - **Why L-cyclic defeats every linear pipeline.** Revealing cluster k's signal needs Q_k, and keeping Q_k also keeps cluster k−1's nuisance. A subset can avoid that conflict for at most every other cluster, which is why the best subsets are alternating and reveal exactly 3 of 6 clusters (P1). cPCA has no labels to find even those subsets: near α = 1 its top directions are the signal blocks, and in the data each block also carries another cluster's nuisance.
@@ -135,17 +171,13 @@ Selection seed 0, colored by signal group y_s (left) and background cluster y_b 
 - **The best cPCA variant is chosen with labels per seed,** so it is an upper bound on what cPCA can do. The label-free comparison is (c) vs (e2).
 - **The linear projections on the confirmation seeds are descriptive.** They were added before the freeze (`2fb8b7a`), but no verdict depends on them.
 - **L-cyclic is adversarial by construction.** Every cluster's nuisance block is exactly another cluster's signal block. The result shows that (c) *can* beat every global linear pipeline, not how often such structure occurs in real data.
-- **No piecewise or local linear baseline was run.** Every competitor applies one global projection to all points. But the background clusters are recoverable without labels (ξ_B's same-y_b precision is 1.000 on every seed), so a cluster-then-cPCA pipeline, with a different projection per cluster, may solve L-cyclic.
+- **No piecewise or local linear baseline was run in the main experiment.** Every competitor applies one global projection to all points. But the background clusters are recoverable without labels (ξ_B's same-y_b precision is 1.000 on every seed), so a cluster-then-cPCA pipeline, with a different projection per cluster, may solve L-cyclic. *Extension, added after the main results:* it does. Local cPCA beats (c) on both designs (see "Extension: local cPCA"). Design L's discrete, well-separated clusters make the clustering step exact, which is the most favorable case for it.
 - **Synthetic data only,** with discrete, balanced background clusters, as in all earlier phases.
 - **Dirty flag:** both selection summaries record `dirty: true` at `9c35a0b`. The only uncommitted file was the then-untracked `scripts/phase5b_report.py`, which the runs do not import; tracked code was identical to `9c35a0b`. The confirmation summaries and rechecks record a clean tree.
 
 ## Next steps
 
-1. **A local-cPCA baseline.**
-   - Cluster X_B without labels: k-means, with the number of clusters chosen by a label-free rule such as silhouette over K ∈ {2, …, 10}.
-   - Assign each target point to its nearest background cluster, and run cPCA within each cluster: label-free α per cluster, k ∈ {3, 5, 10}.
-   - Embed with (a)'s two-stage Neg-t-SNE.
-   - Also run an oracle version that uses the true clusters.
+1. **A local-cPCA baseline.** *Done as the extension above:* it beats (c) on both designs. A follow-up suggestion (not part of the reviewed next steps): a design where (c) could still have an edge needs background structure that clustering cannot carve into linear pieces, such as a continuous or curved background, or nuisance that changes direction within a cluster.
 2. **A non-adversarial Design L variant.** Draw each cluster's nuisance and signal subspaces at random inside a shared lower-dimensional space, so that overlaps occur by chance rather than by construction.
 3. **Move compute to the Math Slurm cluster** (account YANG-2026). The GPU path is untested: the ξ_B sampling code has only run on CPU, and results will not be bit-identical to the Mac's.
 4. **A label-free rule for (α, k).** L-between shows cPCA needs both chosen well. Test whether a rule that also picks k (for example, from the cPCA eigenvalue gap) recovers the signal without labels.
@@ -166,6 +198,10 @@ Run with the cne-bg environment, in this order:
     python scripts/phase5b_run.py --design cyclic --recheck
     python scripts/phase5b_run.py --design between --stage confirmation
     python scripts/phase5b_run.py --design between --recheck
+    python scripts/phase5b_local_cpca.py --design cyclic
+    python scripts/phase5b_local_cpca.py --design between
+    python scripts/phase5b_local_cpca.py --design cyclic --recheck
+    python scripts/phase5b_local_cpca.py --design between --recheck
     python scripts/phase5b_report.py
     python scripts/phase5b_assemble.py
 
@@ -176,6 +212,7 @@ Run with the cne-bg environment, in this order:
 - Freeze: `9c35a0b`, before any (b), (c) or (o) run.
 - Selection: `65b919a`.
 - Confirmation: `81d6cc1` (L-cyclic), `a7928b3` (L-between).
+- Extension: predictions P6–P9 and the local-cPCA code `a791d9b`, before any local result; results `8fc5e5f`.
 
 **Checks:**
 - The reruns of selection seed 0 are bit-identical in every row and embedding, for both variants (`results/phase5b/recheck_{cyclic,between}.json`).
