@@ -47,7 +47,8 @@ Tables marked **(generated)** are copied verbatim from `results/phase5b/*.md` by
 
 ## Summary
 
-1. **L-cyclic: (c) beats every linear-projection pipeline, including the label-chosen ones, consistently across 3 paired seeds.**
+1. **L-cyclic: (c) beats every global linear-projection pipeline, including the label-chosen ones, consistently across 3 paired seeds.**
+   - A local, cluster-then-cPCA pipeline beats (c); see item 5.
    - WC on the confirmation seeds: (c) 0.914, best labeled linear projection 0.624, best cPCA variant 0.530, label-free (e2) 0.420, (a) 0.335 (means; tables below).
    - (c) beats best cPCA by +0.36 to +0.41 on every seed (pre-registered) and the best labeled linear projection by +0.29 (descriptive).
    - **Per cluster** (a cluster counts as revealed at per-cluster WC ≥ 0.80): (c) reveals all 6 clusters on every seed (per-cluster WC ≥ 0.85). The best linear projection is always an alternating subset (U+Q135 on every confirmation seed) and reveals exactly 3 clusters (WC 0.98–1.00) while leaving the other 3 near chance (0.23–0.29). Of the cPCA variants, none reveals more than one cluster, and the best-WC variant reveals none.
@@ -163,6 +164,7 @@ Each figure shows, top to bottom: (c), the best global cPCA variant, then local 
 - **Why L-cyclic defeats every linear pipeline.** Revealing cluster k's signal needs Q_k, and keeping Q_k also keeps cluster k−1's nuisance. A subset can avoid that conflict for at most every other cluster, which is why the best subsets are alternating and reveal exactly 3 of 6 clusters (P1). cPCA has no labels to find even those subsets: near α = 1 its top directions are the signal blocks, and in the data each block also carries another cluster's nuisance.
 - **Why (c) is not limited the same way.** ξ_B works with neighborhoods, not directions. Its negatives are points that are close in the background data, so within each cluster the repulsion lands on whatever direction carries that cluster's nuisance, and a different direction can carry it in each cluster.
 - **L-between is a selection problem in two parameters.** In population, cPCA at α < 1 with k ≤ 5 keeps exactly U, which holds the signal and excludes the nuisance V. The label-free rule fails on α (the representative with the largest variance ratio was an α > 1 on every seed), and the pipeline's fixed k = 10 fails on its own (it brings V back). A label-free rule that picks both well would win this design; (c) would not.
+- **Why local cPCA beats (c)** (interpretation). Within each cluster, the background varies in one block, so per-cluster cPCA removes the nuisance *before* the kNN graph is built (WC ≈ 0.99). (c) changes only the repulsion: its kNN graph is still built in the raw space, nuisance included, so its WC is bounded by about the high-D detectability (0.91 vs 0.92). The limit is the graph, not the negatives.
 - **The oracle control again.** As in Phase 5a, repelling random members of the true background cluster spreads each island but recovers much less signal than ξ_B: (o) at its best m_B (80, the top of its grid) reaches 0.69–0.70, against 0.91 for (c).
 
 ## Limitations
@@ -177,11 +179,13 @@ Each figure shows, top to bottom: (c), the best global cPCA variant, then local 
 
 ## Next steps
 
-1. **A local-cPCA baseline.** *Done as the extension above:* it beats (c) on both designs. A follow-up suggestion (not part of the reviewed next steps): a design where (c) could still have an edge needs background structure that clustering cannot carve into linear pieces, such as a continuous or curved background, or nuisance that changes direction within a cluster.
-2. **A non-adversarial Design L variant.** Draw each cluster's nuisance and signal subspaces at random inside a shared lower-dimensional space, so that overlaps occur by chance rather than by construction.
-3. **Move compute to the Math Slurm cluster** (account YANG-2026). The GPU path is untested: the ξ_B sampling code has only run on CPU, and results will not be bit-identical to the Mac's.
-4. **A label-free rule for (α, k).** L-between shows cPCA needs both chosen well. Test whether a rule that also picks k (for example, from the cPCA eigenvalue gap) recovers the signal without labels.
-5. **Judge (c) against its ceiling.** (c)'s WC sits just below detectability on both designs; a design where the high-D kNN graph itself is poor would show whether (c) is limited by the graph.
+The local-cPCA baseline, formerly #1, was run as the extension above.
+
+1. **A continuous or curved background design,** where clustering cannot carve the background into linear pieces.
+2. **A background-suppressed graph, built per point without clustering.** For each target point, take the PCA of its background neighbors, project those local background directions out, and build the kNN graph on the residuals. Optionally combine it with ξ_B negatives.
+3. **A label-free rule for (α, k).** L-between shows cPCA needs both chosen well. Test whether a rule that also picks k (for example, from the cPCA eigenvalue gap) recovers the signal without labels.
+4. **Move compute to the Math Slurm cluster** (account YANG-2026). The GPU path is untested: the ξ_B sampling code has only run on CPU, and results will not be bit-identical to the Mac's.
+5. **A non-adversarial Design L variant,** now lower priority, since discrete clusters favor local cPCA. Draw each cluster's nuisance and signal subspaces at random inside a shared lower-dimensional space, so that overlaps occur by chance rather than by construction.
 
 ## Reproducibility
 

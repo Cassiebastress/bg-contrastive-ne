@@ -408,8 +408,8 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
 - **Extension, local cPCA** (`baselines/local_cpca.py`; P6–P9 committed first, all confirmed): k-means on X_B finds K = 6 with ARI 1.0 on every seed. Per-cluster cPCA (label-free α, all > 1) embedded once with a scaled one-hot reaches WC 0.984–0.992 on both designs, at every k and with label-free or true clusters, beating (c) by +0.07–0.08 on L-cyclic. (c)'s win holds only against *global* linear pipelines; discrete, separable clusters favor the piecewise approach.
 - **Limits:** L-cyclic is adversarial (shows capability, not prevalence). No local/piecewise linear baseline was run, though background clusters are recoverable without labels (ξ_B same-y_b precision 1.000), so cluster-then-cPCA may solve L-cyclic.
 - **Next:**
-  1. Local-cPCA baseline: k-means on X_B (K by silhouette over 2–10), nearest-cluster assignment of target points, cPCA per cluster (label-free α, k ∈ {3, 5, 10}), embedded with (a)'s two-stage Neg-t-SNE; plus an oracle version with true clusters.
-  2. A non-adversarial Design L: random per-cluster nuisance and signal subspaces inside a shared lower-dimensional space, so overlaps occur by chance.
-  3. Move compute to the Math Slurm cluster (account YANG-2026); the GPU path is untested.
-  4. A label-free rule for both α and k for cPCA.
-  5. A design where the high-D kNN graph itself is poor, to see whether (c) is limited by the graph (its WC sits just under detectability here).
+  1. A continuous or curved background design, where clustering cannot carve the background into linear pieces.
+  2. A background-suppressed graph built per point without clustering: project out each target point's local background directions (PCA of its background neighbors), build the kNN graph on the residuals; optionally with ξ_B negatives. (Interpretation: (c)'s limit is its raw-space graph, WC 0.91 vs detectability 0.92.)
+  3. A label-free rule for both α and k for cPCA.
+  4. Move compute to the Math Slurm cluster (account YANG-2026); the GPU path is untested.
+  5. A non-adversarial Design L (lower priority: discrete clusters favor local cPCA).
