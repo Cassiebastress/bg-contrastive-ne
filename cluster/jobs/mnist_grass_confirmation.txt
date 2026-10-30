@@ -1,0 +1,16 @@
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 3 --run c_m5
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 3 --run a
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 3 --run T1
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 3 --run T2
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 3 --run T3
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 4 --run c_m5
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 4 --run a
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 4 --run T1
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 4 --run T2
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 4 --run T3
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 5 --run c_m5
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 5 --run a
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 5 --run T1
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 5 --run T2
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 5 --run T3
+$PY scripts/mnist_grass_run.py --stage confirmation --seed 3 --run c_m5 --rep 2
