@@ -28,10 +28,12 @@ def local_background(X_T, X_B, k_loc, r_max=R_MAX):
     X_T, X_B = np.asarray(X_T, dtype=np.float64), np.asarray(X_B, dtype=np.float64)
     nbrs = knn_indices(X_T, k_loc, Y=X_B)
     r_max = min(r_max, k_loc - 1)
-    mu = X_B[nbrs].mean(axis=1)
+    mu = np.empty_like(X_T)
     V = np.empty((len(X_T), X_T.shape[1], r_max))
-    for i in range(len(X_T)):
-        _, _, vt = np.linalg.svd(X_B[nbrs[i]] - mu[i], full_matrices=False)
+    for i in range(len(X_T)):  # one target at a time: (k_loc, D) in memory, not (n_T, k_loc, D)
+        N = X_B[nbrs[i]]
+        mu[i] = N.mean(axis=0)
+        _, _, vt = np.linalg.svd(N - mu[i], full_matrices=False)
         V[i] = vt[:r_max].T
     return LocalBackground(k_loc=k_loc, mu=mu, V=V, neighbors=nbrs)
 

@@ -1,0 +1,24 @@
+$PY scripts/bsgraph_phase1.py --seed 0 --k-loc 15
+$PY scripts/bsgraph_phase1.py --seed 0 --k-loc 30
+$PY scripts/bsgraph_phase1.py --seed 0 --k-loc 100
+$PY scripts/bsgraph_phase1.py --seed 1 --k-loc 15
+$PY scripts/bsgraph_phase1.py --seed 1 --k-loc 30
+$PY scripts/bsgraph_phase1.py --seed 1 --k-loc 100
+$PY scripts/bsgraph_phase1.py --seed 2 --k-loc 15
+$PY scripts/bsgraph_phase1.py --seed 2 --k-loc 30
+$PY scripts/bsgraph_phase1.py --seed 2 --k-loc 100
+$PY scripts/bsgraph_phase1.py --seed 3 --k-loc 15
+$PY scripts/bsgraph_phase1.py --seed 3 --k-loc 30
+$PY scripts/bsgraph_phase1.py --seed 3 --k-loc 100
+$PY scripts/bsgraph_phase1.py --seed 4 --k-loc 15
+$PY scripts/bsgraph_phase1.py --seed 4 --k-loc 30
+$PY scripts/bsgraph_phase1.py --seed 4 --k-loc 100
+$PY scripts/bsgraph_phase1.py --seed 5 --k-loc 15
+$PY scripts/bsgraph_phase1.py --seed 5 --k-loc 30
+$PY scripts/bsgraph_phase1.py --seed 5 --k-loc 100
+$PY scripts/bsgraph_phase1.py --seed 0 --reference
+$PY scripts/bsgraph_phase1.py --seed 1 --reference
+$PY scripts/bsgraph_phase1.py --seed 2 --reference
+$PY scripts/bsgraph_phase1.py --seed 3 --reference
+$PY scripts/bsgraph_phase1.py --seed 4 --reference
+$PY scripts/bsgraph_phase1.py --seed 5 --reference
