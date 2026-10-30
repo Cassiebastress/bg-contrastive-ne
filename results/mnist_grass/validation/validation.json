@@ -1,0 +1,107 @@
+{
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+    "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+    "cpu_count": 192,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 4,
+    "torch_deterministic_algorithms": false,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "d7505ec35b1d894b4883d455fb6b1a8f6a2cb151",
+      "dirty": false
+    },
+    "hostname": "math-h100-r01.math.mcgill.ca",
+    "slurm_job_id": "6026",
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  },
+  "gate": "cluster run twice is bit-identical (rows and embeddings)",
+  "gate_passed": true,
+  "embeddings_identical": {
+    "stage1": true,
+    "a": true,
+    "c_m20": true
+  },
+  "why": "x86 cluster vs ARM Mac (different BLAS and SIMD): Mac bit-identity is impossible, so the Mac-vs-cluster difference is descriptive",
+  "comparison": [
+    {
+      "run": "a",
+      "metric": "WC",
+      "cluster": 0.37076872231440733,
+      "mac": 0.34379445638842804,
+      "diff": 0.02697426592597929,
+      "cluster_opt_seed_range": null,
+      "mac_seed_range_3_5": [
+        0.32762898347882546,
+        0.34379445638842804
+      ]
+    },
+    {
+      "run": "a",
+      "metric": "acc_s",
+      "cluster": 0.37320000000000003,
+      "mac": 0.34719999999999995,
+      "diff": 0.02600000000000008,
+      "cluster_opt_seed_range": null,
+      "mac_seed_range_3_5": [
+        0.3316,
+        0.34719999999999995
+      ]
+    },
+    {
+      "run": "c_m20",
+      "metric": "WC",
+      "cluster": 0.9256143308563596,
+      "mac": 0.9137884957795254,
+      "diff": 0.011825835076834212,
+      "cluster_opt_seed_range": [
+        0.9031958848567924,
+        0.9134015006132314
+      ],
+      "mac_seed_range_3_5": [
+        0.9116065334391458,
+        0.916393355457759
+      ]
+    },
+    {
+      "run": "c_m20",
+      "metric": "acc_s",
+      "cluster": 0.9274000000000001,
+      "mac": 0.9124000000000001,
+      "diff": 0.015000000000000013,
+      "cluster_opt_seed_range": [
+        0.9036,
+        0.9152000000000001
+      ],
+      "mac_seed_range_3_5": [
+        0.9124000000000001,
+        0.9168000000000001
+      ]
+    }
+  ],
+  "max_abs_WC_diff_mac_vs_cluster": 0.02697426592597929,
+  "smallest_phase5b_per_seed_margin": {
+    "abs_WC_diff": 0.06961137003102236,
+    "variant": "between",
+    "vs": "local_oracle_k5"
+  },
+  "diff_below_smallest_margin": true
+}
