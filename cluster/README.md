@@ -21,6 +21,18 @@ pushed commit. Logs go to `cluster/logs/` (gitignored).
 
     sbatch cluster/smoke.sbatch         # timing and reproducibility test; writes ~/cluster_smoke/smoke_<job>.json
 
+## Run seeds in parallel
+
+Per run, the cluster is about 2.4–3× slower than the M3 Mac (many tiny steps; single-core speed), so the gain
+comes from running many seeds at once. Write one command per line (one seed of one run script) and submit:
+
+    sbatch --export=ALL,THREADS=2 cluster/parallel.sbatch cluster/jobs/<name>.txt
+
+`cluster/parallel_lib.sh` runs at most (24 CPUs) / THREADS commands at a time, each with THREADS threads, and logs
+each to `cluster/logs/<job>/<n>.out`. Run scripts for new phases take `--seed` (one seed per process, its own
+output file) and a separate merge step. `sbatch cluster/threads.sbatch` measures which THREADS value gives the
+most runs per hour.
+
 ## Watch and cancel
 
     squeue -u cbastr2                   # your jobs
