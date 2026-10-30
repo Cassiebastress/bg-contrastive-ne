@@ -413,3 +413,12 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
   3. A label-free rule for both α and k for cPCA.
   4. Move compute to the Math Slurm cluster (account YANG-2026); the GPU path is untested.
   5. A non-adversarial Design L (lower priority: discrete clusters favor local cPCA).
+
+# MNIST-on-grass: real-data test (`REPORT_mnist_grass.md`, `results/mnist_grass/`)
+
+- **Data:** the cPCA paper's recipe rebuilt deterministically (`data/mnist_grass.py`): digits 0/1 at 0.25 on 28 × 28 patches of 1274 ImageNet grass images; 5000 target and 5000 background per seed; seeds 0–2 selection, 3–5 confirmation. The raw files live only on the cluster (`data/MANIFEST.md`).
+- **Compute:** everything on the Math Slurm cluster, CPU only, 1 thread per run, 24 runs in parallel. Phase B validated the cluster first (two runs bit-identical; Mac-vs-cluster difference at most 0.027 WC, below every 5b verdict margin). No comparison mixes Mac and cluster results.
+- **Selection:** m_B = 5 for (c).
+- **Confirmation (digit kNN accuracy):** (c) 0.931 beats T1 t-SNE 0.884, T2 PCA-50 → t-SNE 0.891 and (a) 0.858, consistent across 3 seeds. T3 cPCA → t-SNE 0.955 beats (c), consistent. (a) < T1/T2: the background term carries all of (c)'s gain. Recall vs grass: (c) 0.022, T1/T2 about 0.13, T3 0.003.
+- **Reading:** MNIST-on-grass is additive (independent grass), the case where cPCA's identity holds, so its win was predicted by Phases 4–5.
+- **Next (suggested):** the background-suppressed kNN graph; a real dataset with a non-additive background.
