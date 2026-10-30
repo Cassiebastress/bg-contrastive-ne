@@ -1,6 +1,6 @@
 """Write data/MANIFEST.md for the MNIST-on-grass inputs (run on the cluster, where data/raw/ lives).
 
-Checks (stop and report on failure): data/raw/grass/ holds exactly 1272 images, every one readable by Pillow;
+Checks (stop and report on failure): data/raw/grass/ holds exactly 1274 images, every one readable by Pillow;
 data/raw/mnist.npz matches the SHA-256 that Keras pins for it. Lists the file count, the extensions found, and a
 SHA-256 per file; adds data/processed/*.npz if present (after scripts/mnist_grass_build.py).
 
@@ -15,7 +15,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW, PROCESSED = ROOT / "data" / "raw", ROOT / "data" / "processed"
-N_GRASS = 1272  # .JPEG files in ImageNet-20261030T152523Z-1-001.zip (the Drive folder of the cPCA authors)
+N_GRASS = 1274  # .JPEG files in ImageNet-20261030T152523Z-1-001.zip (the Drive folder of the cPCA authors)
 MNIST_SHA256 = "731c5ac602752760c8e48fbffcf8c3b850d9dc2a2aedcf2cc48468fc17b673d1"  # keras.datasets.mnist file_hash
 
 
