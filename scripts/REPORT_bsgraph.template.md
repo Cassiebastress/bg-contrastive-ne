@@ -24,6 +24,7 @@ The data are the MNIST-on-grass datasets, seeds 0–5. Everything ran on the Mat
    - The selected residual graph is k_loc = 30, r = 2. It has graph digit accuracy 0.961–0.963 on the selection seeds, against 0.932–0.938 for the better of the raw and PCA-50 graphs. That is +0.025 to +0.029 on every seed, past the +0.02 bar.
    - The graph's neighborhoods also hold almost no grass: grass recall is 0.057, against 0.44 for the raw graph and 0.34 for PCA-50.
    - The confirmation seeds show the same (0.956–0.967, descriptive).
+   - **The variant choice barely matters** (descriptive). All 15 residual-graph variants reach mean graph digit accuracy 0.954–0.964 on the selection seeds (per seed 0.951–0.965), each above both reference graphs (raw 0.904, PCA-50 0.935). This supports a fixed label-free default (k_loc = 30, r = 2).
 2. **The residual graph improves the method a lot: (r_c) beats (c) on every confirmation seed,** by +0.036 to +0.046 (0.973 vs 0.931). Recall vs grass falls from 0.022 to 0.003, and recall vs clean digits rises from 0.013 to 0.056.
 3. **(r_c) vs cPCA → t-SNE (T3) is not consistent.**
    - (r_c) is ahead on seeds 3 and 5 (+0.032, +0.028) and behind on seed 4 (−0.006), mean +0.018.
@@ -63,6 +64,8 @@ Colored by digit (left) and by mean grass-patch brightness (right):
   - On raw pixels, about 44% of each target's graph neighbors are also among its 15 nearest images by grass patch. The attraction therefore pulls same-grass images together, and ξ_B's repulsion can only partly undo that.
   - Removing each image's local background mean and top 2 local background directions *before* the graph is built removes that pull at its source.
   - Then no repulsion is needed: (r_a) ≈ (r_c).
+- **The result is not sensitive to the residual graph's settings** (descriptive). Every variant on the grid, from k_loc = 15 to 100 and r = 0 to 10, has mean graph digit accuracy 0.954–0.964 on the selection seeds, above both raw (0.904) and PCA-50 (0.935). Even r = 0, which only subtracts the local background mean, is enough to clear both. A fixed label-free default (k_loc = 30, r = 2) is therefore supported, and the labels used to select it decided little.
+- **ξ_B and the residual graph use the same information** (interpretation): each target's nearest background images. ξ_B uses it for repulsion; the residual graph uses it to define neighborhoods. On this dataset, using it in the graph is what helps, and ξ_B adds nothing measurable once the graph is background-suppressed.
 - **This is local, not global, background suppression.** The residual uses each image's own 30 nearest background images, with no global linear assumption. On this additive dataset it matches cPCA → t-SNE (not consistently better or worse). Whether it keeps working where cPCA's global identity fails, as in Phase 5b's L-cyclic, is untested.
 - **Why ξ_B becomes redundant here** (interpretation). ξ_B pairs are targets with similar grass. On the residual graph, same-grass targets are no longer neighbors, so there is little left for the repulsion to separate.
 
@@ -77,8 +80,8 @@ Colored by digit (left) and by mean grass-patch brightness (right):
 ## Next steps
 
 These are suggestions, not part of this phase's spec:
-1. **Test the residual graph on the synthetic designs where cPCA fails** (Phase 5b's L-cyclic and L-between), against (c) and local cPCA. That is the test of local vs global suppression.
-2. **A non-adversarial real dataset with a non-additive background,** the step deferred from the MNIST-on-grass report.
+1. **A real dataset with a non-additive background,** with (r_a)/(r_c) as the main method. The dataset is to be chosen with the supervisor. This is the step deferred from the MNIST-on-grass report, and it tests the residual graph where linear subtraction is not enough.
+2. **Optional: the residual graph on the existing L-cyclic and L-between datasets** (Phase 5b), against (c) and local cPCA, as a test of local vs global suppression where cPCA's global identity fails.
 3. **Decide what ξ_B is for.** Here it is redundant once the graph is background-suppressed. Test whether it helps when the residual graph is imperfect, for example with a mis-sized k_loc or r.
 
 ## Reproducibility
