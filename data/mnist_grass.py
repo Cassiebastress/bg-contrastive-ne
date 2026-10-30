@@ -93,3 +93,13 @@ def save(d, path):
 def load(path):
     with np.load(path) as f:
         return {k: f[k] for k in f.files}
+
+
+def processed_path(seed, root):
+    return Path(root) / "data" / "processed" / f"mnist_grass_seed{seed}.npz"
+
+
+def for_embedding(d):
+    """X_T and X_B as float32 (as the synthetic designs feed the pipeline), plus the evaluation-only truth."""
+    truth = {"y": d["y"], "digits": d["digits"], "grass_T": d["grass_T"]}
+    return d["X_T"].astype(np.float32), d["X_B"].astype(np.float32), truth
