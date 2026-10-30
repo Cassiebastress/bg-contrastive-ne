@@ -66,30 +66,25 @@ This report describes the current state of the method, the reasoning and evidenc
 
 \paragraph{Key findings.}
 \begin{enumerate}
-  \item \textbf{The residual graph is what makes the method work.} On MNIST-on-grass, a real-image benchmark of MNIST digits overlaid on grass photographs, \BN{} beats the method's earlier form on every confirmation seed. That earlier form used background negatives on the raw kNN graph. Digit kNN accuracy is 0.973 vs 0.931 \cpre. Without background negatives, the residual graph alone raises plain Neg-t-SNE by 0.10--0.13 \cdesc.
+  \item \textbf{The residual graph is what makes the method work.} MNIST-on-grass is a real-image benchmark: MNIST digits overlaid on grass photographs. On it, \BN{} beats the method's earlier form, which used background negatives on the raw kNN graph, on every confirmation seed. Digit kNN accuracy is 0.973 vs 0.931 \cpre. Without background negatives, the residual graph alone raises plain Neg-t-SNE by 0.10--0.13 \cdesc.
   % source: results/bsgraph/tables_phase2.md, results/bsgraph/comparisons.json
   \item \textbf{Background negatives become redundant once the graph is background-suppressed.} \BN{} and \methodname{} differ by at most 0.002 per seed, with one exact tie \cpre.
   \item \textbf{On MNIST-on-grass the method ties contrastive PCA (cPCA) followed by t-SNE, and is more stable across seeds.} Neither is consistently better \cpre. Across seeds, \BN{} ranges over 0.972--0.974 and cPCA$\to$t-SNE over 0.941--0.979 \cdesc.
-  \item \textbf{Global cPCA wins when the background is additive.} If target $=$ signal $+$ independent background, the difference of the target and background covariances is exactly the signal covariance \cder. Accordingly, cPCA-based pipelines beat raw-graph background negatives on every additive benchmark we ran, synthetic \cdesc{} and real \cpre.
-  \item \textbf{A label-free ``cluster, then cPCA'' pipeline (local cPCA) beats raw-graph background negatives} on two synthetic benchmarks designed to defeat global projections: within-cluster signal accuracy 0.984--0.992 vs 0.914 \cpre.
-  % source: results/phase5b/tables_cyclic_local_cpca.md, results/phase5b/tables_between_local_cpca.md
-  \item \textbf{On one of those benchmarks, raw-graph background negatives beat every global linear pipeline, including ones chosen with labels}: 0.914, against 0.530 for the best cPCA variant \cpre{} and 0.624 for the best labeled projection \cdesc.
-  % source: results/phase5b/tables_cyclic.md
+  \item \textbf{Global cPCA wins when the background is additive.} If target $=$ signal $+$ independent background, the difference of the target and background covariances is exactly the signal covariance \cder. Accordingly, cPCA-based pipelines beat raw-graph background negatives on every additive benchmark we ran: synthetic \cdesc{} and real \cpre.
 \end{enumerate}
 
-\paragraph{Main open question.} The residual graph has so far been tested only on MNIST-on-grass, whose background is additive, so that global cPCA already does about as well. Its intended advantage, suppressing a background that no single global projection can remove, has not yet been tested: neither on real data with a non-additive background, nor on the synthetic benchmarks where global cPCA fails (\cref{sec:gaps}).
+\paragraph{Main open question.} The residual graph has so far been tested only on MNIST-on-grass. That dataset's background is additive, so global cPCA already does about as well. The residual graph's intended advantage is suppressing a background that no single global projection can remove. That advantage has not yet been tested on real data with a non-additive background (\cref{sec:gaps}).
 
-\paragraph{How to read this report.}
+\paragraph{How to read this report.} \Cref{sec:setup} sets out the problem, data and evaluation; \cref{sec:background,sec:method} give the background and the method; \cref{sec:decisions} covers the design decisions and their evidence; \cref{sec:evidence} presents the full results; and \cref{sec:gaps,sec:next} cover what is untested and what comes next.
+
+Every claim carries one of five labels:
 \begin{itemize}
-  \item \Cref{sec:setup} defines the problem, the datasets and the evaluation protocol. Everything after it uses these definitions.
-  \item \Cref{sec:background} reviews the published theory, together with one extension of our own.
-  \item \Cref{sec:method} specifies the method.
-  \item \Cref{sec:decisions} goes through the design decisions and the evidence for each.
-  \item \Cref{sec:theory} collects theoretical observations about when linear suppression works.
-  \item \Cref{sec:evidence} presents the experimental results in full.
-  \item \Cref{sec:gaps,sec:next} list what is untested and what we propose next.
+  \item \cpub{}: a cited result;
+  \item \cder{}: derived here, not taken from the literature;
+  \item \cpre{}: a verdict under a rule committed before the results existed;
+  \item \cdesc{}: a measurement with no verdict attached;
+  \item \cinterp{}: our explanation, not directly tested.
 \end{itemize}
-Every claim carries one of five labels: \cpub{} for a cited result; \cder{}; \cpre{} for a verdict under a rule committed before the results existed; \cdesc{} for a measurement with no verdict attached; and \cinterp{} for our explanation, not directly tested.
 
 % =====================================================================
 \section{Problem, data and evaluation}
@@ -97,26 +92,26 @@ Every claim carries one of five labels: \cpub{} for a cited result; \cder{}; \cp
 
 \subsection{Problem and notation}
 
-We have a \emph{target} dataset $X_T \in \R^{n_T\times D}$ and a \emph{background} dataset $X_B \in \R^{n_B\times D}$ in the same feature space. The background contains only nuisance variation. The target contains the same kind of nuisance variation plus a target-specific \emph{signal}. The goal is a two-dimensional embedding of the target points whose neighborhoods reflect the signal rather than the background. This is the neighbor-embedding analogue of contrastive PCA \cite{abid2018cpca}, which finds directions with high target variance and low background variance, i.e.\ the top eigenvectors of $C_T - \alpha C_B$ for a contrast parameter $\alpha \ge 0$.
+We have a \emph{target} dataset $X_T \in \R^{n_T\times D}$ and a \emph{background} dataset $X_B \in \R^{n_B\times D}$ in the same feature space. The background contains only nuisance variation. The target contains the same kind of nuisance variation plus a target-specific \emph{signal}. The goal is a two-dimensional embedding of the target points whose neighborhoods reflect the signal rather than the background. This is the neighbor-embedding analogue of contrastive PCA \cite{abid2018cpca}. cPCA finds directions with high target variance and low background variance: the top eigenvectors of $C_T - \alpha C_B$ for a contrast parameter $\alpha \ge 0$.
 
 \paragraph{Notation.}
 \begin{itemize}
   \item \textbf{Embedding:} $y_i \in \R^2$ is the embedding of target point $i$, and $d_{ij} = \|y_i - y_j\|$. The Cauchy kernel is $\phi(d) = 1/(1+d^2)$, and $q_{ij} = \phi(d_{ij})$ is the model similarity.
   \item \textbf{Graph and sampling:} $p_{ij}$ is the uniform distribution over the directed edges of the symmetrized kNN graph of the targets ($k = 15$). $\xi$ is a noise distribution over pairs. $m$ and $m_B$ are the numbers of uniform and background negatives per edge.
   \item \textbf{Residual graph:} $\kloc$ is the number of background neighbors used to form the residual, and $r$ the number of local background directions removed.
-  \item \textbf{Covariances:} $C_T$ and $C_B$ are the covariances of $X_T$ and $X_B$, and $C_S$, $C_G$ those of the signal and background components. $Q\T$ is the transpose of $Q$.
+  \item \textbf{Covariances:} $C_T$ and $C_B$ are the covariances of $X_T$ and $X_B$, and $C_S$ and $C_G$ are those of the signal and background components. $Q\T$ is the transpose of $Q$.
 \end{itemize}
 
 \subsection{Datasets}
 \label{sec:data}
 
-\paragraph{Synthetic benchmarks.} All synthetic benchmarks share one template: $n_T = n_B = 5000$ points in $D = 50$ dimensions, with isotropic noise of standard deviation 0.1.
+\paragraph{Synthetic benchmarks.} The synthetic benchmarks share one template: $n_T = n_B = 5000$ points in $D = 50$ dimensions, with isotropic noise of standard deviation 0.1.
 \begin{itemize}
-  \item \textbf{Background:} six equal-weight Gaussian background clusters, with centers on a regular simplex of edge 30 in a 5-dimensional latent space.
+  \item \textbf{Background:} six equal-weight Gaussian clusters, with centers on a regular simplex of edge 30 in a 5-dimensional latent space.
   \item \textbf{Signal:} four groups, with centers on a simplex of edge 6 in a 3-dimensional latent space, scaled by a strength $\rho$.
   \item \textbf{Choice of $\rho$:} the largest value at which plain Neg-t-SNE still hides the signal. A benchmark is \emph{valid} only if plain Neg-t-SNE leaves signal kNN accuracy at or below 0.50 and background accuracy at or above 0.90, while the clean signal alone is separable (accuracy at least 0.95).
 \end{itemize}
-The benchmarks differ in how the signal and background combine (\cref{tab:benchmarks}). Labels for signal group and background cluster are used only for evaluation.
+\Cref{tab:benchmarks} lists the benchmarks. Labels for signal group and background cluster are used only for evaluation.
 
 \begin{table}[htbp]
 \centering
@@ -128,18 +123,10 @@ The benchmarks differ in how the signal and background combine (\cref{tab:benchm
   name & construction & what it tests \\
   \midrule
   additive (orthogonal, overlapping, nonlinear) & $x_T = \rho A z_s + B(z_b) + \varepsilon$, $x_B = B(z_b') + \varepsilon$. Orthogonal: signal and background spans orthogonal. Overlapping: half the signal span inside the background span. Nonlinear: $B$ a random tanh network. $\rho = 0.2, 0.2, 0.3$. & whether background negatives beat simple controls \\
-  weak-signal stress sets & the additive benchmarks at $\rho = 0.1$, where the signal is weak even in the high-dimensional kNN graph & what happens when the graph barely carries the signal \\
-  interaction & the signal includes $M(z_b, z_s) - M(z_b, s_0)$ for a random tanh network $M$, so its effect depends on the background state; 1 of 16 configurations was valid & a non-additive signal \\
-  cluster-specific signal & each background cluster has its own signal map & non-independent signal \\
-  cyclic & six 3-D blocks $Q_0,\dots,Q_5$; in cluster $k$ the signal lies in $Q_k$ and the nuisance in $Q_{k+1}$ (indices mod 6) & a case no single global projection can solve \\
-  between-cluster & the signal lies inside the between-cluster span $U$; the within-cluster nuisance lies in a separate block $V$ & a case where cPCA needs $\alpha<1$ and few components \\
-  \midrule
   MNIST-on-grass (real) & digits 0/1 at 25\% intensity added to $28\times28$ grass patches; background $=$ grass patches & real images, additive background \\
   \bottomrule
 \end{tabular}
 \end{table}
-
-We call the cyclic and between-cluster benchmarks together the \emph{subspace-conflict benchmarks}. In both, the background clusters are identical in $X_T$ and $X_B$, so the population identity of \cref{sec:identity} still holds. The difficulty lies elsewhere: in the cyclic benchmark, keeping cluster $k$'s signal block also keeps cluster $k-1$'s nuisance.
 
 \paragraph{MNIST-on-grass.} This follows the construction of the cPCA paper \cite{abid2018cpca}:
 \begin{itemize}
@@ -153,15 +140,13 @@ The grass is added independently of the digit, so this dataset is additive.
 \subsection{Evaluation protocol}
 \label{sec:protocol}
 
-\paragraph{Pre-registration and seeds.} Every experiment was pre-registered: its runs, decision rules and predictions were committed to the repository before the results they govern (\cref{app:repro}). Each dataset is generated from a seed, which also seeds every run on it. Settings such as $m_B$ are chosen on \emph{selection seeds} 0--2. Verdicts use fresh \emph{confirmation seeds}, usually 3--5. One confirmation seed failed the validity check and was replaced, under a rule added before any further result on that benchmark.
+\paragraph{Pre-registration and seeds.} Every experiment was pre-registered: its runs, decision rules and predictions were committed to the repository before the results they govern (\cref{app:repro}). Each dataset is generated from a seed, which also seeds every run on it. Settings such as $m_B$ are chosen on \emph{selection seeds} 0--2. Verdicts use fresh \emph{confirmation seeds}, usually 3--5.
 
-\paragraph{The verdict rule.} Runs are paired by seed. ``X beats Y, consistent across 3 paired seeds'' means that the mean difference is positive \emph{and} every per-seed difference is positive; anything else is reported as ``not consistent''. No $p$-values are reported. Reruns were checked to be bit-identical in every experiment, and runs were flagged for collapse or fragmentation (none was).
+\paragraph{The verdict rule.} Runs are paired by seed. ``X beats Y, consistent across 3 paired seeds'' means that the mean difference is positive \emph{and} every per-seed difference is positive. Anything else is reported as ``not consistent'', and no $p$-values are reported. In every experiment, reruns were checked to be bit-identical, and runs were flagged for collapse or fragmentation (none was flagged).
 
-\paragraph{Metrics.} All metrics are computed on the 2-D embedding.
+\paragraph{Metrics.} Both metrics are computed on the 2-D embedding.
 \begin{itemize}
   \item \emph{Signal kNN accuracy}: a 15-nearest-neighbor classifier predicting the signal label, with stratified 5-fold cross-validation. On MNIST-on-grass this is \emph{digit kNN accuracy}.
-  \item \emph{Within-cluster signal accuracy}: the same classifier, computed inside each true background cluster and size-weighted. It measures signal separation regardless of the global layout.
-  \item \emph{Detectability}: within-cluster accuracy computed on the high-dimensional data. It shows how much signal is there to recover.
   \item \emph{Recall vs grass}: the fraction of a point's 15 embedding neighbors that are also among its 15 nearest images by grass patch. Lower is better.
 \end{itemize}
 
@@ -175,15 +160,11 @@ The grass is added independently of the digit, so this dataset is additive.
   plain Neg-t-SNE & (baseline) \\
   uniform extra negatives (same number, drawn uniformly) & more repulsion \\
   t-SNE-end spectrum reference ($\bar Z = 100n$, i.e.\ $c = 500/n$) & a shift along the attraction--repulsion spectrum \\
-  same-cluster oracle negatives (drawn from the true cluster) & knowing the background cluster \\
-  cPCA$\to$Neg-t-SNE, cPCA$\to$UMAP, cPCA$\to$t-SNE & linear background suppression \\
+  cPCA$\to$Neg-t-SNE, cPCA$\to$t-SNE & linear background suppression \\
   t-SNE, PCA$\to$t-SNE & standard practice \\
   \bottomrule
 \end{tabular}
 \end{center}
-
-\paragraph{Compute.} The synthetic experiments ran on a laptop CPU, and MNIST-on-grass on the McGill Mathematics Slurm cluster (CPU only). No comparison mixes the two platforms. On a benchmark rerun, they differed by at most 0.027 in within-cluster accuracy, below every verdict margin \cdesc.
-% source: results/mnist_grass/tables.md (cluster validation table)
 
 % =====================================================================
 \section{Background: neighbor embeddings as contrastive learning}
@@ -194,9 +175,9 @@ t-SNE \cite{vandermaaten2008tsne} and UMAP \cite{mcinnes2018umap} can both be wr
 Damrich et al.\ \cite{damrich2023tsne} make this precise through contrastive learning. Both estimators below sample positive pairs from $p$ and noise pairs from $\xi$, and train a classifier to tell them apart.
 \begin{itemize}
   \item \textbf{Noise-contrastive estimation (NCE).} The classifier is $q_\theta/(q_\theta + m\xi)$. At the optimum $q_\theta = p$, whatever the full-support noise distribution \cpub{} (\cite{gutmann2010nce}; Theorem~1 of \cite{damrich2023tsne}).
-  \item \textbf{Negative sampling} \cite{mikolov2013word2vec,levy2014neural}. The classifier is $q_\theta/(q_\theta + 1)$; the noise probability does not appear in it. Corollary~2 of \cite{damrich2023tsne} shows that, with uniform noise over the $|X|$ pairs, negative sampling learns a rescaled distribution $q = (|X|/m)\,p$ \cpub.
+  \item \textbf{Negative sampling} \cite{mikolov2013word2vec,levy2014neural}. The classifier is $q_\theta/(q_\theta + 1)$: the noise probability does not appear in it. Corollary~2 of \cite{damrich2023tsne} shows that, with uniform noise over the $|X|$ pairs, negative sampling learns a rescaled distribution $q = (|X|/m)\,p$ \cpub.
 \end{itemize}
-Neg-t-SNE is negative sampling with the Cauchy kernel. In the \texttt{contrastive-ne} package its classifier is $q/(q+c)$ for a constant $c$, with default $c = 1$, and moving $c$ moves the embedding along the spectrum \cpub{} \cite{damrich2023tsne}.
+Neg-t-SNE is negative sampling with the Cauchy kernel. In the \texttt{contrastive-ne} package its classifier is $q/(q+c)$ for a constant $c$, with default $c = 1$. Moving $c$ moves the embedding along the spectrum \cpub{} \cite{damrich2023tsne}.
 
 \paragraph{Extension to a general noise distribution} \cder. Corollary~2 assumes uniform noise. Background negatives make the noise non-uniform, so we need the optimum for a general $\xi$. The expected negative-sampling loss with classifier $q/(q+c)$ is
 \begin{equation}
@@ -216,7 +197,7 @@ With background negatives, each edge with head $i$ draws $m$ uniform negatives a
   q^*_{ij} = \frac{c\,p_{ij}}{m\,\xi_U(i,j) + \gamma\, m_B\, \tilde\xi_B(i,j)} .
   \label{eq:qstar-bg}
 \end{equation}
-Pairs that the background explains, i.e.\ with large $\tilde\xi_B$, receive a smaller target similarity, so they are pushed apart; this includes kNN edges whose endpoints are close for background reasons.
+Pairs that the background explains, i.e.\ those with large $\tilde\xi_B$, receive a smaller target similarity, so they are pushed apart. This includes kNN edges whose endpoints are close for background reasons.
 
 The derivation is idealized. It assumes:
 \begin{itemize}
@@ -226,7 +207,7 @@ The derivation is idealized. It assumes:
   \item no clamping (the package clamps the classifier output to $[10^{-4},1]$).
 \end{itemize}
 
-\paragraph{UMAP and initialization.} The loss that UMAP actually optimizes differs from the one stated in its paper, and has far less repulsion \cpub{} \cite{damrich2021umap}. Lemma~3 of \cite{damrich2023tsne} shows that UMAP is negative sampling with the model $1/d_{ij}^2$ in place of the Cauchy kernel. Its repulsion therefore diverges as $d \to 0$, while Neg-t-SNE's stays bounded \cpub. Finally, we initialize every embedding from the first two principal components, scaled so that the first has standard deviation 1. This initialization is recommended for preserving global structure \cpub{} \cite{kobak2021init,damrich2023tsne}.
+\paragraph{UMAP.} Lemma~3 of \cite{damrich2023tsne} shows that UMAP is negative sampling with the model $1/d_{ij}^2$ in place of the Cauchy kernel. Its repulsion therefore diverges as $d \to 0$, while Neg-t-SNE's stays bounded \cpub.
 
 % =====================================================================
 \section{The method}
@@ -237,7 +218,7 @@ The derivation is idealized. It assumes:
 \subsection{Background-suppressed (residual) neighbor graph}
 \label{sec:residual}
 
-For each target point $x_i$ we find its $\kloc$ nearest background points $N_B(i) \subset X_B$ by exact Euclidean search. Let $\mu_i$ be their mean, and $V_i \in \R^{D\times r}$ the top $r$ right singular vectors of the centered neighbors $\{b - \mu_i : b \in N_B(i)\}$. The residual of $x_i$ is
+For each target point $x_i$ we find its $\kloc$ nearest background points $N_B(i) \subset X_B$ by exact Euclidean search. Let $\mu_i$ be their mean, and let $V_i \in \R^{D\times r}$ be the top $r$ right singular vectors of the centered neighbors $\{b - \mu_i : b \in N_B(i)\}$. The residual of $x_i$ is
 \begin{equation}
   \tilde x_i = (I - V_i V_i\T)(x_i - \mu_i).
   \label{eq:residual}
@@ -257,23 +238,30 @@ We use Neg-t-SNE \cite{damrich2023tsne} as implemented in \texttt{contrastive-ne
   \item SGD with learning rate 1, annealed linearly to 0;
   \item elementwise gradient clipping at $\pm4$.
 \end{itemize}
+Every embedding is initialized from the first two principal components, scaled so that the first has standard deviation 1. This initialization is recommended for preserving global structure \cpub{} \cite{kobak2021init,damrich2023tsne}.
+
 Training is two separate fits on the same graph. Stage~1 runs 250 epochs from the PCA initialization. Stage~2 runs 500 epochs starting exactly from the Stage~1 embedding, with a fresh learning-rate annealing. Background negatives, when used, are active in Stage~2 only.
+
+We use two separate fits rather than the package's built-in early-exaggeration phase, which does nothing at its negative-sampling defaults \cdesc. They give an exact, reproducible handoff. The warm-up was meant to let a global layout form before the background term acts, but no single-stage schedule was compared \cinterp.
 
 \subsection{Optional background negatives}
 \label{sec:xib}
 
-The background-negative distribution $\xiB$ pairs target points that look similar for background reasons.
+The background-negative distribution $\xiB$ pairs target points that look similar for background reasons. It is built in four steps.
 \begin{enumerate}
   \item \textbf{Background neighbors.} For each target point $i$, find its $k_B = 15$ nearest background points $N_B(i)$.
   \item \textbf{Scores.} Score each pair of target points by the Jaccard overlap $s_B(i,j) = |N_B(i)\cap N_B(j)|/|N_B(i)\cup N_B(j)|$.
-  \item \textbf{Partners.} Keep the top $L = 30$ partners of each point. Ties with the 30th are kept up to $2L$; beyond that cap, a seeded random draw decides, never target distance.
+  \item \textbf{Partners.} Keep the top $L = 30$ partners of each point. Ties with the 30th are kept, up to $2L$; beyond that cap, a seeded random draw decides, never target distance.
   \item \textbf{Distribution.} Set $\xiB(i,\cdot) \propto s_B(i,\cdot)$. Target kNN edges are not excluded.
 \end{enumerate}
+
 For each kNN edge with head $i$, Stage~2 adds $m_B$ negatives $b \sim \xiB(i,\cdot)$, with the loss term
 \begin{equation}
-  -\gamma \sum_{b=1}^{m_B} \log\Big(1 - \frac{\phi_{ib}}{\phi_{ib}+c}\Big), \qquad \gamma = 1,
+  -\gamma \sum_{b=1}^{m_B} \log\Big(1 - \frac{\phi_{ib}}{\phi_{ib}+c}\Big), \qquad \gamma = 1.
 \end{equation}
-using the same $c$, kernel and clamping as the package's own negatives. A unit test confirms that one background negative and one uniform negative at the same distance contribute identical loss and gradient. By \cref{eq:qstar-bg}, the term lowers the target similarity of pairs with overlapping background neighborhoods \cder. Loosely, the embedding learns ``target similarity divided by background similarity'' \cinterp.
+The term uses the same $c$, kernel and clamping as the package's own negatives. A unit test confirms that one background negative and one uniform negative at the same distance contribute identical loss and gradient.
+
+By \cref{eq:qstar-bg}, the term lowers the target similarity of pairs with overlapping background neighborhoods \cder. Loosely, the embedding learns ``target similarity divided by background similarity'' \cinterp.
 
 \begin{algorithm}[htbp]
 \caption{\methodname{} (with optional background negatives)}
@@ -313,7 +301,14 @@ This section takes each design decision in turn: what was chosen, the alternativ
 \subsection{Neg-t-SNE rather than UMAP or t-SNE}
 \label{sec:dec-neg}
 
-The method needs an embedding whose optimum responds to the noise distribution. Negative sampling has this property, because the noise distribution is absent from its classifier (\cref{eq:qstar}) \cder. NCE does not: its optimum is $p$ for any noise \cpub. t-SNE has no noise distribution at all. We checked that the package's classifier uses a single constant $c$, not $\xi$ \cdesc. Among negative-sampling methods we rejected UMAP, because its effective $1/d^2$ model has a repulsion that diverges at short range \cpub. Short range is exactly where background negatives act: on pairs that start close together because they share a background \cinterp.
+The method needs an embedding whose optimum responds to the noise distribution.
+\begin{itemize}
+  \item \textbf{Negative sampling} has this property, because the noise distribution is absent from its classifier (\cref{eq:qstar}) \cder.
+  \item \textbf{NCE} does not: its optimum is $p$ for any noise \cpub.
+  \item \textbf{t-SNE} has no noise distribution at all.
+\end{itemize}
+
+Among negative-sampling methods we rejected UMAP, because the repulsion of its effective $1/d^2$ model diverges at short range \cpub. Short range is exactly where background negatives act: on pairs that start close together because they share a background \cinterp.
 
 The choice has a cost. Without the background term, Neg-t-SNE scored below t-SNE on MNIST-on-grass: digit accuracy 0.858, against 0.884 for t-SNE and 0.891 for PCA$\to$t-SNE \cdesc. Comparisons with t-SNE-based controls therefore also change the embedding algorithm (\cref{sec:gaps}).
 % source: results/mnist_grass/tables.md
@@ -321,51 +316,56 @@ The choice has a cost. Without the background term, Neg-t-SNE scored below t-SNE
 \subsection{Putting the background into the noise distribution}
 \label{sec:dec-noise}
 
-The method's first version changed only the repulsion. It added background negatives on top of the raw kNN graph, which works only because negative sampling keeps the noise out of its classifier; under NCE the noise distribution would cancel at the optimum \cpub. On the three additive synthetic benchmarks, this version beat the best uniform-extra-negatives control on every confirmation seed \cpre, by a mean signal accuracy of $+0.51$ (orthogonal), $+0.18$ (overlapping) and $+0.44$ (nonlinear). It also beat the spectrum reference at every level \cpre{} (\cref{tab:additive}).
+The method's first version changed only the repulsion. It added background negatives on top of the raw kNN graph. This works only because negative sampling keeps the noise out of its classifier; under NCE, the noise distribution would cancel at the optimum \cpub.
+
+On the three additive synthetic benchmarks, this version beat the best uniform-extra-negatives control on every confirmation seed \cpre. The mean gain in signal accuracy was $+0.51$ (orthogonal), $+0.18$ (overlapping) and $+0.44$ (nonlinear). It also beat the spectrum reference at every level \cpre{} (\cref{tab:additive}).
 % source: results/phase4/tables.md (pre-registered comparisons vs b_m20, confirmation seeds)
 
-The uniform control is weak, however \cdesc. With six equal, well-separated background clusters, about 5 in 6 uniform negatives land in another cluster, which is already far away, so they add little force within a cluster. Beating it shows that the repulsion must be targeted, not that $\xiB$'s targeting is the only kind that works. The next subsection uses a stronger control.
+The uniform control is weak, however \cdesc. With six equal, well-separated background clusters, about 5 in 6 uniform negatives land in another cluster. That cluster is already far away, so they add little force within a cluster. Beating this control shows that the repulsion must be targeted, not that $\xiB$'s targeting is the only kind that works.
 
 \subsection{Background similarity from shared background neighbors}
 \label{sec:dec-jaccard}
 
 $\xiB$ pairs share their background but not their signal \cdesc.
 \begin{itemize}
-  \item \textbf{Synthetic data:} the two points of a pair belong to the same background cluster 100\% of the time, and the excess of same-signal pairs over chance is at most $+0.064$.
+  \item \textbf{Synthetic data:} the two points of a pair belong to the same background cluster 100\% of the time. The excess of same-signal pairs over chance is at most $+0.064$.
   % source: results/phase2/xi_b_diagnostics.csv; results/phase4/summary_medium_confirmation.json
-  \item \textbf{MNIST-on-grass:} the same-digit excess is $+0.055$ to $+0.074$, and the grass patches of a pair are 3.8--4.0 apart, against 7.9--8.1 for random pairs.
+  \item \textbf{MNIST-on-grass:} the same-digit excess is $+0.055$ to $+0.074$. The grass patches of a pair are 3.8--4.0 apart, against 7.9--8.1 for random pairs.
   % source: results/mnist_grass/prechecks.md
 \end{itemize}
-
-The stronger control is the \emph{same-cluster oracle}. It draws the extra negatives uniformly from the head's true background cluster, a deliberate use of labels. $\xiB$ beats it on the interaction benchmark (signal accuracy $+0.39$) and on both subspace-conflict benchmarks (within-cluster accuracy $+0.21$ and $+0.22$) \cpre. So it is $\xiB$'s fine-grained neighborhoods that matter, not merely knowing the cluster \cinterp. One caveat: on the subspace-conflict benchmarks the oracle was selected at the top of its grid ($m_B = 80$), and its selection mean was still rising slowly, by $+0.01$ to $+0.02$ from $m_B = 40$ to 80 \cdesc.
-% source: results/phase5a/tables_J.md; results/phase5b/tables_cyclic.md; results/phase5b/tables_between.md
-
-\subsection{The two-stage schedule}
-
-The package's built-in early-exaggeration phase does nothing at its negative-sampling defaults and does not reset the learning rate \cdesc. Two separate fits instead give an exact, reproducible handoff: Stage~2 starts from the Stage~1 embedding bit for bit. The original reason for a warm-up was to let a global layout form before the background term acts, avoiding fragmentation. That is a design rationale, not a tested result: no single-stage ablation was run \cinterp.
 
 \subsection{Moving the background into the graph}
 \label{sec:dec-graph}
 
-Background negatives change only the repulsion; the attraction still follows the raw kNN graph. Several measurements pointed to that graph as the limit \cdesc:
+Background negatives change only the repulsion; the attraction still follows the raw kNN graph. Two measurements pointed to that graph as the limit \cdesc:
 \begin{itemize}
-  \item \textbf{Subspace-conflict benchmarks:} raw-graph background negatives reach within-cluster accuracy 0.91, about the detectability of the high-dimensional data itself (0.915--0.924).
-  % source: results/phase5b/tables_cyclic.md, tables_between.md (detectability column)
-  \item \textbf{Weak-signal stress sets:} where the signal is weak in the graph itself, the gains are small or absent.
-  % source: results/phase4/stress/tables_stress.md
   \item \textbf{Additive benchmarks:} none of about 925{,}000 kNN edges joins two background clusters, so attraction can never bring the clusters together.
   % source: results/phase4/data_geometry.md (0 of 313574 + 312002 + 300033)
   \item \textbf{MNIST-on-grass:} 44\% of a target's raw-graph neighbors are also among its 15 nearest images by grass patch.
   % source: results/bsgraph/phase1.md (raw grass recall 0.439)
 \end{itemize}
 
-The ``graph ceiling'' is not strict, however. On MNIST-on-grass, raw-graph background negatives reached a digit accuracy of 0.931, above the raw graph's own digit accuracy on the same seeds (0.901) \cdesc. The main evidence for moving the background into the graph is therefore the residual-graph result itself. \BN{} beats raw-graph background negatives on every MNIST-on-grass confirmation seed \cpre.
+The ``graph ceiling'' is not strict, however. On MNIST-on-grass, raw-graph background negatives reached a digit accuracy of 0.931. That is above the raw graph's own digit accuracy on the same seeds, 0.901 \cdesc. The main evidence for moving the background into the graph is therefore the residual-graph result itself: \BN{} beats raw-graph background negatives on every MNIST-on-grass confirmation seed \cpre.
 % source: results/mnist_grass/tables.md; results/bsgraph/phase1.md
 
 \subsection{A local residual graph rather than a global cPCA graph}
 \label{sec:dec-local}
 
-The obvious alternative is to build the graph on the top 10 global cPCA components. On MNIST-on-grass, that graph was the cleaner of the two \cdesc:
+\paragraph{The population identity behind cPCA.}
+\label{sec:identity}
+This is a standard argument \cder. Suppose the target is $x_T = s + g + \varepsilon$ and the background is $x_B = g' + \varepsilon'$, where:
+\begin{itemize}
+  \item $s$, $g$ and $\varepsilon$ are independent;
+  \item $g'$ has the same distribution as $g$;
+  \item both noises have covariance $\sigma^2 I$.
+\end{itemize}
+Then $C_T - C_B = C_S$.
+
+\emph{Proof.} By independence the cross-covariances vanish, so $C_T = C_S + C_G + \sigma^2 I$ and $C_B = C_G + \sigma^2 I$. $\square$
+
+The identity holds for \emph{any} map producing $g$, linear or not: only $g$'s covariance enters, and it cancels. At $\alpha = 1$, cPCA's top directions are therefore the signal's own directions, up to finite-sample error. For $\alpha > 1$, $C_T - \alpha C_B = C_S - (\alpha-1)(C_G + \sigma^2 I)$, so the signal survives in directions where the background has little variance \cder.
+
+\paragraph{The comparison.} So on additive data the obvious alternative is a graph built on the top 10 global cPCA components. On MNIST-on-grass, that graph was the cleaner of the two \cdesc:
 \begin{center}
 \small
 \begin{tabular}{llcc}
@@ -380,104 +380,36 @@ The obvious alternative is to build the graph on the top 10 global cPCA componen
 \end{tabular}
 \end{center}
 % source: results/bsgraph/phase1.md
-On the confirmation seeds the accuracy order reverses, but cPCA-10 keeps the much lower grass recall. On additive data, then, the local graph has no clear advantage. Its case rests on backgrounds that are not additive, where no single global projection removes them; that case is untested (\cref{sec:gaps}) \cinterp.
+On the confirmation seeds the accuracy order reverses, but cPCA-10 keeps a much lower grass recall. On additive data, then, the local graph has no clear advantage. Its case rests on backgrounds that are not additive, where no single global projection removes them; that case is untested (\cref{sec:gaps}) \cinterp.
 
 \subsection{Defaults $\kloc = 30$ and $r = 2$}
 \label{sec:dec-defaults}
 
 Before any residual graph was computed, we committed a graph-quality gate. On each selection seed, the selected variant had to beat the better of the raw-pixel and PCA-50 graphs by at least 0.02 in graph digit accuracy. It did, by $+0.025$ to $+0.029$ \cpre.
 
-The choice among variants barely mattered \cdesc. All 15 variants on the grid, $\kloc \in \{15,30,100\}$ and $r \in \{0,1,2,5,10\}$, reach a mean graph digit accuracy of 0.954--0.964 (0.951--0.965 on individual seeds). Every one of them is above both reference graphs: raw 0.904 and PCA-50 0.935. Even $r = 0$, which only subtracts the local background mean, clears both (full grid in \cref{tab:grid}). The labels used in selection therefore decided little, which supports a fixed, label-free default \cinterp, although so far on this one dataset only.
+The choice among variants barely mattered \cdesc. The grid covered $\kloc \in \{15,30,100\}$ and $r \in \{0,1,2,5,10\}$. All 15 variants reach a mean graph digit accuracy of 0.954--0.964 (0.951--0.965 on individual seeds). Every one is above both reference graphs: raw 0.904 and PCA-50 0.935. Even $r = 0$, which only subtracts the local background mean, clears both (full grid in \cref{tab:grid}). The labels used in selection therefore decided little, which supports a fixed, label-free default \cinterp. So far this holds on one dataset only.
 % source: results/bsgraph/phase1.md
 
 \subsection{Current status of background negatives}
 
-With the residual graph, background negatives were redundant on MNIST-on-grass \cpre. The smallest value on the grid, $m_B = 1$, was selected, and accuracy fell slowly as $m_B$ grew, from 0.973 to 0.968 at $m_B = 40$ \cdesc{} (\cref{tab:mb}). They have not been tested with the residual graph on any other data. A plausible reason for the redundancy \cinterp: the residual graph and $\xiB$ use the same information, namely each target's nearest background points. $\xiB$ uses it for repulsion, the residual graph to define neighborhoods, and on this dataset putting it into the graph is what helps.
+With the residual graph, background negatives were redundant on MNIST-on-grass \cpre. The smallest value on the grid, $m_B = 1$, was selected, and accuracy fell slowly as $m_B$ grew: from 0.973 to 0.968 at $m_B = 40$ \cdesc{} (\cref{tab:mb}). They have not been tested with the residual graph on any other data.
+
+A plausible reason for the redundancy \cinterp: the residual graph and $\xiB$ use the same information, namely each target's nearest background points. $\xiB$ uses it for repulsion, the residual graph to define neighborhoods. On this dataset, putting that information into the graph is what helps.
 % source: results/bsgraph/tables_phase2.md (appendix)
-
-% =====================================================================
-\section{When linear suppression works: theoretical observations}
-\label{sec:theory}
-
-\subsection{The population identity behind cPCA}
-\label{sec:identity}
-
-\paragraph{Claim} \cder{} (a standard argument). Suppose the target is $x_T = s + g + \varepsilon$ and the background is $x_B = g' + \varepsilon'$, where:
-\begin{itemize}
-  \item $s$, $g$ and $\varepsilon$ are independent;
-  \item $g'$ has the same distribution as $g$;
-  \item both noises have covariance $\sigma^2 I$.
-\end{itemize}
-Then $C_T - C_B = C_S$.
-
-\paragraph{Proof.} By independence the cross-covariances vanish, so $C_T = C_S + C_G + \sigma^2 I$ and $C_B = C_G + \sigma^2 I$. $\square$
-
-\paragraph{Consequences.} The identity holds for \emph{any} map producing $g$, linear or not, because only $g$'s covariance enters and it cancels. At $\alpha = 1$, cPCA's top directions are therefore the signal's own directions, up to finite-sample error. For $\alpha > 1$,
-\[
-  C_T - \alpha C_B = C_S - (\alpha-1)(C_G + \sigma^2 I),
-\]
-so the signal survives in directions where the background has little variance \cder.
-
-Breaking independence is not enough to defeat this. Suppose each background cluster has its own signal map, with zero mean and lying outside the background's span. The cross-covariances still vanish, and the identity holds with a higher-dimensional $C_S$ \cder. The cluster-specific-signal benchmark was built this way, and it was stopped at calibration because cPCA$\to$Neg-t-SNE already reached within-cluster accuracy 0.970--0.980 \cdesc.
-% source: results/phase5a/k_calibration.md
-
-\subsection{Finding vs cleaning}
-\label{sec:finding}
-
-\paragraph{Claim} \cder. Let $P$ be the orthogonal projection onto the $k$ cPCA directions that are kept. Under the assumptions above,
-\begin{equation}
-  \operatorname{Cov}(P x_T) = P C_S P + P C_G P + \sigma^2 P .
-\end{equation}
-The identity guarantees that cPCA \emph{finds} the signal directions. But the projected data are \emph{clean} only if $C_G$ has no variance in the chosen subspace. Otherwise the term $P C_G P$ remains, and the embedding still sees that background variation.
-
-\paragraph{Illustration} \cdesc: the between-cluster benchmark. For $\alpha < 1$, $C_T - \alpha C_B = C_S + (1-\alpha)(C_G + \sigma^2 I)$, so the top directions are first the between-cluster span $U$, which contains the signal, and then the nuisance block $V$.
-\begin{itemize}
-  \item With $k \le 5$ components, cPCA keeps only $U$ and reveals the signal: within-cluster accuracy 0.989.
-  \item With $k = 10$, the components also include $V$, and accuracy drops to 0.35.
-  \item Embedding the labeled projection onto $U \cup V$ gives the same result, 0.34--0.36.
-\end{itemize}
-The between-cluster offsets that remain in $U$ do not affect within-cluster accuracy.
-% source: results/phase5b/tables_between.md (cPCA variants by alpha and k); results/phase5b/runs_between_confirmation.csv (lin_U+V)
-
-\subsection{Global vs local background variance}
-
-A local method can beat a global projection where the background varies strongly \emph{globally} along the signal's directions, but weakly within a neighborhood \cinterp. What decides whether cPCA fails, however, is the fraction of signal variance lying \emph{outside} the directions of high global background variance, not the ratio of global to local variance itself \cdesc. On the interaction benchmark's configurations, this ratio reached 46--69, but it was driven by a 2--10\% tilt of the signal into the background's span. At least 87\% of the signal variance lay outside that span on every seed, and cPCA used it.
-% source: results/phase5a/data_diagnostics.md
-
-\subsection{The cyclic construction}
-\label{sec:cyclic-theory}
-
-In the cyclic benchmark, cluster $k$'s signal lies in the block $Q_k$ and its nuisance in $Q_{k+1}$, with nuisance standard deviation $\sigma_w = \sqrt{5/3}$ and signal scale $\rho = 0.2$.
-
-\paragraph{Block-aligned projections} \cder. Consider projections onto unions of whole blocks. Revealing cluster $k$ cleanly requires keeping $Q_k$ and dropping $Q_{k+1}$. But keeping $Q_k$ prevents a clean reveal of cluster $k-1$, whose nuisance is $Q_k$. Around the cycle of six, at most every other cluster can be revealed cleanly: 3 of 6.
-
-\paragraph{General projections} \cinterp, not proven. Let $a_k$ be the fraction of $Q_k$ kept by a general projection. Revealing cluster $k$ needs $\rho^2 a_k \gg \sigma_w^2 a_{k+1}$. Revealing two adjacent clusters would need $a_k$ to fall by more than $(\sigma_w/\rho)^2 \approx 42$ per step, which the isotropic noise floor limits. We do not state this as a theorem.
-
-\paragraph{Observation} \cdesc. The best of the 64 labeled block subsets reveals exactly 3 clusters, with within-cluster accuracy 0.624. The best cPCA variants, which are not block-aligned, reach 0.530 on average (0.551 on the best seed).
-% source: results/phase5b/tables_cyclic.md; results/phase5b/calibration.md
-
-\paragraph{Per-cluster cPCA} \cder. Running cPCA within each cluster avoids the conflict. Within cluster $k$,
-\[
-  C^{(k)}_T - \alpha C^{(k)}_B = \rho^2 Q_k \Sigma_s Q_k\T - (\alpha-1)\big(\sigma_w^2 Q_{k+1}Q_{k+1}\T + \sigma^2 I\big),
-\]
-where $\Sigma_s$ is the covariance of the signal latent. For any $\alpha \ge 1$ the top directions lie in $Q_k$, and each cluster gets its own projection. In the experiment, every per-cluster label-free $\alpha$ was above 1, ranging from 1.7 to 58.8 \cdesc.
-
-\subsection{The residual graph in these terms}
-\label{sec:residual-theory}
-
-\cinterp, untested. The residual of \cref{eq:residual} is a per-point version of the same idea: the local mean removes the cluster centroid, and the top-$r$ local directions remove the local nuisance. In the cyclic benchmark each cluster's nuisance is 3-dimensional, so the default $r = 2$ removes only 2 of its 3 directions. On MNIST-on-grass, $r = 5$ was nearly identical to $r = 2$: graph digit accuracy 0.961 vs 0.962 at $\kloc = 30$ \cdesc.
-% source: results/bsgraph/phase1.md
 
 % =====================================================================
 \section{Experimental results}
 \label{sec:evidence}
 
-All synthetic results in this section used the \emph{raw} kNN graph with background negatives, the method's earlier form; the residual graph has not been tested on them. The real-data results (\cref{sec:mnist}) include both forms.
+\subsection{Synthetic additive benchmarks}
 
-\subsection{Do background negatives help beyond more repulsion?}
+All synthetic results used the \emph{raw} kNN graph with background negatives, the method's earlier form. The residual graph has not been tested on them.
 
-On the additive benchmarks, yes. \Cref{tab:additive} shows large gains over every control at every level, consistent across seeds \cpre. \Cref{fig:additive} shows the mechanism: each background cluster splits into its four signal groups, while the six clusters stay apart.
+\paragraph{Do background negatives help beyond more repulsion?} Yes. \Cref{tab:additive} shows large gains over every control at every level, consistent across seeds \cpre.
 % source: results/phase4/headline.md; results/phase4/tables.md
+
+\paragraph{Does global cPCA do better?} Yes, as the population identity predicts (\cref{sec:identity}). cPCA$\to$Neg-t-SNE reaches 0.980--0.989 (\cref{tab:additive}), beating raw-graph background negatives by $+0.10$, $+0.40$ and $+0.11$ \cdesc. It also organizes the layout by signal across clusters. Of a point's 15 embedding neighbors, a fraction of 0.805--0.820 share its signal group but come from a different background cluster. For background negatives the fraction is 0.000--0.001 \cdesc.
+% source: results/phase5prep/cpca_summary.md
 
 \begin{table}[htbp]
 \centering
@@ -496,89 +428,6 @@ On the additive benchmarks, yes. \Cref{tab:additive} shows large gains over ever
 \end{tabular}}
 \end{table}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[height=0.45\textheight]{figures/additive_easy_seed0.png}
-\caption{Orthogonal additive benchmark, selection seed 0, colored by signal group (left) and background cluster (right). Rows, top to bottom: plain Neg-t-SNE (\texttt{a}); 20 uniform extra negatives per edge (\texttt{b\_m20}); 10 background negatives per edge on the raw graph (\texttt{c\_m10}); spectrum reference (\texttt{d}). ``acc'' is kNN accuracy for the colored label.}
-\label{fig:additive}
-\end{figure}
-
-The full pre-registered success criterion was met only on the overlapping level \cpre. The clause that failed elsewhere, ``background accuracy drops'', cannot be met by design. Background negatives add only repulsion, and no kNN edge joins two background clusters, so nothing pulls the clusters together \cdesc. Background accuracy stayed at 1.000 on the other two levels. The overlapping level's pass rests on about 10 boundary points.
-
-The gain is not a change of scale \cdesc. Relative to plain Neg-t-SNE, background negatives spread the embedding by $1.11$--$1.25\times$, the best uniform control by $1.44$--$1.47\times$, and the spectrum reference by $1.79$--$1.87\times$. The two controls spread it more, yet recover little signal.
-% source: results/phase4/runs_*_confirmation.csv (std_ratio_vs_a, confirmation-seed means)
-
-Against the stronger same-cluster oracle, $\xiB$ wins in every case \cpre:
-\begin{itemize}
-  \item interaction benchmark: by $+0.385$ to $+0.388$ per seed (0.858 vs 0.472), and still by $+0.36$ when the oracle uses $m_B = 40$;
-  \item cyclic benchmark: by $+0.19$ to $+0.23$;
-  \item between-cluster benchmark: by $+0.22$ to $+0.23$.
-\end{itemize}
-On the weak-signal stress sets, which were run once and used for no choice, the gain over the best uniform control was small: $+0.03$, consistent on the orthogonal and nonlinear levels, and absent on the overlapping level \cdesc.
-% source: results/phase5a/tables_J.md; results/phase5a/extension_o.md; results/phase5b/tables_cyclic.md; results/phase5b/tables_between.md; results/phase4/stress/tables_stress.md
-
-\subsection{When does global cPCA win?}
-
-Whenever the population identity holds and the signal lies mostly outside the background's high-variance directions.
-\begin{itemize}
-  \item \textbf{Additive benchmarks} (\cref{tab:additive}). cPCA$\to$Neg-t-SNE reaches 0.980--0.989, beating raw-graph background negatives by $+0.10$, $+0.40$ and $+0.11$ \cdesc. It also organizes the layout by signal across clusters: a fraction of 0.805--0.820 of a point's 15 embedding neighbors share its signal group but come from a different background cluster, against 0.000--0.001 for background negatives \cdesc.
-  % source: results/phase5prep/cpca_summary.md
-  \item \textbf{Interaction benchmark.} cPCA$\to$Neg-t-SNE beats raw-graph background negatives, 0.984 vs 0.858 (per seed $+0.086$ to $+0.155$) \cpre.
-  % source: results/phase5a/tables_J.md
-  \item \textbf{Choosing $\alpha$.} The label-free rule was not a weak point on these benchmarks. After embedding, the label-free $\alpha$ and the label-chosen $\alpha$ differed by at most 0.003 in mean signal accuracy \cdesc.
-\end{itemize}
-
-\subsection{When do background negatives beat every global projection, and when does a local pipeline beat them?}
-
-\Cref{tab:subspace} summarizes the subspace-conflict benchmarks, and \cref{fig:cyclic} shows the cyclic case.
-% source: results/phase5b/tables_cyclic.md; tables_between.md; tables_cyclic_local_cpca.md; tables_between_local_cpca.md
-
-\paragraph{Cyclic benchmark.} Raw-graph background negatives beat the best cPCA variant by $+0.36$ to $+0.41$ per seed \cpre. That variant was chosen per seed, with labels, over every $\alpha$ representative and $k \in \{3,5,10,20\}$. They also beat the best labeled block projection, by $+0.29$ \cdesc. Background negatives reveal all six clusters, with per-cluster accuracy at least 0.85; the best projection reveals three \cdesc.
-
-\paragraph{Between-cluster benchmark.} Here the best cPCA variant (0.989) beats background negatives by 0.07--0.08 on every seed \cpre. Label-free cPCA fails (0.255) on two counts \cdesc. Its $\alpha$ rule picks $\alpha > 1$, which removes $U$ along with the signal, and its fixed $k = 10$ brings in $V$ (\cref{sec:finding}).
-
-\paragraph{Local cPCA.} This baseline was added after the main results, with its predictions committed first. It works in three steps:
-\begin{enumerate}
-  \item cluster $X_B$ with k-means, choosing the number of clusters by silhouette, and assign each target to the nearest centroid;
-  \item within each cluster, run cPCA at that cluster's label-free $\alpha$;
-  \item embed the per-cluster coordinates with a large cluster offset, so that no kNN edge crosses clusters.
-\end{enumerate}
-Clustering found 6 clusters in perfect agreement with the truth (adjusted Rand index 1.0) on every seed. Local cPCA reached 0.984--0.992 on both benchmarks, at every $k \in \{3,5,10\}$, with label-free and true clusters alike. This confirmed the pre-registered predictions: at least 0.90, and label-free within 0.02 of true clusters \cpre. On the cyclic benchmark it beat background negatives by $+0.07$ to $+0.08$ on every seed \cpre. Discrete, well-separated background clusters are the most favorable case for this pipeline \cinterp.
-
-\begin{table}[htbp]
-\centering
-\small
-\caption{Subspace-conflict benchmarks: within-cluster signal accuracy on confirmation seeds 3--5, mean [min, max]. ``Best'' rows are chosen per seed with labels, so they are upper bounds. Local cPCA uses label-free clusters and $k = 3$; the other $k$ and the true-cluster versions are within 0.002 of it.}
-\label{tab:subspace}
-% source: results/phase5b/tables_cyclic.md; results/phase5b/tables_between.md; results/phase5b/tables_cyclic_local_cpca.md; results/phase5b/tables_between_local_cpca.md
-\begin{tabular}{lcc}
-  \toprule
-  run & cyclic & between-cluster \\
-  \midrule
-  plain Neg-t-SNE & 0.334 [0.328, 0.344] & 0.349 [0.346, 0.352] \\
-  uniform extra negatives ($m_B=40$) & 0.518 [0.503, 0.538] & 0.522 [0.516, 0.529] \\
-  same-cluster oracle negatives ($m_B=80$) & 0.701 [0.689, 0.721] & 0.691 [0.684, 0.699] \\
-  background negatives, raw graph ($m_B = 20$ / $10$) & 0.914 [0.912, 0.916] & 0.914 [0.910, 0.921] \\
-  label-free cPCA$\to$Neg-t-SNE & 0.420 [0.377, 0.442] & 0.255 [0.244, 0.262] \\
-  best cPCA variant (labels) & 0.530 [0.500, 0.551] & 0.989 [0.988, 0.992] \\
-  best labeled linear projection & 0.624 [0.619, 0.628] & 0.989 [0.988, 0.991] \\
-  local cPCA (label-free, $k=3$) & 0.989 [0.989, 0.990] & 0.987 [0.984, 0.991] \\
-  \midrule
-  detectability (high-D data) & 0.919--0.924 & 0.915--0.924 \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[height=0.6\textheight]{figures/cyclic_seed0.png}\hspace{2em}
-\includegraphics[height=0.6\textheight]{figures/cyclic_local_cpca_seed3.png}
-\caption{Cyclic benchmark. In each pair of columns, the left panel is colored by signal group and the right by background cluster; ``WC'' is within-cluster signal accuracy.
-\textbf{Left block (selection seed 0), top to bottom:} plain Neg-t-SNE (\texttt{a}); raw-graph background negatives, $m_B = 20$ (\texttt{c\_m20}), which split every cluster into its four signal groups; the best cPCA variant chosen with labels; and the best labeled block projection ($U$ plus blocks 1, 3 and 5), which reveals only clusters 1, 3 and 5.
-\textbf{Right block (confirmation seed 3), top to bottom:} raw-graph background negatives; the best global cPCA variant; local cPCA with label-free clusters; and local cPCA with true clusters ($k = 3$). Local cPCA gives 24 tight islands, one per cluster and signal group. The islands of one background cluster are not placed together, because the cluster offsets make all clusters equidistant.}
-\label{fig:cyclic}
-\end{figure}
-
 \subsection{Real data: MNIST-on-grass}
 \label{sec:mnist}
 
@@ -594,7 +443,8 @@ Clustering found 6 clusters in perfect agreement with the truth (adjusted Rand i
   \item Recall vs grass falls from 0.022 to 0.003, the same as cPCA$\to$t-SNE \cdesc.
   \item In the embedding (\cref{fig:mnist}), the two digits form separate islands with no gradient in grass brightness. On the raw graph, by contrast, the digits split within one blob that still runs from dark to bright grass.
 \end{itemize}
-The \BN{} seed-3 rerun was bit-identical. The raw-graph and t-SNE rows were reused from the earlier experiment, after checking that the code they depend on was unchanged and that every dataset matched its recorded checksum \cdesc. The controls' embeddings are shown in \cref{fig:mnist-controls}.
+
+\paragraph{Checks.} The \BN{} seed-3 rerun was bit-identical. The raw-graph and t-SNE rows were reused from the earlier experiment, after checking that the code they depend on was unchanged and that every dataset matched its recorded checksum \cdesc. The controls' embeddings are shown in \cref{fig:mnist-controls}.
 
 \begin{table}[htbp]
 \centering
@@ -665,11 +515,6 @@ The \BN{} seed-3 rerun was bit-identical. The raw-graph and t-SNE rows were reus
   data & background & graph & competitors & outcome \\
   \midrule
   3 additive synthetic & additive, discrete clusters & raw & uniform, spectrum ref., cPCA & beats controls; cPCA better \\
-  weak-signal stress sets & additive, signal weak in graph & raw & uniform, spectrum ref. & small gain on 2 of 3 levels \\
-  interaction & signal depends on background & raw & cPCA, same-cluster oracle & cPCA better; beats oracle \\
-  cluster-specific signal & cluster-specific signal maps & --- & cPCA & stopped: cPCA already solves it \\
-  cyclic & subspace conflict & raw & cPCA, linear, oracle, local cPCA & beats all global linear; local cPCA better \\
-  between-cluster & signal in between-cluster span & raw & cPCA, linear, oracle, local cPCA & best cPCA and local cPCA better \\
   MNIST-on-grass & real, additive & raw & t-SNE, PCA/cPCA$\to$t-SNE & beats t-SNE controls; cPCA better \\
   MNIST-on-grass & real, additive & residual & the above, and raw & beats raw and t-SNE; ties cPCA \\
   \bottomrule
@@ -679,12 +524,10 @@ The \BN{} seed-3 rerun was bit-identical. The raw-graph and t-SNE rows were reus
 The main gaps, in rough order of importance:
 \begin{enumerate}
   \item \textbf{Non-additive real data.} Every real-data result is on an additive dataset, where global cPCA is exact in population. This is also where the local residual graph's case against a global cPCA graph must be made (\cref{sec:dec-local}).
-  \item \textbf{The residual graph on the subspace-conflict benchmarks,} the designs where global cPCA fails or needs labels. One open point is whether the default $r = 2$ suffices against their 3-dimensional local nuisance (\cref{sec:residual-theory}).
-  \item \textbf{Continuous or curved backgrounds.} Every background so far consists of discrete, well-separated clusters, which also favors cluster-then-cPCA pipelines.
-  \item \textbf{The role of background negatives.} They are redundant with the residual graph on MNIST-on-grass and untested with it elsewhere, for example when the residual graph is imperfect.
-  \item \textbf{Label-free defaults beyond MNIST-on-grass.} $\kloc$ and $r$ have been checked on one dataset.
-  \item \textbf{The algorithm confound.} Comparisons with t-SNE-based controls also change the embedding algorithm, and without the background term Neg-t-SNE was below t-SNE on MNIST-on-grass (\cref{sec:dec-neg}).
-  \item \textbf{A single-stage schedule} has not been compared with the two-stage one.
+  \item \textbf{Continuous or curved backgrounds.} Every background so far consists of discrete, well-separated clusters.
+  \item \textbf{The role of background negatives.} With the residual graph they are redundant on MNIST-on-grass and untested elsewhere, for example when the residual graph is imperfect.
+  \item \textbf{Label-free defaults beyond MNIST-on-grass.} $\kloc$ and $r$ have been checked on one dataset only.
+  \item \textbf{The algorithm confound.} Comparisons with t-SNE-based controls also change the embedding algorithm. Without the background term, Neg-t-SNE was below t-SNE on MNIST-on-grass (\cref{sec:dec-neg}).
   \item \textbf{Nonlinear contrastive methods}, such as contrastiveVI \cite{weinberger2023contrastivevi}, have not been compared.
   \item \textbf{Scaling.} Only $n = 5000$ has been tested. The residual construction does one small SVD per target point.
 \end{enumerate}
@@ -695,7 +538,6 @@ The main gaps, in rough order of importance:
 
 \begin{enumerate}
   \item \textbf{A real dataset with a non-additive background,} with \methodname{} (with or without background negatives) as the main method, compared against cPCA$\to$t-SNE, t-SNE and PCA$\to$t-SNE. The dataset is to be chosen together. It should be one where the nuisance interacts with the signal, so that global cPCA's identity fails.
-  \item \textbf{Optional: the residual graph on the existing cyclic and between-cluster benchmarks,} against raw-graph background negatives and local cPCA. This needs no new data and tests local against global suppression directly.
   \item \textbf{What background negatives are for.} Test whether they help when the residual graph is imperfect, for example with a mis-sized $\kloc$ or $r$. If they never help, drop them from the method.
 \end{enumerate}
 
@@ -708,7 +550,7 @@ The main gaps, in rough order of importance:
 \section{Map to the repository}
 \label{app:names}
 
-The repository (\cref{app:repro}) organizes the work by phases, each with its own detailed report and results directory, and uses short internal labels for runs. This table maps the names used here to those phases and files, for readers who want more detail. The report does not depend on them.
+The repository (\cref{app:repro}) organizes the work by phases. Each phase has its own detailed report and results directory, and runs carry short internal labels. The table below maps the names used here to those phases and files, for readers who want more detail; the report does not depend on them.
 
 \begin{center}
 \small
@@ -716,22 +558,19 @@ The repository (\cref{app:repro}) organizes the work by phases, each with its ow
   \toprule
   name in this report & internal label & detailed report & results directory \\
   \midrule
-  additive benchmarks (orthogonal / overlapping / nonlinear), uniform control, spectrum reference, weak-signal stress sets & easy / medium / hard; runs (b), (d); stress & \texttt{REPORT.md} (Phase 4) & \texttt{results/phase4/} \\
-  cPCA$\to$Neg-t-SNE / UMAP on the additive benchmarks & (e2) / (e3) & \texttt{REPORT\_phase5prep.md} & \texttt{results/phase5prep/} \\
-  interaction / cluster-specific-signal benchmarks; same-cluster oracle & Design J (t60\_proj\_g2) / Design K; run (o) & \texttt{REPORT\_phase5a.md} & \texttt{results/phase5a/} \\
-  cyclic / between-cluster benchmarks; local cPCA & L-cyclic / L-between; local\_labelfree, local\_oracle & \texttt{REPORT\_phase5b.md} & \texttt{results/phase5b/} \\
+  additive benchmarks (orthogonal / overlapping / nonlinear), uniform control, spectrum reference & easy / medium / hard; runs (b), (d) & \texttt{REPORT.md} (Phase 4) & \texttt{results/phase4/} \\
+  cPCA$\to$Neg-t-SNE on the additive benchmarks & (e2) & \texttt{REPORT\_phase5prep.md} & \texttt{results/phase5prep/} \\
   MNIST-on-grass, raw graph; t-SNE / PCA$\to$t-SNE / cPCA$\to$t-SNE & (c), (a); T1 / T2 / T3 & \texttt{REPORT\_mnist\_grass.md} & \texttt{results/mnist\_grass/} \\
   \methodname{} / \BN{}; residual-graph grid & (r\_a) / (r\_c); Phase 1 & \texttt{REPORT\_bsgraph.md} & \texttt{results/bsgraph/} \\
   \midrule
   plain Neg-t-SNE & (a) & all & --- \\
   raw graph + background negatives & (c) & all & --- \\
   background-negative distribution & $\xi_B$ & \texttt{REPORT.md} & \texttt{results/phase2/} \\
-  within-cluster signal accuracy & WC & \texttt{REPORT\_phase5a.md} & --- \\
   \bottomrule
 \end{tabular}
 \end{center}
 
-Package internals (the sampling scheme, the classifier constant, the schedule facts) are documented in \texttt{NOTES.md}, and the original plan in \texttt{Initial\_Project\_Plan.md}.
+\texttt{NOTES.md} documents the package internals: the sampling scheme, the classifier constant and the schedule facts. The original plan is in \texttt{Initial\_Project\_Plan.md}.
 
 \section{Reproducibility}
 \label{app:repro}
@@ -747,9 +586,6 @@ Package internals (the sampling scheme, the classifier constant, the schedule fa
   \midrule
   additive benchmarks: protocol and decision rules & \texttt{dad1c09} \\
   global metrics and thresholds, before any cPCA result & \texttt{23459ff} \\
-  interaction / cluster-specific benchmarks: predictions; pre-registration & \texttt{4336ea0}; \texttt{9ed1110} \\
-  cyclic / between-cluster: predictions; pre-registration & \texttt{04a1450}; \texttt{9c35a0b} \\
-  local cPCA predictions & \texttt{a791d9b} \\
   MNIST-on-grass (raw graph): pre-registration; selection & \texttt{8f916ee}; \texttt{3dd613a} \\
   residual graph: graph-quality gate; embeddings & \texttt{3f0fc27}; \texttt{42bd31c} \\
   \bottomrule
@@ -760,14 +596,16 @@ Package internals (the sampling scheme, the classifier constant, the schedule fa
 \begin{itemize}
   \item Python 3.12, PyTorch 2.14.1 (CPU), numpy 2.5.2, scipy 1.18.1 and scikit-learn 1.9.1.
   \item \texttt{contrastive-ne} v0.4.0 (upstream commit \texttt{d5f0b53}), vendored with an 11-line hook.
-  \item openTSNE 1.0.4 \cite{policar2024opentsne} for the t-SNE controls.
+  \item openTSNE 1.0.4 \cite{policar2024opentsne}, for the t-SNE controls.
 \end{itemize}
 
 \paragraph{Compute.}
 \begin{itemize}
-  \item Synthetic experiments: an Apple M3 laptop, 4 threads.
-  \item MNIST-on-grass: the McGill Mathematics Slurm cluster (AMD EPYC 9474F, CPU only), 1 thread per run, 24 runs in parallel. Before use, the cluster was validated: two runs were bit-identical, and it differed from the laptop by at most 0.027 in within-cluster accuracy on a benchmark rerun.
-  \item Determinism: deterministic PyTorch algorithms, fixed thread counts, seeded generators and exact kNN graphs, with a bit-identical rerun checked in every experiment.
+  \item \textbf{Synthetic experiments:} an Apple M3 laptop, 4 threads.
+  \item \textbf{MNIST-on-grass:} the McGill Mathematics Slurm cluster (AMD EPYC 9474F, CPU only), 1 thread per run, 24 runs in parallel.
+  \item \textbf{Cross-platform check:} no comparison in this report mixes the two platforms. Before use, the cluster was validated: two runs were bit-identical. On a synthetic benchmark rerun, it differed from the laptop by at most 0.027 in kNN accuracy, below every verdict margin \cdesc.
+  % source: results/mnist_grass/tables.md (cluster validation table)
+  \item \textbf{Determinism:} deterministic PyTorch algorithms, fixed thread counts, seeded generators and exact kNN graphs, with a bit-identical rerun checked in every experiment.
 \end{itemize}
 
 \section{Additional tables and figures}
@@ -776,7 +614,7 @@ Package internals (the sampling scheme, the classifier constant, the schedule fa
 \begin{table}[ht]
 \centering
 \small
-\caption{Residual-graph grid on MNIST-on-grass, selection seeds 0--2, mean [min, max]. Selected: $\kloc = 30$, $r = 2$. The rule was the highest mean, with variants within 0.002 counted as tied and broken toward the smaller $r$, then the smaller $\kloc$. Edge purity is the share of graph edges joining same-digit images.}
+\caption{Residual-graph grid on MNIST-on-grass, selection seeds 0--2, mean [min, max]. Selected: $\kloc = 30$, $r = 2$. The rule was the highest mean; variants within 0.002 counted as tied, and ties were broken toward the smaller $r$, then the smaller $\kloc$. Edge purity is the share of graph edges joining same-digit images.}
 \label{tab:grid}
 % source: results/bsgraph/phase1.md
 \resizebox{\textwidth}{!}{\begin{tabular}{lcccc}
