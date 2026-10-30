@@ -1,5 +1,6 @@
 # data and downloads
 data/raw/
+data/processed/
 MNIST/
 
 # large result arrays (plots and json are tracked)

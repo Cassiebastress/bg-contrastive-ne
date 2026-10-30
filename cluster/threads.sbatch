@@ -5,7 +5,6 @@
 #SBATCH -p gpu_h100_pro
 #SBATCH --qos=gpu_h100_pro
 #SBATCH -A yang-2026
-#SBATCH --gres=gpu:rtx6000:1
 #SBATCH -c 24
 #SBATCH --mem=96G
 #SBATCH -t 1:00:00
