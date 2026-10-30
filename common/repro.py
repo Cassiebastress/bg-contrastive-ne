@@ -32,6 +32,11 @@ def _cpu_model():
         out = subprocess.run(["sysctl", "-n", "machdep.cpu.brand_string"], capture_output=True, text=True)
         if out.returncode == 0:
             return out.stdout.strip()
+    if sys.platform.startswith("linux"):
+        with open("/proc/cpuinfo") as f:
+            names = [line.split(":", 1)[1].strip() for line in f if line.startswith("model name")]
+        if names:
+            return names[0]
     return platform.processor() or platform.machine()
 
 
@@ -62,7 +67,7 @@ def environment_info():
         "torch_deterministic_algorithms": torch.are_deterministic_algorithms_enabled(),
         "packages": {d: _version(d) for d in
                      ["numpy", "scipy", "scikit-learn", "torchvision", "annoy", "matplotlib", "contrastive-ne",
-                      "contrastive", "umap-learn", "numba", "llvmlite", "pynndescent"]},
+                      "contrastive", "umap-learn", "numba", "llvmlite", "pynndescent", "openTSNE"]},
         "contrastive_ne_upstream_commit": UPSTREAM_COMMIT,
         "project_git": _git_head(),
         # node name only inside a Slurm job (cluster node names are not personal; a laptop's can be)
