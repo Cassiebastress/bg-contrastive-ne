@@ -422,3 +422,11 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
 - **Confirmation (digit kNN accuracy):** (c) 0.931 beats T1 t-SNE 0.884, T2 PCA-50 → t-SNE 0.891 and (a) 0.858, consistent across 3 seeds. T3 cPCA → t-SNE 0.955 beats (c), consistent. (a) < T1/T2: the background term carries all of (c)'s gain. Recall vs grass: (c) 0.022, T1/T2 about 0.13, T3 0.003.
 - **Reading:** MNIST-on-grass is additive (independent grass), the case where cPCA's identity holds, so its win was predicted by Phases 4–5.
 - **Next (suggested):** the background-suppressed kNN graph; a real dataset with a non-additive background.
+
+# Background-suppressed kNN graph on MNIST-on-grass (`REPORT_bsgraph.md`, `results/bsgraph/`)
+
+- **Idea:** build the attraction graph on local background residuals: each target minus its k_loc nearest background images' mean and top r directions (`method/residual_graph.py`). ξ_B and the initialization stay on raw pixels.
+- **Phase 1 (graph quality, gated):** grid k_loc ∈ {15, 30, 100} × r ∈ {0, 1, 2, 5, 10}. Selected k30_r2 (0.962; k100_r5 0.964 was within the 0.002 tie rule). Gate passed: +0.025 to +0.029 graph digit accuracy over max(raw, PCA-50) on every selection seed. Grass recall of the graph 0.057 vs 0.44 raw.
+- **Phase 2 (embeddings):** (r_c) m_B = 1 0.973 beats (c) 0.931 (+0.036 to +0.046) and T1/T2, consistent. vs T3 0.955: not consistent (+0.032, −0.006, +0.028). (r_c) vs (r_a): not consistent (seed 4 exact tie): ξ_B adds nothing once the graph is background-suppressed; (r_a) − (a) = +0.10 to +0.13.
+- **Reading:** (c)'s limit was its raw-pixel graph. Local suppression matches cPCA → t-SNE on additive data without a global linear assumption.
+- **Next (suggested):** the residual graph on L-cyclic / L-between vs local cPCA; non-additive real data; whether ξ_B helps when the residual graph is imperfect.
