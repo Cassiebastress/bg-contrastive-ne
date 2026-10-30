@@ -10,7 +10,9 @@ This file lists every claim in the report with its type and source.
   - `interp`: our explanation, not tested.
 - **Sources:**
   - Generated result files (`results/...`) are primary.
-  - Report sections (`REPORT*.md`) are given where a number exists only in report prose or where the report states the verdict. They are for checking only; the report itself does not cite them.
+  - Report sections (`REPORT*.md`) are given where a number exists only in report prose or where the report states the verdict.
+  - The report is self-contained: every definition it needs is inside it. Appendix A maps its names to the repository's phases, detailed reports and results directories, for readers who want more.
+  - Section numbers below follow the first draft. In the current draft, the datasets and the evaluation protocol are in §2, and the experimental results in §7.
 - **Unresolved `\todo{}`:** none.
 
 ## 1. Summary

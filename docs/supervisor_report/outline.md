@@ -16,6 +16,13 @@ These tags are used here, in `claims.md`, and in the report itself.
 
 ## The report is standalone
 
+**Revised after drafting.** The aim is that a reader needs no other file to follow the report; naming other files is not banned. The report now:
+- defines the datasets and the protocol up front, in §2;
+- is written mostly in prose;
+- in Appendix A, maps its names to the detailed per-phase reports and results directories.
+
+The bullets below record the original, stricter rule.
+
 - **No references to earlier report files.** The report never names `REPORT*.md`, `NOTES.md` or the plan files, and never says "see the Phase X report". Everything it needs is defined inside it.
 - **Source comments.** `% source:` comments in `main.tex` point to generated result files under `results/` (e.g. `results/bsgraph/tables_phase2.md`), never to report files. Where a number exists only in a report's prose, its report section is recorded in `claims.md`, not in the `.tex` file.
 - **Appendix A** maps report names to internal phase and run labels and to result directories. It does not map to report files.
