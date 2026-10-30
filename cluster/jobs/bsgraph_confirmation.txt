@@ -1,0 +1,7 @@
+$PY scripts/bsgraph_run.py --stage confirmation --seed 3 --run r_a
+$PY scripts/bsgraph_run.py --stage confirmation --seed 3 --run r_c_m1
+$PY scripts/bsgraph_run.py --stage confirmation --seed 4 --run r_a
+$PY scripts/bsgraph_run.py --stage confirmation --seed 4 --run r_c_m1
+$PY scripts/bsgraph_run.py --stage confirmation --seed 5 --run r_a
+$PY scripts/bsgraph_run.py --stage confirmation --seed 5 --run r_c_m1
+$PY scripts/bsgraph_run.py --stage confirmation --seed 3 --run r_c_m1 --rep 2
