@@ -3,11 +3,15 @@
 Tables: confirmation seeds (mean [min, max] and per seed, ARI included), the six pre-registered comparisons on digit
 kNN accuracy (secondary metrics alongside, no verdict), the descriptive comparisons, per-digit accuracy, T3's alpha per
 seed, the determinism checks, the 0/1 side-by-side (stored cluster results; 0/1 ARI post hoc) and the selection-seed
-appendix. Figures (confirmation seed 3): the seven runs colored by digit and by mean grass brightness, and the
-row-normalized confusion matrices of (r_c), (r_a) and T3. Needs data/processed/ and the embeddings (cluster).
+appendix. Figures (confirmation seed 3): small multiples by digit (one run per row, one digit per panel, highlighted in
+one blue over the other points in gray: ten categorical hues cannot be told apart in a scatter, so identity is carried
+by position, not hue), the seven runs colored by mean grass brightness (one-hue blue ramp), and the row-normalized
+confusion matrices of (r_c), (r_a) and T3. Colors from the dataviz reference palette, checked with its validator.
+Needs data/processed/ and the embeddings (cluster).
 
     python scripts/mnist_grass_0to9_report.py
-Outputs: results/mnist_grass_0to9/tables.md, comparisons.json, embeddings_seed3.png, confusion_seed3.png
+Outputs: results/mnist_grass_0to9/tables.md, comparisons.json, embeddings_by_digit_seed3.png,
+embeddings_grass_seed3.png, confusion_seed3.png
 """
 import csv
 import json
@@ -19,6 +23,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
+from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -32,6 +37,9 @@ RUNS_DIR = OUT / "runs"
 OLD_RAW, OLD_RES = ROOT / "results" / "mnist_grass", ROOT / "results" / "bsgraph"
 FIG_SEED = 3
 DIGITS = range(10)
+HIGHLIGHT, CONTEXT = "#2a78d6", "#d9d8d3"  # reference blue (validator: all checks pass) over a recessive gray
+BLUE_RAMP = LinearSegmentedColormap.from_list("blue", ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf",
+                                                       "#184f95", "#0d366b"])  # one-hue sequential ramp, light -> dark
 METRICS = [("digit_acc", "digit kNN accuracy"), ("recall_digits", "recall vs clean digits"),
            ("recall_grass", "recall vs grass (lower is better)"), ("ari", "ARI (k-means, k = 10)")]
 NAMES = {"a": "(a) raw graph, background term off", "r_a": "(r_a) residual graph, background term off",
@@ -139,52 +147,63 @@ def side_by_side(conf, rc, c):
     return "\n".join(out)
 
 
-def scatter_by_digit(ax, e, y, colors):
-    for d in DIGITS:
-        m = y == d
-        ax.scatter(*e[m].T, color=colors[d], s=0.6, edgecolor="none", rasterized=True, label=str(d))
-    for d in DIGITS:
-        cx, cy = np.median(e[y == d], axis=0)
-        ax.text(cx, cy, str(d), fontsize=8, fontweight="bold", ha="center", va="center", color="black",
-                bbox={"boxstyle": "round,pad=0.15", "fc": "white", "ec": colors[d], "lw": 1, "alpha": 0.85})
-
-
-def figures(runs, rc):
-    d = mg.load(mg.processed_path(FIG_SEED, ROOT, name=NAME))
-    y, brightness = d["y"], d["grass_T"].mean(axis=1)
-    colors = plt.get_cmap("tab10").colors
-    fig, axes = plt.subplots(len(runs), 2, figsize=(7, 3.2 * len(runs)))
-    for ax_row, run in zip(axes, runs):
+def by_digit_figure(runs, y):
+    fig, axes = plt.subplots(len(runs), len(DIGITS), figsize=(1.3 * len(DIGITS), 1.55 * len(runs)))
+    for i, run in enumerate(runs):
         e = np.load(RUNS_DIR / f"confirmation_seed{FIG_SEED}_{run}.npy")
         rec = run_json("confirmation", FIG_SEED, run)
-        scatter_by_digit(ax_row[0], e, y, colors)
-        sc = ax_row[1].scatter(*e.T, c=brightness, s=0.6, cmap="viridis", edgecolor="none", rasterized=True)
-        ax_row[0].set_title(f"{label(run)}\nby digit: acc {rec['digit_acc']:.3f}, ARI {rec['ari']:.3f}", fontsize=7)
-        ax_row[1].set_title(f"{label(run)}\nby mean grass brightness: grass recall {rec['recall_grass']:.3f}",
-                            fontsize=7)
-        fig.colorbar(sc, ax=ax_row[1], fraction=0.04)
-        for ax in ax_row:
+        for d, ax in zip(DIGITS, axes[i]):
+            ax.scatter(*e[y != d].T, color=CONTEXT, s=0.3, edgecolor="none", rasterized=True)
+            ax.scatter(*e[y == d].T, color=HIGHLIGHT, s=0.6, edgecolor="none", rasterized=True)
             ax.set_aspect("equal")
-            ax.axis("off")
-    handles = [plt.Line2D([], [], marker="o", ls="", color=colors[k], label=str(k)) for k in DIGITS]
-    fig.legend(handles=handles, title="digit", loc="upper center", ncol=10, fontsize=7, title_fontsize=7,
-               bbox_to_anchor=(0.5, 1.0), frameon=False)
-    fig.suptitle(f"MNIST-on-grass 0–9, confirmation seed {FIG_SEED}", fontsize=9, y=1.012)
-    fig.tight_layout(rect=(0, 0, 1, 0.985))
-    fig.savefig(OUT / f"embeddings_seed{FIG_SEED}.png", dpi=110, bbox_inches="tight")
+            ax.set_xticks([])
+            ax.set_yticks([])
+            for side in ax.spines.values():
+                side.set_visible(False)
+            if i == 0:
+                ax.set_title(f"digit {d}", fontsize=8)
+        axes[i, 0].set_ylabel(f"{short(run)}\nacc {rec['digit_acc']:.3f}\nARI {rec['ari']:.3f}", fontsize=7,
+                              rotation=0, ha="right", va="center", labelpad=4)
+    fig.suptitle(f"MNIST-on-grass 0–9, confirmation seed {FIG_SEED}: each digit (blue) against all other images "
+                 "(gray)", fontsize=9)
+    fig.tight_layout(rect=(0, 0, 1, 0.98))
+    fig.savefig(OUT / f"embeddings_by_digit_seed{FIG_SEED}.png", dpi=110, bbox_inches="tight")
     plt.close(fig)
 
+
+def grass_figure(runs, brightness):
+    ncol = 4
+    fig, axes = plt.subplots(2, ncol, figsize=(3 * ncol, 6.2))
+    lo, hi = brightness.min(), brightness.max()
+    for ax, run in zip(axes.flat, runs):
+        e = np.load(RUNS_DIR / f"confirmation_seed{FIG_SEED}_{run}.npy")
+        rec = run_json("confirmation", FIG_SEED, run)
+        sc = ax.scatter(*e.T, c=brightness, s=0.6, cmap=BLUE_RAMP, vmin=lo, vmax=hi, edgecolor="none",
+                        rasterized=True)
+        ax.set_title(f"{label(run)}\ngrass recall {rec['recall_grass']:.3f}", fontsize=7)
+        ax.set_aspect("equal")
+        ax.axis("off")
+    for ax in axes.flat[len(runs):]:
+        ax.axis("off")
+    fig.colorbar(sc, ax=axes, fraction=0.02, label="mean grass-patch brightness")
+    fig.suptitle(f"MNIST-on-grass 0–9, confirmation seed {FIG_SEED}: colored by the grass behind each digit",
+                 fontsize=9)
+    fig.savefig(OUT / f"embeddings_grass_seed{FIG_SEED}.png", dpi=110, bbox_inches="tight")
+    plt.close(fig)
+
+
+def confusion_figure(rc):
     panels = [rc, "r_a", "T3"]
     fig, axes = plt.subplots(1, len(panels), figsize=(4 * len(panels), 3.8))
     for ax, run in zip(axes, panels):
         cm = np.array(run_json("confirmation", FIG_SEED, run)["confusion"], dtype=float)
         cm /= cm.sum(axis=1, keepdims=True)
-        im = ax.imshow(cm, cmap="Blues", vmin=0, vmax=1)
+        im = ax.imshow(cm, cmap=BLUE_RAMP, vmin=0, vmax=1)
         for i in DIGITS:
             for j in DIGITS:
                 if cm[i, j] >= 0.005:
                     ax.text(j, i, f"{100 * cm[i, j]:.0f}", ha="center", va="center", fontsize=6,
-                            color="white" if cm[i, j] > 0.6 else "black")
+                            color="white" if cm[i, j] > 0.45 else "#0b0b0b")
         ax.set_xticks(DIGITS)
         ax.set_yticks(DIGITS)
         ax.set_xlabel("predicted digit", fontsize=8)
@@ -194,6 +213,13 @@ def figures(runs, rc):
     fig.suptitle(f"kNN confusion matrices (row-normalized, %), confirmation seed {FIG_SEED}", fontsize=9)
     fig.savefig(OUT / f"confusion_seed{FIG_SEED}.png", dpi=110, bbox_inches="tight")
     plt.close(fig)
+
+
+def figures(runs, rc):
+    d = mg.load(mg.processed_path(FIG_SEED, ROOT, name=NAME))
+    by_digit_figure(runs, d["y"])
+    grass_figure(runs, d["grass_T"].mean(axis=1))
+    confusion_figure(rc)
 
 
 def main():
