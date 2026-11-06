@@ -430,3 +430,20 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
 - **Phase 2 (embeddings):** (r_c) m_B = 1 0.973 beats (c) 0.931 (+0.036 to +0.046) and T1/T2, consistent. vs T3 0.955: not consistent (+0.032, −0.006, +0.028). (r_c) vs (r_a): not consistent (seed 4 exact tie): ξ_B adds nothing once the graph is background-suppressed; (r_a) − (a) = +0.10 to +0.13.
 - **Reading:** (c)'s limit was its raw-pixel graph. Local suppression matches cPCA → t-SNE on additive data without a global linear assumption.
 - **Next (suggested):** the residual graph on L-cyclic / L-between vs local cPCA; non-additive real data; whether ξ_B helps when the residual graph is imperfect.
+
+# MNIST-on-grass with digits 0–9 (`REPORT_mnist_grass_0to9.md`, `results/mnist_grass_0to9/`)
+
+- **Data:** the same recipe with all ten digits, balanced at 500 per digit (`build(..., digits=range(10))`; the default 0/1 build is unchanged, pinned by a hash in the tests and by a real-data regression in `scripts/mnist_grass_0to9_build.py`).
+- **Fixed in advance:** the residual graph at k_loc = 30, r = 2 (not re-selected). Pre-registration `a9329a6` came before every cluster job of the phase. ARI (k-means, k = 10) is a pre-registered secondary metric with no verdicts. The 0/1 ARI is computed post hoc from the saved embeddings.
+- **Pre-checks (descriptive):** mean graph digit accuracy (chance 0.10) is 0.36–0.38 raw, 0.42 for PCA-50, 0.46–0.49 for cPCA-10, and 0.58–0.59 for the residual default; the whole grid is at 0.55–0.59. ξ_B same-digit excess is only +0.008 to +0.010.
+- **Selection:** m_B = 20 for (c), m_B = 5 for (r_c) (0.5337 vs 0.5336 at m_B = 2).
+- **Confirmation (digit kNN accuracy):**
+  - (r_c) 0.530 beats T3 0.433 (+0.039 to +0.137), T1 0.253, T2 0.255 and (c) 0.226, all consistent;
+  - (r_a) 0.514 beats T3, consistent;
+  - (r_c) vs (r_a): +0.004, +0.031, +0.014, consistent (unlike 0/1);
+  - descriptive: (a) 0.115 and (c) are both below T1.
+- **Secondary and descriptive:**
+  - ARI is (r_c) 0.244, (r_a) 0.225, T3 0.117, every other run ≤ 0.031 (0/1, post hoc: 0.87 / 0.87 / 0.80).
+  - Per-digit accuracy is best for 0, 1 and 6 and worst for 5, 8 and 9; 4 and 9 are the main confusion.
+- **Reading:** on additive data with ten classes, the local residual graph beats cPCA-10 → t-SNE. Possible reasons, untested: 10 components may be too few, and T3 depends on α. The raw-graph runs fail because raw neighborhoods are mostly grass.
+- **Next (suggested):** non-additive real data; T3 with more components (descriptive); what ξ_B is for, as the number of classes grows.

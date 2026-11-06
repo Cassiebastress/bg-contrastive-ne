@@ -83,6 +83,7 @@ These are the headline results. The supervisor report has the details and caveat
 | 5b | Benchmarks where no global projection works ("Design L"). | `REPORT_phase5b.md` | Background negatives beat every global linear pipeline; local cPCA beats them. |
 | MNIST-on-grass | Does it work on real images? | `REPORT_mnist_grass.md` | Beats t-SNE controls; cPCA → t-SNE is better. |
 | bsgraph | Build the kNN graph on local background residuals. | `REPORT_bsgraph.md` | Big gain; ties cPCA → t-SNE; background negatives now redundant. |
+| MNIST 0–9 | Repeat MNIST-on-grass with all ten digits. | `REPORT_mnist_grass_0to9.md` | The residual graph beats cPCA → t-SNE and the t-SNE controls; background negatives add a small, consistent gain. |
 
 Other documents:
 - `NOTES.md`: working notes, package internals with file/line references, and a short summary of each phase.
