@@ -1,0 +1,60 @@
+{
+  "metric": "digit kNN accuracy",
+  "c": {
+    "means": {
+      "1": 0.16806666666666667,
+      "2": 0.1826,
+      "5": 0.20779999999999998,
+      "10": 0.21413333333333331,
+      "20": 0.21740000000000004,
+      "40": 0.215
+    },
+    "best_m_B": 20
+  },
+  "r_c": {
+    "means": {
+      "1": 0.5246,
+      "2": 0.5336000000000001,
+      "5": 0.5336666666666666,
+      "10": 0.5262666666666667,
+      "20": 0.5256666666666667,
+      "40": 0.524
+    },
+    "best_m_B": 5
+  },
+  "rule": "highest mean digit kNN accuracy over selection seeds 0-2; ties -> smaller m_B",
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-5.15.0-202-generic-x86_64-with-glibc2.35",
+    "cpu_model": "Intel(R) Xeon(R) Gold 6234 CPU @ 3.30GHz",
+    "cpu_count": 32,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 1,
+    "torch_deterministic_algorithms": false,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "065e9662db90cddd648da9ab4a91aad104f52c60",
+      "dirty": false
+    },
+    "hostname": null,
+    "slurm_job_id": null,
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}
