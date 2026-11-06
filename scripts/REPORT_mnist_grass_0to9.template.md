@@ -76,13 +76,20 @@ What the pre-checks show (descriptive):
 
 ### Figures (confirmation seed 3)
 
-Each run colored by digit (left; each digit's number is placed at the median of its points) and by mean grass-patch brightness (right):
+**By digit**, one row per run and one panel per digit: the digit in blue, every other image in gray. (Ten colors in one scatter plot can't be told apart reliably, including by colorblind readers, so each digit gets its own panel.)
 
-![MNIST-on-grass 0–9 embeddings](results/mnist_grass_0to9/embeddings_seed3.png)
+![MNIST-on-grass 0–9 embeddings by digit](results/mnist_grass_0to9/embeddings_by_digit_seed3.png)
 
-- **(r_a) and (r_c):** separate regions for 0, 1, 3, 6 and 7. 2, 5 and 8 overlap in the middle, and 4 and 9 share one region. There is no grass-brightness gradient.
-- **T3:** the digits are spread more diffusely, also with no brightness gradient.
-- **(a), (c), T1 and T2:** the digits are mixed, and the layout runs from dark to bright grass. Grass brightness is the main axis of these maps.
+- **(r_a) and (r_c):** 0, 1, 3, 6 and 7 each occupy their own region. 2, 5 and 8 spread across the middle, and 4 and 9 share one region.
+- **T3:** each digit falls into several scattered patches.
+- **(a), (c), T1 and T2:** every digit is spread over the whole map.
+
+**By mean grass-patch brightness** (darker blue is brighter grass):
+
+![MNIST-on-grass 0–9 embeddings by grass brightness](results/mnist_grass_0to9/embeddings_grass_seed3.png)
+
+- **(a), (c), T1 and T2:** the layout runs from dark to bright grass, so grass brightness is the main axis of these maps.
+- **(r_a), (r_c) and T3:** no brightness gradient.
 
 Row-normalized kNN confusion matrices for (r_c), (r_a) and T3:
 
