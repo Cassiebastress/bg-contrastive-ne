@@ -36,3 +36,14 @@ These run in `tests/test_mnist_grass.py` on fake inputs, and on the real data in
 - disjoint pools;
 - bit-identical rebuild;
 - digit class counts.
+
+## Digits 0–9 (`digits` parameter)
+
+`build(seed, ..., digits=...)` defaults to digits (0, 1) and leaves that build unchanged. Its draws are pinned by a hash in `tests/test_mnist_grass.py`, and `scripts/mnist_grass_0to9_build.py` checks that rebuilding the stored 0/1 files gives identical arrays. For any other digit set, the sample is **balanced**:
+- for each digit in ascending order, n / len(digits) training images are drawn without replacement;
+- the combined sample is shuffled by one permutation;
+- the pools and patches are then drawn as before, from the same RNG.
+
+With digits 0–9 and n = 5000, that is 500 images per digit. Balanced builds also save `digit_classes`, and the build check then requires equal counts per digit.
+
+Everything else follows the recipe above. The files are `data/processed/mnist_grass_0to9_seed{s}.npz` (`processed_path(seed, root, name="mnist_grass_0to9")`), with checksums in `data/MANIFEST.md`.

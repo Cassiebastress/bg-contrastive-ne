@@ -33,21 +33,18 @@ def load(seed):
     return mg.for_embedding(mg.load(mg.processed_path(seed, ROOT)))
 
 
-def precheck(seed):
+def xi_checks(X_T, X_B, t, seed):
+    """ξ_B on raw pixels (k_B = 15, L = 30): same-digit excess over chance (pairs weighted by target-graph degree),
+    grass-patch distance of ξ_B pairs vs random target pairs vs each target's 15 grass-nearest targets, list sizes,
+    empty rows and the tie cap. Shared with scripts/mnist_grass_0to9_prechecks.py."""
     from scipy.spatial.distance import pdist
-    from sklearn.decomposition import PCA
 
     from common.knn import knn_graph, knn_indices
-    from common.repro import environment_info, setup_determinism
-    from eval.metrics import knn_accuracy, pair_label_agreement, uniform_pair_agreement
+    from eval.metrics import pair_label_agreement, uniform_pair_agreement
     from eval.xi_b_diag import weighted_row_mean
     from method.xi_b import build_xi_b
 
-    setup_determinism(seed)
-    X_T, X_B, t = load(seed)
     y, grass = t["y"], t["grass_T"]
-    rec = {"seed": seed, "digit_acc_raw": knn_accuracy(X_T, y), "digit_acc_clean": knn_accuracy(t["digits"], y),
-           "digit_acc_pca50": knn_accuracy(PCA(50, svd_solver="full").fit_transform(X_T), y)}
     G = knn_graph(X_T, k=K)
     xi = build_xi_b(X_T, X_B, k_B=K_B, L=L, seed=seed)
     deg = np.diff(G.indptr).astype(float)
@@ -57,18 +54,30 @@ def precheck(seed):
     chance = uniform_pair_agreement(y)
     lengths = xi.row_lengths()
     nn = knn_indices(grass, K)
-    rec.update({"xi_same_digit": same, "same_digit_chance": chance, "xi_same_digit_excess": same - chance,
-                "gate_reference": GATE_SAME_DIGIT_EXCESS,
-                "grass_dist_xi_pairs": weighted_row_mean(P, np.linalg.norm(grass[heads] - grass[xi.indices], axis=1),
-                                                         deg),
-                "grass_dist_random_pairs": float(pdist(grass).mean()),
-                "grass_dist_grass_knn": float(np.linalg.norm(grass[:, None, :] - grass[nn], axis=2).mean()),
-                "len_min": int(lengths.min()), "len_median": float(np.median(lengths)),
-                "len_p90": float(np.percentile(lengths, 90)), "len_max": int(lengths.max()),
-                "n_empty_rows": xi.params["n_empty_rows"],
-                "frac_tie_split_rows": xi.params["n_tie_split_rows"] / xi.n,
-                "frac_capped_rows": xi.params["n_capped_rows"] / xi.n, "xi_sha256": xi.sha256(),
-                "environment": environment_info()})
+    return {"xi_same_digit": same, "same_digit_chance": chance, "xi_same_digit_excess": same - chance,
+            "grass_dist_xi_pairs": weighted_row_mean(P, np.linalg.norm(grass[heads] - grass[xi.indices], axis=1),
+                                                     deg),
+            "grass_dist_random_pairs": float(pdist(grass).mean()),
+            "grass_dist_grass_knn": float(np.linalg.norm(grass[:, None, :] - grass[nn], axis=2).mean()),
+            "len_min": int(lengths.min()), "len_median": float(np.median(lengths)),
+            "len_p90": float(np.percentile(lengths, 90)), "len_max": int(lengths.max()),
+            "n_empty_rows": xi.params["n_empty_rows"], "frac_tie_split_rows": xi.params["n_tie_split_rows"] / xi.n,
+            "frac_capped_rows": xi.params["n_capped_rows"] / xi.n, "xi_sha256": xi.sha256()}
+
+
+def precheck(seed):
+    from sklearn.decomposition import PCA
+
+    from common.repro import environment_info, setup_determinism
+    from eval.metrics import knn_accuracy
+
+    setup_determinism(seed)
+    X_T, X_B, t = load(seed)
+    y = t["y"]
+    rec = {"seed": seed, "digit_acc_raw": knn_accuracy(X_T, y), "digit_acc_clean": knn_accuracy(t["digits"], y),
+           "digit_acc_pca50": knn_accuracy(PCA(50, svd_solver="full").fit_transform(X_T), y)}
+    rec.update(xi_checks(X_T, X_B, t, seed))
+    rec.update({"gate_reference": GATE_SAME_DIGIT_EXCESS, "environment": environment_info()})
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / f"seed{seed}.json").write_text(json.dumps(rec, indent=2))
     print(json.dumps({k: v for k, v in rec.items() if k != "environment"}), flush=True)

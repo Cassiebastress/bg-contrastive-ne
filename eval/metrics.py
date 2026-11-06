@@ -3,7 +3,9 @@ import numpy as np
 from scipy.sparse.csgraph import connected_components
 from scipy.spatial.distance import pdist
 from scipy.stats import rankdata
-from sklearn.model_selection import StratifiedKFold, cross_val_score
+from sklearn.cluster import KMeans
+from sklearn.metrics import adjusted_rand_score
+from sklearn.model_selection import StratifiedKFold, cross_val_predict, cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
 
 from common.knn import knn_graph, knn_indices
@@ -14,6 +16,20 @@ def knn_accuracy(embd, labels, k=15, n_splits=5, seed=0):
     clf = KNeighborsClassifier(n_neighbors=k)
     cv = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=seed)
     return float(np.mean(cross_val_score(clf, embd, labels, cv=cv)))
+
+
+def knn_predictions(embd, labels, k=15, n_splits=5, seed=0):
+    """Out-of-fold kNN predictions, with the classifier and folds of knn_accuracy (for per-class accuracy and
+    confusion matrices)."""
+    clf = KNeighborsClassifier(n_neighbors=k)
+    cv = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=seed)
+    return cross_val_predict(clf, embd, labels, cv=cv)
+
+
+def kmeans_ari(embd, labels, n_clusters, seed):
+    """Adjusted Rand index between k-means clusters of the embedding (n_init = 10, random_state = seed) and labels."""
+    pred = KMeans(n_clusters=n_clusters, n_init=10, random_state=seed).fit_predict(np.asarray(embd, dtype=np.float64))
+    return float(adjusted_rand_score(labels, pred))
 
 
 def pair_label_agreement(P, labels, head_weights=None):

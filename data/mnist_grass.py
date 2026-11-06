@@ -4,7 +4,9 @@ Recipe (reference/cpca_mnist_notebook.py; deviations documented in data/README_m
 - grass: every .JPEG/.JPG/.jpg in the grass folder, in sorted filename order; grayscale (PIL mode "L"), LANCZOS
   resize to 100 x 100, scaled to [0, 1];
 - one numpy.random.default_rng(seed), drawn from in this fixed order:
-    1. n digits sampled without replacement from all MNIST training images of digits 0 and 1;
+    1. the digits: for the default digits (0, 1), n images sampled without replacement from all MNIST training images
+       of those digits; for any other digit set (e.g. 0-9), balanced: n / len(digits) images of each digit in
+       ascending order, each sampled without replacement, then shuffled by one permutation;
     2. a permutation of the grass images: the first half is the target pool, the second the background pool;
     3. target patches: source image (uniform over the target pool), then crop origins (row, col), each in [0, 70);
     4. background patches: source image (uniform over the background pool), then crop origins;
@@ -50,13 +52,25 @@ def crop(grass, src, loc):
     return np.stack([grass[s, r:r + PATCH, c:c + PATCH].ravel() for s, (r, c) in zip(src, loc)])
 
 
-def build(seed, grass_dir, mnist_path, n=N):
+def sample_digits(rng, y_train, n, digits):
+    """MNIST training indices: the 0/1 draw for the default digits, else n / len(digits) of each digit, shuffled."""
+    if tuple(digits) == DIGITS:
+        return rng.choice(np.flatnonzero(np.isin(y_train, DIGITS)), size=n, replace=False)
+    if n % len(digits):
+        raise ValueError(f"n = {n} is not divisible by the {len(digits)} digits")
+    per = n // len(digits)
+    index = np.concatenate([rng.choice(np.flatnonzero(y_train == d), size=per, replace=False) for d in sorted(digits)])
+    return index[rng.permutation(n)]
+
+
+def build(seed, grass_dir, mnist_path, n=N, digits=DIGITS):
     """The dataset for one seed, with its provenance (see the module docstring for the draw order)."""
     files = grass_files(grass_dir)
     grass = load_grass(files)
     x_train, y_train = load_mnist(mnist_path)
     rng = np.random.default_rng(seed)
-    mnist_index = rng.choice(np.flatnonzero(np.isin(y_train, DIGITS)), size=n, replace=False)
+    mnist_index = sample_digits(rng, y_train, n, digits)
+    extra = {} if tuple(digits) == DIGITS else {"digit_classes": np.array(sorted(digits))}
     perm = rng.permutation(len(files))
     target_pool, background_pool = perm[: len(files) // 2], perm[len(files) // 2:]
     t_src = rng.choice(target_pool, size=n)
@@ -69,16 +83,20 @@ def build(seed, grass_dir, mnist_path, n=N):
             "mnist_index": mnist_index, "digits": digits, "digit_scale": DIGIT_SCALE, "grass_T": grass_T,
             "target_src": t_src, "target_loc": t_loc, "background_src": b_src, "background_loc": b_loc,
             "target_pool": np.sort(target_pool), "background_pool": np.sort(background_pool), "seed": seed,
-            "filenames_sha256": hashlib.sha256("\n".join(p.name for p in files).encode()).hexdigest()}
+            "filenames_sha256": hashlib.sha256("\n".join(p.name for p in files).encode()).hexdigest(), **extra}
 
 
 def check(d, grass):
-    """The build checks (raises AssertionError): shapes, ranges, exact reconstruction, disjoint pools."""
+    """The build checks (raises AssertionError): shapes, ranges, exact reconstruction, disjoint pools, and for a
+    balanced build (digit_classes saved) exactly n / len(digit_classes) images of each digit."""
     n = len(d["y"])
+    classes = d.get("digit_classes", np.array(DIGITS))
     assert d["X_T"].shape == d["X_B"].shape == d["digits"].shape == d["grass_T"].shape == (n, PATCH * PATCH)
     assert d["digits"].min() >= 0 and d["digits"].max() <= 1 and d["X_B"].min() >= 0 and d["X_B"].max() <= 1
     assert d["X_T"].min() >= 0 and d["X_T"].max() <= 1 + d["digit_scale"]
-    assert set(np.unique(d["y"])) <= set(DIGITS) and len(np.unique(d["mnist_index"])) == n
+    assert set(np.unique(d["y"])) <= set(classes) and len(np.unique(d["mnist_index"])) == n
+    if "digit_classes" in d:
+        assert all(np.sum(d["y"] == c) == n // len(classes) for c in classes), "digits are not balanced"
     assert np.array_equal(d["X_T"], d["digit_scale"] * d["digits"] + crop(grass, d["target_src"], d["target_loc"]))
     assert np.array_equal(d["X_B"], crop(grass, d["background_src"], d["background_loc"]))
     assert not set(d["target_pool"]) & set(d["background_pool"])
@@ -95,8 +113,9 @@ def load(path):
         return {k: f[k] for k in f.files}
 
 
-def processed_path(seed, root):
-    return Path(root) / "data" / "processed" / f"mnist_grass_seed{seed}.npz"
+def processed_path(seed, root, name="mnist_grass"):
+    """data/processed/{name}_seed{seed}.npz: name "mnist_grass" for digits 0/1, "mnist_grass_0to9" for 0-9."""
+    return Path(root) / "data" / "processed" / f"{name}_seed{seed}.npz"
 
 
 def for_embedding(d):

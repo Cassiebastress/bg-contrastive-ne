@@ -2,7 +2,8 @@
 import numpy as np
 
 from common.experiment import M_BS, SELECTION_RUNS, confirmation_runs, paired, run_spec, select_settings, verdict
-from eval.metrics import component_stats, distance_spearman, knn_recall, pair_distance_ranks
+from eval.metrics import (component_stats, distance_spearman, kmeans_ari, knn_accuracy, knn_predictions,
+                          knn_recall, pair_distance_ranks)
 
 rng = np.random.default_rng(0)
 
@@ -85,3 +86,20 @@ def test_verdict():
             r["flag_fragment"] = True  # flagged runs fail the criterion but stay in the results
     v = verdict(rows, sel)
     assert v["c_flagged"] and not v["success"]
+
+
+def test_knn_predictions_match_knn_accuracy():
+    labels = np.repeat(np.arange(10), 50)  # balanced, so the 5 folds have equal sizes
+    X = labels[:, None] + 2.0 * rng.standard_normal((500, 2))
+    pred = knn_predictions(X, labels)
+    assert pred.shape == labels.shape
+    assert abs(np.mean(pred == labels) - knn_accuracy(X, labels)) < 1e-12
+
+
+def test_kmeans_ari():
+    labels = np.repeat(np.arange(4), 100)
+    X = 50.0 * labels[:, None] * np.ones((1, 2)) + rng.standard_normal((400, 2))
+    assert kmeans_ari(X, labels, 4, seed=0) == 1.0
+    assert abs(kmeans_ari(X, rng.permutation(labels), 4, seed=0)) < 0.05
+    Y = rng.standard_normal((400, 2))
+    assert kmeans_ari(Y, labels, 4, seed=3) == kmeans_ari(Y, labels, 4, seed=3)

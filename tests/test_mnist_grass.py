@@ -1,4 +1,6 @@
 """Tests for the MNIST-on-grass builder (data/mnist_grass.py), on fake grass JPEGs and a fake MNIST file."""
+import hashlib
+
 import numpy as np
 import pytest
 from PIL import Image
@@ -6,6 +8,12 @@ from PIL import Image
 from data import mnist_grass as mg
 
 N_IMAGES, N = 12, 40
+DIGITS_0TO9 = tuple(range(10))
+# SHA-256 of the RNG-derived arrays of the default (0/1) build of seed 3 below, recorded before the digits parameter
+# was added (they don't depend on how the fake JPEGs decode): the 0/1 draws must never change
+DRAWN = ["mnist_index", "y", "digits", "target_pool", "background_pool", "target_src", "target_loc", "background_src",
+         "background_loc"]
+GOLDEN_0_1 = "5bfe07da7689251257619df7f7f1f2fe474a08d1330cdf9d9f65aa730a378280"
 
 
 def make_inputs(root, order):
@@ -31,6 +39,22 @@ def inputs(tmp_path_factory):
 @pytest.fixture(scope="module")
 def built(inputs):
     return mg.build(3, *inputs, n=N)
+
+
+@pytest.fixture(scope="module")
+def balanced(inputs):
+    return mg.build(3, *inputs, n=N, digits=DIGITS_0TO9)
+
+
+def digest(d, keys):
+    h = hashlib.sha256()
+    for k in sorted(keys):
+        a = np.asarray(d[k])
+        h.update(k.encode())
+        h.update(str(a.dtype).encode())
+        h.update(str(a.shape).encode())
+        h.update(np.ascontiguousarray(a).tobytes())
+    return h.hexdigest()
 
 
 def test_shapes_ranges_reconstruction_and_disjoint_pools(inputs, built):
@@ -78,3 +102,48 @@ def test_check_catches_a_broken_reconstruction(inputs, built):
     broken = dict(built, X_T=built["X_T"] + 1e-12)
     with pytest.raises(AssertionError):
         mg.check(broken, grass)
+
+
+def test_default_digits_draws_are_unchanged(built):
+    assert digest(built, DRAWN) == GOLDEN_0_1
+    assert "digit_classes" not in built
+
+
+def test_explicit_default_digits_equal_the_default(inputs, built):
+    again = mg.build(3, *inputs, n=N, digits=(0, 1))
+    assert set(again) == set(built) and all(np.array_equal(built[k], again[k]) for k in built)
+
+
+def test_balanced_build_has_equal_digit_counts_and_passes_check(inputs, balanced):
+    mg.check(balanced, mg.load_grass(mg.grass_files(inputs[0])))
+    assert np.array_equal(np.bincount(balanced["y"], minlength=10), np.full(10, N // 10))
+    assert np.array_equal(balanced["digit_classes"], np.arange(10))
+    assert len(np.unique(balanced["mnist_index"])) == N
+
+
+def test_balanced_rebuild_is_bit_identical_and_other_seed_differs(inputs, balanced):
+    again = mg.build(3, *inputs, n=N, digits=DIGITS_0TO9)
+    assert set(again) == set(balanced) and all(np.array_equal(balanced[k], again[k]) for k in balanced)
+    assert not np.array_equal(balanced["mnist_index"], mg.build(4, *inputs, n=N, digits=DIGITS_0TO9)["mnist_index"])
+
+
+def test_balanced_order_is_shuffled(balanced):
+    assert not np.all(np.diff(balanced["y"]) >= 0)
+
+
+def test_n_not_divisible_by_the_digits_raises(inputs):
+    with pytest.raises(ValueError):
+        mg.build(3, *inputs, n=N + 1, digits=DIGITS_0TO9)
+
+
+def test_check_catches_unbalanced_digits(inputs, balanced):
+    grass = mg.load_grass(mg.grass_files(inputs[0]))
+    y = balanced["y"].copy()
+    y[0] = (y[0] + 1) % 10
+    with pytest.raises(AssertionError):
+        mg.check(dict(balanced, y=y), grass)
+
+
+def test_processed_paths():
+    assert mg.processed_path(2, "/r").name == "mnist_grass_seed2.npz"
+    assert mg.processed_path(2, "/r", name="mnist_grass_0to9").name == "mnist_grass_0to9_seed2.npz"
