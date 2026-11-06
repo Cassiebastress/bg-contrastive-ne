@@ -3,14 +3,20 @@
 Tables: confirmation seeds (mean [min, max] and per seed, ARI included), the six pre-registered comparisons on digit
 kNN accuracy (secondary metrics alongside, no verdict), the descriptive comparisons, per-digit accuracy, T3's alpha per
 seed, the determinism checks, the 0/1 side-by-side (stored cluster results; 0/1 ARI post hoc) and the selection-seed
-appendix. Figures (confirmation seed 3): small multiples by digit (one run per row, one digit per panel, highlighted in
-one blue over the other points in gray: ten categorical hues cannot be told apart in a scatter, so identity is carried
-by position, not hue), the seven runs colored by mean grass brightness (one-hue blue ramp), and the row-normalized
-confusion matrices of (r_c), (r_a) and T3. Colors from the dataviz reference palette, checked with its validator.
-Needs data/processed/ and the embeddings (cluster).
+appendix. Figures (confirmation seed 3):
+- the seven runs colored by digit, styled after Damrich et al. (2023), Fig. 1: tab10 in digit order, one scatter per
+  run drawn in a fixed random order, a scale bar, serif captions and a two-column legend. The tab10 colors are a
+  deliberate match to that paper; they fail the dataviz palette validator (some pairs, e.g. green/orange, cannot be told
+  apart by colorblind readers), so the next figure is the accessible view;
+- small multiples by digit (one run per row, one digit per panel, in one blue over the other points in gray), which
+  carry identity by position, not hue;
+- the seven runs colored by mean grass brightness (one-hue blue ramp);
+- the row-normalized confusion matrices of (r_c), (r_a) and T3.
+The blue colors come from the dataviz reference palette and pass its validator. Needs data/processed/ and the
+embeddings (cluster).
 
     python scripts/mnist_grass_0to9_report.py
-Outputs: results/mnist_grass_0to9/tables.md, comparisons.json, embeddings_by_digit_seed3.png,
+Outputs: results/mnist_grass_0to9/tables.md, comparisons.json, embeddings_seed3.png, embeddings_by_digit_seed3.png,
 embeddings_grass_seed3.png, confusion_seed3.png
 """
 import csv
@@ -24,6 +30,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -215,8 +222,46 @@ def confusion_figure(rc):
     plt.close(fig)
 
 
+def round_length(width):
+    """A round scale-bar length (1, 2 or 5 x 10^k) close to a quarter of the panel width."""
+    target = width / 4
+    base = 10.0 ** np.floor(np.log10(target))
+    return min((m * base for m in (1, 2, 5, 10)), key=lambda v: abs(v - target))
+
+
+def paper_figure(runs, y):
+    """All digits in one scatter per run, colored like Damrich et al. (2023), Fig. 1 (tab10 in digit order)."""
+    colors = plt.get_cmap("tab10").colors
+    order = np.random.default_rng(0).permutation(len(y))  # fixed draw order: no digit painted last on purpose
+    with plt.rc_context({"font.family": "serif", "mathtext.fontset": "cm"}):
+        fig, axes = plt.subplots(2, 4, figsize=(13, 7.2))
+        for ax, run in zip(axes.flat, runs):
+            e = np.load(RUNS_DIR / f"confirmation_seed{FIG_SEED}_{run}.npy")[order]
+            rec = run_json("confirmation", FIG_SEED, run)
+            ax.scatter(*e.T, c=np.asarray(colors)[y[order]], s=1, edgecolor="none", rasterized=True)
+            ax.set_aspect("equal", adjustable="datalim")  # same box for every panel, so the captions line up
+            ax.axis("off")
+            length = round_length(np.ptp(e[:, 0]))
+            ax.add_artist(AnchoredSizeBar(ax.transData, length, f"{length:g}", "lower right", pad=0.1, sep=3,
+                                          borderpad=0.2, frameon=False, size_vertical=0, fontproperties={"size": 9},
+                                          label_top=False))
+            caption = label(run).replace("ξ_B", r"$\xi_B$").replace("m_B", r"$m_B$")
+            ax.text(0.5, -0.03, f"{caption}\ndigit kNN accuracy {rec['digit_acc']:.3f}", transform=ax.transAxes,
+                    ha="center", va="top", fontsize=10)
+        legend_ax = axes.flat[len(runs)]
+        legend_ax.axis("off")
+        handles = [plt.Line2D([], [], marker="o", ls="", ms=7, color=colors[d], label=str(d)) for d in DIGITS]
+        legend_ax.legend(handles=handles, ncol=2, frameon=False, loc="center", fontsize=12, handletextpad=0.6,
+                         columnspacing=2.5, labelspacing=0.9)
+        fig.suptitle(f"MNIST-on-grass 0–9, confirmation seed {FIG_SEED}", fontsize=12)
+        fig.tight_layout(rect=(0, 0, 1, 0.97), h_pad=3.5)
+        fig.savefig(OUT / f"embeddings_seed{FIG_SEED}.png", dpi=130, bbox_inches="tight")
+        plt.close(fig)
+
+
 def figures(runs, rc):
     d = mg.load(mg.processed_path(FIG_SEED, ROOT, name=NAME))
+    paper_figure(runs, d["y"])
     by_digit_figure(runs, d["y"])
     grass_figure(runs, d["grass_T"].mean(axis=1))
     confusion_figure(rc)
