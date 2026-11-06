@@ -291,9 +291,13 @@ Selection rule: highest mean digit kNN accuracy over selection seeds 0-2; ties -
 
 ### Figures (confirmation seed 3)
 
-**By digit**, one row per run and one panel per digit: the digit in blue, every other image in gray. (Ten colors in one scatter plot can't be told apart reliably, including by colorblind readers, so each digit gets its own panel.)
+**By digit.** The colors follow Damrich et al. (2023), Fig. 1 (tab10 in digit order). Each scale bar gives a length in embedding units.
 
-![MNIST-on-grass 0–9 embeddings by digit](results/mnist_grass_0to9/embeddings_by_digit_seed3.png)
+![MNIST-on-grass 0–9 embeddings colored by digit](results/mnist_grass_0to9/embeddings_seed3.png)
+
+**The same embeddings, one panel per digit**: the digit in blue, every other image in gray. Some tab10 pairs (green/orange, gray/brown) are hard to tell apart for colorblind readers, and overlapping digits hide each other in a single scatter, so this view shows each digit on its own.
+
+![MNIST-on-grass 0–9 embeddings, one panel per digit](results/mnist_grass_0to9/embeddings_by_digit_seed3.png)
 
 - **(r_a) and (r_c):** 0, 1, 3, 6 and 7 each occupy their own region. 2, 5 and 8 spread across the middle, and 4 and 9 share one region.
 - **T3:** each digit falls into several scattered patches.
