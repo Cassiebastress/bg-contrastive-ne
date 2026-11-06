@@ -1,0 +1,548 @@
+{
+  "label": "descriptive, computed post hoc (ARI was not pre-registered for the 0/1 runs)",
+  "kmeans": {
+    "n_clusters": 2,
+    "n_init": 10,
+    "random_state": "dataset seed"
+  },
+  "rows": [
+    {
+      "source": "bsgraph",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "r_a",
+      "ari": 0.8559543517427988
+    },
+    {
+      "source": "bsgraph",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "r_c_m1",
+      "ari": 0.8574357301845066
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "T1",
+      "ari": 0.008787826034126187
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "T2",
+      "ari": 0.009466023272458544
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "T3",
+      "ari": 0.7326826269002789
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "a",
+      "ari": 0.0035195577167051514
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 3,
+      "run": "c_m5",
+      "ari": 0.0201967103173863
+    },
+    {
+      "source": "bsgraph",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "r_a",
+      "ari": 0.8873311088790337
+    },
+    {
+      "source": "bsgraph",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "r_c_m1",
+      "ari": 0.8865773801242366
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "T1",
+      "ari": 0.00863239751238004
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "T2",
+      "ari": 0.00410359492553341
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "T3",
+      "ari": 0.9047594448381174
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "a",
+      "ari": 0.0022937476019141657
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 4,
+      "run": "c_m5",
+      "ari": 0.03364763093184467
+    },
+    {
+      "source": "bsgraph",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "r_a",
+      "ari": 0.8745632792436042
+    },
+    {
+      "source": "bsgraph",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "r_c_m1",
+      "ari": 0.8768100359339827
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "T1",
+      "ari": 0.003179003961005966
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "T2",
+      "ari": 0.029607061756279113
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "T3",
+      "ari": 0.7533489748771256
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "a",
+      "ari": 0.00924573565397317
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "confirmation",
+      "seed": 5,
+      "run": "c_m5",
+      "ari": 0.03962670109995938
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 0,
+      "run": "r_a",
+      "ari": 0.875314321410944
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 0,
+      "run": "r_c_m1",
+      "ari": 0.871574537765883
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 0,
+      "run": "r_c_m10",
+      "ari": 0.871574537765883
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 0,
+      "run": "r_c_m2",
+      "ari": 0.87232172153946
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 0,
+      "run": "r_c_m20",
+      "ari": 0.8708274454998438
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 0,
+      "run": "r_c_m40",
+      "ari": 0.8768122115636268
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 0,
+      "run": "r_c_m5",
+      "ari": 0.8753142133334096
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 0,
+      "run": "T1",
+      "ari": -0.00014158785092395138
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 0,
+      "run": "T2",
+      "ari": 0.0014545910415818058
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 0,
+      "run": "T3",
+      "ari": 0.9401107044828079
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 0,
+      "run": "a",
+      "ari": 0.0007515532584013602
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 0,
+      "run": "c_m1",
+      "ari": 0.0019727445250749725
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 0,
+      "run": "c_m10",
+      "ari": 0.09149873070024134
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 0,
+      "run": "c_m2",
+      "ari": 0.0024133018918597138
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 0,
+      "run": "c_m20",
+      "ari": 0.3293391903534064
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 0,
+      "run": "c_m40",
+      "ari": 0.5416019791833034
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 0,
+      "run": "c_m5",
+      "ari": 0.004317031901531513
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 1,
+      "run": "r_a",
+      "ari": 0.8656109379590965
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 1,
+      "run": "r_c_m1",
+      "ari": 0.8715773741154242
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 1,
+      "run": "r_c_m10",
+      "ari": 0.8730722990083131
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 1,
+      "run": "r_c_m2",
+      "ari": 0.8723247952853711
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 1,
+      "run": "r_c_m20",
+      "ari": 0.8760657475241873
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 1,
+      "run": "r_c_m40",
+      "ari": 0.8753169627680862
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 1,
+      "run": "r_c_m5",
+      "ari": 0.8738201231372384
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 1,
+      "run": "T1",
+      "ari": 0.005699753661909399
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 1,
+      "run": "T2",
+      "ari": 0.007061090953558127
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 1,
+      "run": "T3",
+      "ari": 0.6861797071019137
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 1,
+      "run": "a",
+      "ari": 0.0053327808792586855
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 1,
+      "run": "c_m1",
+      "ari": 0.0055169434444104345
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 1,
+      "run": "c_m10",
+      "ari": 0.08694868711183011
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 1,
+      "run": "c_m2",
+      "ari": 0.010205396110921626
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 1,
+      "run": "c_m20",
+      "ari": 0.29579425174947366
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 1,
+      "run": "c_m40",
+      "ari": 0.524651654621032
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 1,
+      "run": "c_m5",
+      "ari": 0.025786744782420615
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 2,
+      "run": "r_a",
+      "ari": 0.8738200077327368
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 2,
+      "run": "r_c_m1",
+      "ari": 0.8723245148045577
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 2,
+      "run": "r_c_m10",
+      "ari": 0.868591372427955
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 2,
+      "run": "r_c_m2",
+      "ari": 0.8730721015536362
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 2,
+      "run": "r_c_m20",
+      "ari": 0.8693373620618581
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 2,
+      "run": "r_c_m40",
+      "ari": 0.8723245148045577
+    },
+    {
+      "source": "bsgraph",
+      "stage": "selection",
+      "seed": 2,
+      "run": "r_c_m5",
+      "ari": 0.8700836711141458
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 2,
+      "run": "T1",
+      "ari": 0.006069829372856234
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 2,
+      "run": "T2",
+      "ari": 0.013068549005777357
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 2,
+      "run": "T3",
+      "ari": 0.8926242160641797
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 2,
+      "run": "a",
+      "ari": 0.007680086048848655
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 2,
+      "run": "c_m1",
+      "ari": 0.011287496748597211
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 2,
+      "run": "c_m10",
+      "ari": 0.003794594949530031
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 2,
+      "run": "c_m2",
+      "ari": 0.013720546136964176
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 2,
+      "run": "c_m20",
+      "ari": 5.6691087477145444e-05
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 2,
+      "run": "c_m40",
+      "ari": 0.7224324631913601
+    },
+    {
+      "source": "mnist_grass",
+      "stage": "selection",
+      "seed": 2,
+      "run": "c_m5",
+      "ari": 0.02722527094177048
+    }
+  ],
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-5.15.0-202-generic-x86_64-with-glibc2.35",
+    "cpu_model": "Intel(R) Xeon(R) Gold 6234 CPU @ 3.30GHz",
+    "cpu_count": 32,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 1,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "e16afa144af3900e7914106844abf3d16e1d53f6",
+      "dirty": false
+    },
+    "hostname": null,
+    "slurm_job_id": null,
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}

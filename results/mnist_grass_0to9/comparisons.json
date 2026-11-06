@@ -1,0 +1,178 @@
+{
+  "c": "c_m20",
+  "r_c": "r_c_m5",
+  "preregistered": [
+    {
+      "x": "r_c_m5",
+      "y": "T1",
+      "per_seed": [
+        0.26920000000000005,
+        0.2928000000000001,
+        0.2684
+      ],
+      "mean": 0.2768000000000001,
+      "x_better_consistent": true,
+      "y_better_consistent": false,
+      "secondary_mean_diff": {
+        "recall_digits": 0.03839111111111111,
+        "recall_grass": -0.13926666666666668,
+        "ari": 0.24234092298999643
+      }
+    },
+    {
+      "x": "r_c_m5",
+      "y": "T2",
+      "per_seed": [
+        0.2698000000000001,
+        0.2874000000000001,
+        0.26820000000000005
+      ],
+      "mean": 0.2751333333333334,
+      "x_better_consistent": true,
+      "y_better_consistent": false,
+      "secondary_mean_diff": {
+        "recall_digits": 0.038733333333333335,
+        "recall_grass": -0.13858222222222225,
+        "ari": 0.24188868657646959
+      }
+    },
+    {
+      "x": "r_c_m5",
+      "y": "T3",
+      "per_seed": [
+        0.03940000000000016,
+        0.13680000000000003,
+        0.1140000000000001
+      ],
+      "mean": 0.09673333333333343,
+      "x_better_consistent": true,
+      "y_better_consistent": false,
+      "secondary_mean_diff": {
+        "recall_digits": -0.002044444444444444,
+        "recall_grass": -0.0007688888888888888,
+        "ari": 0.12720252918694888
+      }
+    },
+    {
+      "x": "r_a",
+      "y": "T3",
+      "per_seed": [
+        0.035200000000000065,
+        0.10619999999999996,
+        0.09960000000000002
+      ],
+      "mean": 0.08033333333333335,
+      "x_better_consistent": true,
+      "y_better_consistent": false,
+      "secondary_mean_diff": {
+        "recall_digits": -0.003795555555555554,
+        "recall_grass": 0.0001466666666666666,
+        "ari": 0.10805922554454155
+      }
+    },
+    {
+      "x": "r_c_m5",
+      "y": "c_m20",
+      "per_seed": [
+        0.3068000000000001,
+        0.31600000000000006,
+        0.2888000000000001
+      ],
+      "mean": 0.30386666666666673,
+      "x_better_consistent": true,
+      "y_better_consistent": false,
+      "secondary_mean_diff": {
+        "recall_digits": 0.04319555555555556,
+        "recall_grass": -0.01672888888888889,
+        "ari": 0.21354719435724812
+      }
+    },
+    {
+      "x": "r_c_m5",
+      "y": "r_a",
+      "per_seed": [
+        0.0042000000000000925,
+        0.03060000000000007,
+        0.01440000000000008
+      ],
+      "mean": 0.01640000000000008,
+      "x_better_consistent": true,
+      "y_better_consistent": false,
+      "secondary_mean_diff": {
+        "recall_digits": 0.0017511111111111106,
+        "recall_grass": -0.0009155555555555554,
+        "ari": 0.01914330364240735
+      }
+    }
+  ],
+  "descriptive": [
+    {
+      "x": "a",
+      "y": "T1",
+      "per_seed": [
+        -0.14060000000000006,
+        -0.1356,
+        -0.13720000000000004
+      ],
+      "mean": -0.13780000000000003,
+      "x_better_consistent": false,
+      "y_better_consistent": true,
+      "secondary_mean_diff": {
+        "recall_digits": -0.010044444444444444,
+        "recall_grass": -0.04527555555555555,
+        "ari": -0.00032087252116617964
+      }
+    },
+    {
+      "x": "c_m20",
+      "y": "T1",
+      "per_seed": [
+        -0.03760000000000005,
+        -0.02319999999999997,
+        -0.020400000000000085
+      ],
+      "mean": -0.0270666666666667,
+      "x_better_consistent": false,
+      "y_better_consistent": true,
+      "secondary_mean_diff": {
+        "recall_digits": -0.0048044444444444445,
+        "recall_grass": -0.12253777777777779,
+        "ari": 0.028793728632748285
+      }
+    },
+    {
+      "x": "c_m20",
+      "y": "T2",
+      "per_seed": [
+        -0.037000000000000005,
+        -0.028599999999999987,
+        -0.020600000000000063
+      ],
+      "mean": -0.02873333333333335,
+      "x_better_consistent": false,
+      "y_better_consistent": true,
+      "secondary_mean_diff": {
+        "recall_digits": -0.0044622222222222225,
+        "recall_grass": -0.12185333333333333,
+        "ari": 0.028341492219221467
+      }
+    },
+    {
+      "x": "c_m20",
+      "y": "T3",
+      "per_seed": [
+        -0.26739999999999997,
+        -0.17920000000000005,
+        -0.1748
+      ],
+      "mean": -0.2071333333333333,
+      "x_better_consistent": false,
+      "y_better_consistent": true,
+      "secondary_mean_diff": {
+        "recall_digits": -0.04524,
+        "recall_grass": 0.015960000000000002,
+        "ari": -0.08634466517029922
+      }
+    }
+  ]
+}
