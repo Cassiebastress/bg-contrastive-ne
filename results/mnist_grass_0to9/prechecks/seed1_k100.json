@@ -1,0 +1,84 @@
+{
+  "seed": 1,
+  "rows": [
+    {
+      "variant": "k100_r0",
+      "k_loc": 100,
+      "r": 0,
+      "graph_digit_acc": 0.5374000000000001,
+      "edge_purity": 0.3788347759395201,
+      "graph_grass_recall": 0.12158666666666666,
+      "graph_digit_recall": 0.06570666666666666
+    },
+    {
+      "variant": "k100_r1",
+      "k_loc": 100,
+      "r": 1,
+      "graph_digit_acc": 0.5549999999999999,
+      "edge_purity": 0.3950263032042085,
+      "graph_grass_recall": 0.09041333333333333,
+      "graph_digit_recall": 0.07068
+    },
+    {
+      "variant": "k100_r2",
+      "k_loc": 100,
+      "r": 2,
+      "graph_digit_acc": 0.5763999999999999,
+      "edge_purity": 0.4235311766952157,
+      "graph_grass_recall": 0.05528,
+      "graph_digit_recall": 0.07998666666666666
+    },
+    {
+      "variant": "k100_r5",
+      "k_loc": 100,
+      "r": 5,
+      "graph_digit_acc": 0.5725999999999999,
+      "edge_purity": 0.43658456754766384,
+      "graph_grass_recall": 0.039893333333333336,
+      "graph_digit_recall": 0.08838666666666667
+    },
+    {
+      "variant": "k100_r10",
+      "k_loc": 100,
+      "r": 10,
+      "graph_digit_acc": 0.5654,
+      "edge_purity": 0.4264114962882245,
+      "graph_grass_recall": 0.04016,
+      "graph_digit_recall": 0.08886666666666666
+    }
+  ],
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+    "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+    "cpu_count": 192,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 1,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "a41619c876601980300cebf5bfb61f9f76167f87",
+      "dirty": false
+    },
+    "hostname": "math-h100-r01.math.mcgill.ca",
+    "slurm_job_id": "6085",
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}

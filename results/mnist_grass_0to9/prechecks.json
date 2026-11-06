@@ -1,0 +1,1422 @@
+{
+  "graphs": {
+    "0": {
+      "k100_r0": {
+        "variant": "k100_r0",
+        "k_loc": 100,
+        "r": 0,
+        "graph_digit_acc": 0.548,
+        "edge_purity": 0.3786399769347996,
+        "graph_grass_recall": 0.12473333333333333,
+        "graph_digit_recall": 0.06785333333333333
+      },
+      "k100_r1": {
+        "variant": "k100_r1",
+        "k_loc": 100,
+        "r": 1,
+        "graph_digit_acc": 0.558,
+        "edge_purity": 0.3894477182403728,
+        "graph_grass_recall": 0.09692,
+        "graph_digit_recall": 0.07184
+      },
+      "k100_r2": {
+        "variant": "k100_r2",
+        "k_loc": 100,
+        "r": 2,
+        "graph_digit_acc": 0.5938,
+        "edge_purity": 0.4194985920113733,
+        "graph_grass_recall": 0.05737333333333333,
+        "graph_digit_recall": 0.08201333333333333
+      },
+      "k100_r5": {
+        "variant": "k100_r5",
+        "k_loc": 100,
+        "r": 5,
+        "graph_digit_acc": 0.591,
+        "edge_purity": 0.439098976109215,
+        "graph_grass_recall": 0.039106666666666665,
+        "graph_digit_recall": 0.09328
+      },
+      "k100_r10": {
+        "variant": "k100_r10",
+        "k_loc": 100,
+        "r": 10,
+        "graph_digit_acc": 0.579,
+        "edge_purity": 0.42993126772856205,
+        "graph_grass_recall": 0.03944,
+        "graph_digit_recall": 0.09556
+      },
+      "k15_r0": {
+        "variant": "k15_r0",
+        "k_loc": 15,
+        "r": 0,
+        "graph_digit_acc": 0.5818,
+        "edge_purity": 0.41262481192723294,
+        "graph_grass_recall": 0.07628,
+        "graph_digit_recall": 0.07896
+      },
+      "k15_r1": {
+        "variant": "k15_r1",
+        "k_loc": 15,
+        "r": 1,
+        "graph_digit_acc": 0.5915999999999999,
+        "edge_purity": 0.41932268196094497,
+        "graph_grass_recall": 0.06114666666666667,
+        "graph_digit_recall": 0.08106666666666666
+      },
+      "k15_r2": {
+        "variant": "k15_r2",
+        "k_loc": 15,
+        "r": 2,
+        "graph_digit_acc": 0.594,
+        "edge_purity": 0.4240806966776774,
+        "graph_grass_recall": 0.05244,
+        "graph_digit_recall": 0.08324
+      },
+      "k15_r5": {
+        "variant": "k15_r5",
+        "k_loc": 15,
+        "r": 5,
+        "graph_digit_acc": 0.5942000000000001,
+        "edge_purity": 0.42829489067015647,
+        "graph_grass_recall": 0.044706666666666665,
+        "graph_digit_recall": 0.08614666666666666
+      },
+      "k15_r10": {
+        "variant": "k15_r10",
+        "k_loc": 15,
+        "r": 10,
+        "graph_digit_acc": 0.5791999999999999,
+        "edge_purity": 0.42159491500047636,
+        "graph_grass_recall": 0.04216,
+        "graph_digit_recall": 0.08553333333333334
+      },
+      "k30_r0": {
+        "variant": "k30_r0",
+        "k_loc": 30,
+        "r": 0,
+        "graph_digit_acc": 0.5724,
+        "edge_purity": 0.402943189596167,
+        "graph_grass_recall": 0.08886666666666666,
+        "graph_digit_recall": 0.07616
+      },
+      "k30_r1": {
+        "variant": "k30_r1",
+        "k_loc": 30,
+        "r": 1,
+        "graph_digit_acc": 0.587,
+        "edge_purity": 0.4143521049753964,
+        "graph_grass_recall": 0.06872,
+        "graph_digit_recall": 0.079
+      },
+      "k30_r2": {
+        "variant": "k30_r2",
+        "k_loc": 30,
+        "r": 2,
+        "graph_digit_acc": 0.5958,
+        "edge_purity": 0.4249361434757072,
+        "graph_grass_recall": 0.05265333333333334,
+        "graph_digit_recall": 0.08382666666666666
+      },
+      "k30_r5": {
+        "variant": "k30_r5",
+        "k_loc": 30,
+        "r": 5,
+        "graph_digit_acc": 0.599,
+        "edge_purity": 0.4332838079140711,
+        "graph_grass_recall": 0.04065333333333333,
+        "graph_digit_recall": 0.08882666666666666
+      },
+      "k30_r10": {
+        "variant": "k30_r10",
+        "k_loc": 30,
+        "r": 10,
+        "graph_digit_acc": 0.5862,
+        "edge_purity": 0.4246782431052094,
+        "graph_grass_recall": 0.03998666666666666,
+        "graph_digit_recall": 0.08885333333333334
+      },
+      "raw": {
+        "variant": "raw",
+        "graph_digit_acc": 0.3665999999999999,
+        "edge_purity": 0.21948393296215696,
+        "graph_grass_recall": 0.49528,
+        "graph_digit_recall": 0.022653333333333334
+      },
+      "pca50": {
+        "variant": "pca50",
+        "graph_digit_acc": 0.41059999999999997,
+        "edge_purity": 0.23778453325424484,
+        "graph_grass_recall": 0.36646666666666666,
+        "graph_digit_recall": 0.02312
+      },
+      "cpca10": {
+        "variant": "cpca10",
+        "graph_digit_acc": 0.4648,
+        "edge_purity": 0.32811675751714436,
+        "graph_grass_recall": 0.004826666666666667,
+        "graph_digit_recall": 0.06257333333333333
+      }
+    },
+    "1": {
+      "k100_r0": {
+        "variant": "k100_r0",
+        "k_loc": 100,
+        "r": 0,
+        "graph_digit_acc": 0.5374000000000001,
+        "edge_purity": 0.3788347759395201,
+        "graph_grass_recall": 0.12158666666666666,
+        "graph_digit_recall": 0.06570666666666666
+      },
+      "k100_r1": {
+        "variant": "k100_r1",
+        "k_loc": 100,
+        "r": 1,
+        "graph_digit_acc": 0.5549999999999999,
+        "edge_purity": 0.3950263032042085,
+        "graph_grass_recall": 0.09041333333333333,
+        "graph_digit_recall": 0.07068
+      },
+      "k100_r2": {
+        "variant": "k100_r2",
+        "k_loc": 100,
+        "r": 2,
+        "graph_digit_acc": 0.5763999999999999,
+        "edge_purity": 0.4235311766952157,
+        "graph_grass_recall": 0.05528,
+        "graph_digit_recall": 0.07998666666666666
+      },
+      "k100_r5": {
+        "variant": "k100_r5",
+        "k_loc": 100,
+        "r": 5,
+        "graph_digit_acc": 0.5725999999999999,
+        "edge_purity": 0.43658456754766384,
+        "graph_grass_recall": 0.039893333333333336,
+        "graph_digit_recall": 0.08838666666666667
+      },
+      "k100_r10": {
+        "variant": "k100_r10",
+        "k_loc": 100,
+        "r": 10,
+        "graph_digit_acc": 0.5654,
+        "edge_purity": 0.4264114962882245,
+        "graph_grass_recall": 0.04016,
+        "graph_digit_recall": 0.08886666666666666
+      },
+      "k15_r0": {
+        "variant": "k15_r0",
+        "k_loc": 15,
+        "r": 0,
+        "graph_digit_acc": 0.5702,
+        "edge_purity": 0.4140086530456264,
+        "graph_grass_recall": 0.07672,
+        "graph_digit_recall": 0.07713333333333333
+      },
+      "k15_r1": {
+        "variant": "k15_r1",
+        "k_loc": 15,
+        "r": 1,
+        "graph_digit_acc": 0.573,
+        "edge_purity": 0.4174390709339731,
+        "graph_grass_recall": 0.06056,
+        "graph_digit_recall": 0.07877333333333333
+      },
+      "k15_r2": {
+        "variant": "k15_r2",
+        "k_loc": 15,
+        "r": 2,
+        "graph_digit_acc": 0.5728000000000001,
+        "edge_purity": 0.42175008512087164,
+        "graph_grass_recall": 0.05157333333333333,
+        "graph_digit_recall": 0.08016
+      },
+      "k15_r5": {
+        "variant": "k15_r5",
+        "k_loc": 15,
+        "r": 5,
+        "graph_digit_acc": 0.558,
+        "edge_purity": 0.42344487840725065,
+        "graph_grass_recall": 0.04462666666666667,
+        "graph_digit_recall": 0.0816
+      },
+      "k15_r10": {
+        "variant": "k15_r10",
+        "k_loc": 15,
+        "r": 10,
+        "graph_digit_acc": 0.5492000000000001,
+        "edge_purity": 0.41590309687593463,
+        "graph_grass_recall": 0.04276,
+        "graph_digit_recall": 0.08156
+      },
+      "k30_r0": {
+        "variant": "k30_r0",
+        "k_loc": 30,
+        "r": 0,
+        "graph_digit_acc": 0.5618000000000001,
+        "edge_purity": 0.4028511736512228,
+        "graph_grass_recall": 0.08902666666666667,
+        "graph_digit_recall": 0.07325333333333334
+      },
+      "k30_r1": {
+        "variant": "k30_r1",
+        "k_loc": 30,
+        "r": 1,
+        "graph_digit_acc": 0.5708,
+        "edge_purity": 0.4133787930446642,
+        "graph_grass_recall": 0.06653333333333333,
+        "graph_digit_recall": 0.07690666666666666
+      },
+      "k30_r2": {
+        "variant": "k30_r2",
+        "k_loc": 30,
+        "r": 2,
+        "graph_digit_acc": 0.5714,
+        "edge_purity": 0.4241454010381896,
+        "graph_grass_recall": 0.05112,
+        "graph_digit_recall": 0.08092
+      },
+      "k30_r5": {
+        "variant": "k30_r5",
+        "k_loc": 30,
+        "r": 5,
+        "graph_digit_acc": 0.5675999999999999,
+        "edge_purity": 0.4273441435553922,
+        "graph_grass_recall": 0.041,
+        "graph_digit_recall": 0.08428
+      },
+      "k30_r10": {
+        "variant": "k30_r10",
+        "k_loc": 30,
+        "r": 10,
+        "graph_digit_acc": 0.5568,
+        "edge_purity": 0.4195743291056557,
+        "graph_grass_recall": 0.04117333333333333,
+        "graph_digit_recall": 0.08456
+      },
+      "raw": {
+        "variant": "raw",
+        "graph_digit_acc": 0.36619999999999997,
+        "edge_purity": 0.2211656312074722,
+        "graph_grass_recall": 0.5033466666666667,
+        "graph_digit_recall": 0.021933333333333332
+      },
+      "pca50": {
+        "variant": "pca50",
+        "graph_digit_acc": 0.4144,
+        "edge_purity": 0.24028730003264773,
+        "graph_grass_recall": 0.36236,
+        "graph_digit_recall": 0.02304
+      },
+      "cpca10": {
+        "variant": "cpca10",
+        "graph_digit_acc": 0.4788,
+        "edge_purity": 0.34380980808737027,
+        "graph_grass_recall": 0.005186666666666667,
+        "graph_digit_recall": 0.06790666666666667
+      }
+    },
+    "2": {
+      "k100_r0": {
+        "variant": "k100_r0",
+        "k_loc": 100,
+        "r": 0,
+        "graph_digit_acc": 0.5564,
+        "edge_purity": 0.3933668148636039,
+        "graph_grass_recall": 0.1158,
+        "graph_digit_recall": 0.07132
+      },
+      "k100_r1": {
+        "variant": "k100_r1",
+        "k_loc": 100,
+        "r": 1,
+        "graph_digit_acc": 0.5668,
+        "edge_purity": 0.41102211268569866,
+        "graph_grass_recall": 0.08708,
+        "graph_digit_recall": 0.07666666666666666
+      },
+      "k100_r2": {
+        "variant": "k100_r2",
+        "k_loc": 100,
+        "r": 2,
+        "graph_digit_acc": 0.5856,
+        "edge_purity": 0.4426236235551604,
+        "graph_grass_recall": 0.05550666666666667,
+        "graph_digit_recall": 0.08826666666666666
+      },
+      "k100_r5": {
+        "variant": "k100_r5",
+        "k_loc": 100,
+        "r": 5,
+        "graph_digit_acc": 0.5952,
+        "edge_purity": 0.46036085292509565,
+        "graph_grass_recall": 0.038586666666666665,
+        "graph_digit_recall": 0.09766666666666667
+      },
+      "k100_r10": {
+        "variant": "k100_r10",
+        "k_loc": 100,
+        "r": 10,
+        "graph_digit_acc": 0.5882,
+        "edge_purity": 0.45510577816651177,
+        "graph_grass_recall": 0.03781333333333333,
+        "graph_digit_recall": 0.09865333333333333
+      },
+      "k15_r0": {
+        "variant": "k15_r0",
+        "k_loc": 15,
+        "r": 0,
+        "graph_digit_acc": 0.582,
+        "edge_purity": 0.42970150683619146,
+        "graph_grass_recall": 0.07408,
+        "graph_digit_recall": 0.08309333333333334
+      },
+      "k15_r1": {
+        "variant": "k15_r1",
+        "k_loc": 15,
+        "r": 1,
+        "graph_digit_acc": 0.5882,
+        "edge_purity": 0.4353349835209168,
+        "graph_grass_recall": 0.06045333333333333,
+        "graph_digit_recall": 0.08550666666666666
+      },
+      "k15_r2": {
+        "variant": "k15_r2",
+        "k_loc": 15,
+        "r": 2,
+        "graph_digit_acc": 0.5894,
+        "edge_purity": 0.4403935501503143,
+        "graph_grass_recall": 0.05250666666666667,
+        "graph_digit_recall": 0.08756
+      },
+      "k15_r5": {
+        "variant": "k15_r5",
+        "k_loc": 15,
+        "r": 5,
+        "graph_digit_acc": 0.5768000000000001,
+        "edge_purity": 0.4451862166885103,
+        "graph_grass_recall": 0.04398666666666667,
+        "graph_digit_recall": 0.09013333333333333
+      },
+      "k15_r10": {
+        "variant": "k15_r10",
+        "k_loc": 15,
+        "r": 10,
+        "graph_digit_acc": 0.5721999999999999,
+        "edge_purity": 0.4405188994530003,
+        "graph_grass_recall": 0.04258666666666667,
+        "graph_digit_recall": 0.09109333333333333
+      },
+      "k30_r0": {
+        "variant": "k30_r0",
+        "k_loc": 30,
+        "r": 0,
+        "graph_digit_acc": 0.5778,
+        "edge_purity": 0.41963233884003176,
+        "graph_grass_recall": 0.08513333333333334,
+        "graph_digit_recall": 0.07934666666666666
+      },
+      "k30_r1": {
+        "variant": "k30_r1",
+        "k_loc": 30,
+        "r": 1,
+        "graph_digit_acc": 0.5798,
+        "edge_purity": 0.43246422806489565,
+        "graph_grass_recall": 0.06576,
+        "graph_digit_recall": 0.0842
+      },
+      "k30_r2": {
+        "variant": "k30_r2",
+        "k_loc": 30,
+        "r": 2,
+        "graph_digit_acc": 0.5943999999999999,
+        "edge_purity": 0.44565395766095944,
+        "graph_grass_recall": 0.05122666666666666,
+        "graph_digit_recall": 0.08850666666666666
+      },
+      "k30_r5": {
+        "variant": "k30_r5",
+        "k_loc": 30,
+        "r": 5,
+        "graph_digit_acc": 0.5908,
+        "edge_purity": 0.451621271076524,
+        "graph_grass_recall": 0.041133333333333334,
+        "graph_digit_recall": 0.09354666666666667
+      },
+      "k30_r10": {
+        "variant": "k30_r10",
+        "k_loc": 30,
+        "r": 10,
+        "graph_digit_acc": 0.5838,
+        "edge_purity": 0.44517343445227997,
+        "graph_grass_recall": 0.03954666666666667,
+        "graph_digit_recall": 0.093
+      },
+      "raw": {
+        "variant": "raw",
+        "graph_digit_acc": 0.3912,
+        "edge_purity": 0.22661060857009385,
+        "graph_grass_recall": 0.49432,
+        "graph_digit_recall": 0.022466666666666666
+      },
+      "pca50": {
+        "variant": "pca50",
+        "graph_digit_acc": 0.4244,
+        "edge_purity": 0.243923145665773,
+        "graph_grass_recall": 0.37278666666666666,
+        "graph_digit_recall": 0.0234
+      },
+      "cpca10": {
+        "variant": "cpca10",
+        "graph_digit_acc": 0.445,
+        "edge_purity": 0.31909642109781616,
+        "graph_grass_recall": 0.00504,
+        "graph_digit_recall": 0.0546
+      }
+    },
+    "3": {
+      "k100_r0": {
+        "variant": "k100_r0",
+        "k_loc": 100,
+        "r": 0,
+        "graph_digit_acc": 0.5442,
+        "edge_purity": 0.3732350967529889,
+        "graph_grass_recall": 0.11794666666666667,
+        "graph_digit_recall": 0.06666666666666667
+      },
+      "k100_r1": {
+        "variant": "k100_r1",
+        "k_loc": 100,
+        "r": 1,
+        "graph_digit_acc": 0.5444000000000001,
+        "edge_purity": 0.384062427398084,
+        "graph_grass_recall": 0.0934,
+        "graph_digit_recall": 0.07025333333333333
+      },
+      "k100_r2": {
+        "variant": "k100_r2",
+        "k_loc": 100,
+        "r": 2,
+        "graph_digit_acc": 0.5728,
+        "edge_purity": 0.4133311505825216,
+        "graph_grass_recall": 0.05996,
+        "graph_digit_recall": 0.07982666666666667
+      },
+      "k100_r5": {
+        "variant": "k100_r5",
+        "k_loc": 100,
+        "r": 5,
+        "graph_digit_acc": 0.5736,
+        "edge_purity": 0.43017247256118346,
+        "graph_grass_recall": 0.04224,
+        "graph_digit_recall": 0.0894
+      },
+      "k100_r10": {
+        "variant": "k100_r10",
+        "k_loc": 100,
+        "r": 10,
+        "graph_digit_acc": 0.5519999999999999,
+        "edge_purity": 0.41949810631862894,
+        "graph_grass_recall": 0.04321333333333333,
+        "graph_digit_recall": 0.09186666666666667
+      },
+      "k15_r0": {
+        "variant": "k15_r0",
+        "k_loc": 15,
+        "r": 0,
+        "graph_digit_acc": 0.5641999999999999,
+        "edge_purity": 0.40310977024831746,
+        "graph_grass_recall": 0.07924,
+        "graph_digit_recall": 0.07688
+      },
+      "k15_r1": {
+        "variant": "k15_r1",
+        "k_loc": 15,
+        "r": 1,
+        "graph_digit_acc": 0.5711999999999999,
+        "edge_purity": 0.40965547329815805,
+        "graph_grass_recall": 0.06257333333333333,
+        "graph_digit_recall": 0.07894666666666666
+      },
+      "k15_r2": {
+        "variant": "k15_r2",
+        "k_loc": 15,
+        "r": 2,
+        "graph_digit_acc": 0.5682,
+        "edge_purity": 0.4128304249584842,
+        "graph_grass_recall": 0.054266666666666664,
+        "graph_digit_recall": 0.07965333333333334
+      },
+      "k15_r5": {
+        "variant": "k15_r5",
+        "k_loc": 15,
+        "r": 5,
+        "graph_digit_acc": 0.5538000000000001,
+        "edge_purity": 0.4127156784097244,
+        "graph_grass_recall": 0.04836,
+        "graph_digit_recall": 0.08189333333333333
+      },
+      "k15_r10": {
+        "variant": "k15_r10",
+        "k_loc": 15,
+        "r": 10,
+        "graph_digit_acc": 0.5456000000000001,
+        "edge_purity": 0.4062015925211294,
+        "graph_grass_recall": 0.0466,
+        "graph_digit_recall": 0.0818
+      },
+      "k30_r0": {
+        "variant": "k30_r0",
+        "k_loc": 30,
+        "r": 0,
+        "graph_digit_acc": 0.5558,
+        "edge_purity": 0.3923597837365518,
+        "graph_grass_recall": 0.08994666666666666,
+        "graph_digit_recall": 0.07358666666666666
+      },
+      "k30_r1": {
+        "variant": "k30_r1",
+        "k_loc": 30,
+        "r": 1,
+        "graph_digit_acc": 0.562,
+        "edge_purity": 0.4032295428221026,
+        "graph_grass_recall": 0.07045333333333334,
+        "graph_digit_recall": 0.07592
+      },
+      "k30_r2": {
+        "variant": "k30_r2",
+        "k_loc": 30,
+        "r": 2,
+        "graph_digit_acc": 0.5702,
+        "edge_purity": 0.4150832890668628,
+        "graph_grass_recall": 0.05538666666666667,
+        "graph_digit_recall": 0.08061333333333333
+      },
+      "k30_r5": {
+        "variant": "k30_r5",
+        "k_loc": 30,
+        "r": 5,
+        "graph_digit_acc": 0.5584,
+        "edge_purity": 0.4192723215500585,
+        "graph_grass_recall": 0.04462666666666667,
+        "graph_digit_recall": 0.08466666666666667
+      },
+      "k30_r10": {
+        "variant": "k30_r10",
+        "k_loc": 30,
+        "r": 10,
+        "graph_digit_acc": 0.5422,
+        "edge_purity": 0.40961792010438897,
+        "graph_grass_recall": 0.04534666666666667,
+        "graph_digit_recall": 0.08532
+      },
+      "raw": {
+        "variant": "raw",
+        "graph_digit_acc": 0.3702,
+        "edge_purity": 0.21972025605594878,
+        "graph_grass_recall": 0.48645333333333335,
+        "graph_digit_recall": 0.02208
+      },
+      "pca50": {
+        "variant": "pca50",
+        "graph_digit_acc": 0.42400000000000004,
+        "edge_purity": 0.23954631603885335,
+        "graph_grass_recall": 0.3583866666666667,
+        "graph_digit_recall": 0.02252
+      },
+      "cpca10": {
+        "variant": "cpca10",
+        "graph_digit_acc": 0.5436000000000001,
+        "edge_purity": 0.39692769488831997,
+        "graph_grass_recall": 0.005413333333333333,
+        "graph_digit_recall": 0.09384
+      }
+    },
+    "4": {
+      "k100_r0": {
+        "variant": "k100_r0",
+        "k_loc": 100,
+        "r": 0,
+        "graph_digit_acc": 0.5721999999999999,
+        "edge_purity": 0.3904477776097447,
+        "graph_grass_recall": 0.12398666666666666,
+        "graph_digit_recall": 0.06937333333333333
+      },
+      "k100_r1": {
+        "variant": "k100_r1",
+        "k_loc": 100,
+        "r": 1,
+        "graph_digit_acc": 0.5895999999999999,
+        "edge_purity": 0.4068477560366932,
+        "graph_grass_recall": 0.09233333333333334,
+        "graph_digit_recall": 0.07452
+      },
+      "k100_r2": {
+        "variant": "k100_r2",
+        "k_loc": 100,
+        "r": 2,
+        "graph_digit_acc": 0.6123999999999998,
+        "edge_purity": 0.43506751118346354,
+        "graph_grass_recall": 0.05658666666666667,
+        "graph_digit_recall": 0.08408
+      },
+      "k100_r5": {
+        "variant": "k100_r5",
+        "k_loc": 100,
+        "r": 5,
+        "graph_digit_acc": 0.6057999999999999,
+        "edge_purity": 0.44948977500922094,
+        "graph_grass_recall": 0.039426666666666665,
+        "graph_digit_recall": 0.09277333333333333
+      },
+      "k100_r10": {
+        "variant": "k100_r10",
+        "k_loc": 100,
+        "r": 10,
+        "graph_digit_acc": 0.5893999999999999,
+        "edge_purity": 0.43707786980310825,
+        "graph_grass_recall": 0.03876,
+        "graph_digit_recall": 0.09372
+      },
+      "k15_r0": {
+        "variant": "k15_r0",
+        "k_loc": 15,
+        "r": 0,
+        "graph_digit_acc": 0.6115999999999999,
+        "edge_purity": 0.4254017356073257,
+        "graph_grass_recall": 0.07598666666666666,
+        "graph_digit_recall": 0.08138666666666666
+      },
+      "k15_r1": {
+        "variant": "k15_r1",
+        "k_loc": 15,
+        "r": 1,
+        "graph_digit_acc": 0.6144,
+        "edge_purity": 0.4348532867056445,
+        "graph_grass_recall": 0.06041333333333333,
+        "graph_digit_recall": 0.08350666666666667
+      },
+      "k15_r2": {
+        "variant": "k15_r2",
+        "k_loc": 15,
+        "r": 2,
+        "graph_digit_acc": 0.6106,
+        "edge_purity": 0.4342938223095394,
+        "graph_grass_recall": 0.052,
+        "graph_digit_recall": 0.08430666666666667
+      },
+      "k15_r5": {
+        "variant": "k15_r5",
+        "k_loc": 15,
+        "r": 5,
+        "graph_digit_acc": 0.6008,
+        "edge_purity": 0.4332751853467074,
+        "graph_grass_recall": 0.04494666666666667,
+        "graph_digit_recall": 0.08601333333333333
+      },
+      "k15_r10": {
+        "variant": "k15_r10",
+        "k_loc": 15,
+        "r": 10,
+        "graph_digit_acc": 0.5889999999999999,
+        "edge_purity": 0.42673164887824006,
+        "graph_grass_recall": 0.04361333333333333,
+        "graph_digit_recall": 0.08626666666666667
+      },
+      "k30_r0": {
+        "variant": "k30_r0",
+        "k_loc": 30,
+        "r": 0,
+        "graph_digit_acc": 0.6042,
+        "edge_purity": 0.41471736896197325,
+        "graph_grass_recall": 0.088,
+        "graph_digit_recall": 0.07777333333333333
+      },
+      "k30_r1": {
+        "variant": "k30_r1",
+        "k_loc": 30,
+        "r": 1,
+        "graph_digit_acc": 0.6126,
+        "edge_purity": 0.42851868564630596,
+        "graph_grass_recall": 0.06630666666666667,
+        "graph_digit_recall": 0.08158666666666667
+      },
+      "k30_r2": {
+        "variant": "k30_r2",
+        "k_loc": 30,
+        "r": 2,
+        "graph_digit_acc": 0.6176,
+        "edge_purity": 0.4389927310488058,
+        "graph_grass_recall": 0.05177333333333333,
+        "graph_digit_recall": 0.08548
+      },
+      "k30_r5": {
+        "variant": "k30_r5",
+        "k_loc": 30,
+        "r": 5,
+        "graph_digit_acc": 0.6,
+        "edge_purity": 0.4390556593608925,
+        "graph_grass_recall": 0.04149333333333333,
+        "graph_digit_recall": 0.08804
+      },
+      "k30_r10": {
+        "variant": "k30_r10",
+        "k_loc": 30,
+        "r": 10,
+        "graph_digit_acc": 0.586,
+        "edge_purity": 0.4311209198408806,
+        "graph_grass_recall": 0.041106666666666666,
+        "graph_digit_recall": 0.08793333333333334
+      },
+      "raw": {
+        "variant": "raw",
+        "graph_digit_acc": 0.3736,
+        "edge_purity": 0.2265331487811079,
+        "graph_grass_recall": 0.4871466666666667,
+        "graph_digit_recall": 0.022693333333333333
+      },
+      "pca50": {
+        "variant": "pca50",
+        "graph_digit_acc": 0.42119999999999996,
+        "edge_purity": 0.2468470074423994,
+        "graph_grass_recall": 0.3580933333333333,
+        "graph_digit_recall": 0.02316
+      },
+      "cpca10": {
+        "variant": "cpca10",
+        "graph_digit_acc": 0.4556,
+        "edge_purity": 0.3298420056262274,
+        "graph_grass_recall": 0.004906666666666667,
+        "graph_digit_recall": 0.05958666666666667
+      }
+    },
+    "5": {
+      "k100_r0": {
+        "variant": "k100_r0",
+        "k_loc": 100,
+        "r": 0,
+        "graph_digit_acc": 0.5513999999999999,
+        "edge_purity": 0.38573746150461946,
+        "graph_grass_recall": 0.11953333333333334,
+        "graph_digit_recall": 0.07588
+      },
+      "k100_r1": {
+        "variant": "k100_r1",
+        "k_loc": 100,
+        "r": 1,
+        "graph_digit_acc": 0.568,
+        "edge_purity": 0.40325723066791064,
+        "graph_grass_recall": 0.09146666666666667,
+        "graph_digit_recall": 0.08156
+      },
+      "k100_r2": {
+        "variant": "k100_r2",
+        "k_loc": 100,
+        "r": 2,
+        "graph_digit_acc": 0.5788,
+        "edge_purity": 0.42696536897311954,
+        "graph_grass_recall": 0.05836,
+        "graph_digit_recall": 0.09168
+      },
+      "k100_r5": {
+        "variant": "k100_r5",
+        "k_loc": 100,
+        "r": 5,
+        "graph_digit_acc": 0.5721999999999999,
+        "edge_purity": 0.4390103881902679,
+        "graph_grass_recall": 0.041,
+        "graph_digit_recall": 0.09984
+      },
+      "k100_r10": {
+        "variant": "k100_r10",
+        "k_loc": 100,
+        "r": 10,
+        "graph_digit_acc": 0.5468,
+        "edge_purity": 0.4258675509340757,
+        "graph_grass_recall": 0.04156,
+        "graph_digit_recall": 0.10076
+      },
+      "k15_r0": {
+        "variant": "k15_r0",
+        "k_loc": 15,
+        "r": 0,
+        "graph_digit_acc": 0.5694,
+        "edge_purity": 0.41351766092127257,
+        "graph_grass_recall": 0.07832,
+        "graph_digit_recall": 0.0876
+      },
+      "k15_r1": {
+        "variant": "k15_r1",
+        "k_loc": 15,
+        "r": 1,
+        "graph_digit_acc": 0.5651999999999999,
+        "edge_purity": 0.41654702817999095,
+        "graph_grass_recall": 0.061586666666666665,
+        "graph_digit_recall": 0.08837333333333333
+      },
+      "k15_r2": {
+        "variant": "k15_r2",
+        "k_loc": 15,
+        "r": 2,
+        "graph_digit_acc": 0.5700000000000001,
+        "edge_purity": 0.41952892313577617,
+        "graph_grass_recall": 0.053053333333333334,
+        "graph_digit_recall": 0.09136
+      },
+      "k15_r5": {
+        "variant": "k15_r5",
+        "k_loc": 15,
+        "r": 5,
+        "graph_digit_acc": 0.5584,
+        "edge_purity": 0.4200646631106503,
+        "graph_grass_recall": 0.04496,
+        "graph_digit_recall": 0.09213333333333333
+      },
+      "k15_r10": {
+        "variant": "k15_r10",
+        "k_loc": 15,
+        "r": 10,
+        "graph_digit_acc": 0.542,
+        "edge_purity": 0.4134915337356455,
+        "graph_grass_recall": 0.04356,
+        "graph_digit_recall": 0.09176
+      },
+      "k30_r0": {
+        "variant": "k30_r0",
+        "k_loc": 30,
+        "r": 0,
+        "graph_digit_acc": 0.5642,
+        "edge_purity": 0.4049202583547029,
+        "graph_grass_recall": 0.09092,
+        "graph_digit_recall": 0.08364
+      },
+      "k30_r1": {
+        "variant": "k30_r1",
+        "k_loc": 30,
+        "r": 1,
+        "graph_digit_acc": 0.5672,
+        "edge_purity": 0.4172938504064151,
+        "graph_grass_recall": 0.06792,
+        "graph_digit_recall": 0.08842666666666667
+      },
+      "k30_r2": {
+        "variant": "k30_r2",
+        "k_loc": 30,
+        "r": 2,
+        "graph_digit_acc": 0.5616,
+        "edge_purity": 0.42301545018646775,
+        "graph_grass_recall": 0.05196,
+        "graph_digit_recall": 0.09238666666666667
+      },
+      "k30_r5": {
+        "variant": "k30_r5",
+        "k_loc": 30,
+        "r": 5,
+        "graph_digit_acc": 0.5645999999999999,
+        "edge_purity": 0.4259603046766223,
+        "graph_grass_recall": 0.04244,
+        "graph_digit_recall": 0.09490666666666667
+      },
+      "k30_r10": {
+        "variant": "k30_r10",
+        "k_loc": 30,
+        "r": 10,
+        "graph_digit_acc": 0.5444000000000001,
+        "edge_purity": 0.41787647050804944,
+        "graph_grass_recall": 0.042146666666666666,
+        "graph_digit_recall": 0.09484
+      },
+      "raw": {
+        "variant": "raw",
+        "graph_digit_acc": 0.348,
+        "edge_purity": 0.22276073532944285,
+        "graph_grass_recall": 0.48328,
+        "graph_digit_recall": 0.024266666666666666
+      },
+      "pca50": {
+        "variant": "pca50",
+        "graph_digit_acc": 0.41579999999999995,
+        "edge_purity": 0.24000592460934608,
+        "graph_grass_recall": 0.36776,
+        "graph_digit_recall": 0.024186666666666665
+      },
+      "cpca10": {
+        "variant": "cpca10",
+        "graph_digit_acc": 0.46900000000000003,
+        "edge_purity": 0.32424279412021134,
+        "graph_grass_recall": 0.005866666666666667,
+        "graph_digit_recall": 0.058186666666666664
+      }
+    }
+  },
+  "reference": {
+    "0": {
+      "seed": 0,
+      "rows": [
+        {
+          "variant": "raw",
+          "graph_digit_acc": 0.3665999999999999,
+          "edge_purity": 0.21948393296215696,
+          "graph_grass_recall": 0.49528,
+          "graph_digit_recall": 0.022653333333333334
+        },
+        {
+          "variant": "pca50",
+          "graph_digit_acc": 0.41059999999999997,
+          "edge_purity": 0.23778453325424484,
+          "graph_grass_recall": 0.36646666666666666,
+          "graph_digit_recall": 0.02312
+        },
+        {
+          "variant": "cpca10",
+          "graph_digit_acc": 0.4648,
+          "edge_purity": 0.32811675751714436,
+          "graph_grass_recall": 0.004826666666666667,
+          "graph_digit_recall": 0.06257333333333333
+        }
+      ],
+      "cpca_alpha": 5.541020330009492,
+      "digit_acc_clean": 0.906,
+      "xi": {
+        "xi_same_digit": 0.10849076684061175,
+        "same_digit_chance": 0.09981996399279856,
+        "xi_same_digit_excess": 0.008670802847813186,
+        "grass_dist_xi_pairs": 3.854723765612316,
+        "grass_dist_random_pairs": 7.97844873671798,
+        "grass_dist_grass_knn": 3.671216194388764,
+        "len_min": 26,
+        "len_median": 41.0,
+        "len_p90": 60.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.95,
+        "frac_capped_rows": 0.1066,
+        "xi_sha256": "0f32158bb1b2df5c23ee0bc8257135e7ce4be5fe247a34035aa1d7c981f19c24"
+      },
+      "environment": {
+        "python": "3.12.15",
+        "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+        "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+        "cpu_count": 192,
+        "torch": "2.14.1+cpu",
+        "torch_num_threads": 1,
+        "torch_deterministic_algorithms": true,
+        "packages": {
+          "numpy": "2.5.2",
+          "scipy": "1.18.1",
+          "scikit-learn": "1.9.1",
+          "torchvision": "0.29.1+cpu",
+          "annoy": "1.17.3",
+          "matplotlib": "3.11.2",
+          "contrastive-ne": "0.4.0",
+          "contrastive": "1.2.0",
+          "umap-learn": "0.5.12",
+          "numba": "0.68.0",
+          "llvmlite": "0.50.0",
+          "pynndescent": "0.6.0",
+          "openTSNE": "1.0.4"
+        },
+        "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+        "project_git": {
+          "head": "a41619c876601980300cebf5bfb61f9f76167f87",
+          "dirty": false
+        },
+        "hostname": "math-h100-r01.math.mcgill.ca",
+        "slurm_job_id": "6085",
+        "cne_device": "cpu",
+        "cuda": null,
+        "gpu": null
+      }
+    },
+    "1": {
+      "seed": 1,
+      "rows": [
+        {
+          "variant": "raw",
+          "graph_digit_acc": 0.36619999999999997,
+          "edge_purity": 0.2211656312074722,
+          "graph_grass_recall": 0.5033466666666667,
+          "graph_digit_recall": 0.021933333333333332
+        },
+        {
+          "variant": "pca50",
+          "graph_digit_acc": 0.4144,
+          "edge_purity": 0.24028730003264773,
+          "graph_grass_recall": 0.36236,
+          "graph_digit_recall": 0.02304
+        },
+        {
+          "variant": "cpca10",
+          "graph_digit_acc": 0.4788,
+          "edge_purity": 0.34380980808737027,
+          "graph_grass_recall": 0.005186666666666667,
+          "graph_digit_recall": 0.06790666666666667
+        }
+      ],
+      "cpca_alpha": 5.541020330009492,
+      "digit_acc_clean": 0.9122000000000001,
+      "xi": {
+        "xi_same_digit": 0.10916155478317528,
+        "same_digit_chance": 0.09981996399279856,
+        "xi_same_digit_excess": 0.00934159079037672,
+        "grass_dist_xi_pairs": 3.9012892745091543,
+        "grass_dist_random_pairs": 7.97926811030547,
+        "grass_dist_grass_knn": 3.7331140206419926,
+        "len_min": 28,
+        "len_median": 42.0,
+        "len_p90": 60.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.952,
+        "frac_capped_rows": 0.1014,
+        "xi_sha256": "3453a9ceb46f51af8c1c8c92f3b6eec37a9edfd87a07e1aebfa34a0543dd7d3b"
+      },
+      "environment": {
+        "python": "3.12.15",
+        "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+        "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+        "cpu_count": 192,
+        "torch": "2.14.1+cpu",
+        "torch_num_threads": 1,
+        "torch_deterministic_algorithms": true,
+        "packages": {
+          "numpy": "2.5.2",
+          "scipy": "1.18.1",
+          "scikit-learn": "1.9.1",
+          "torchvision": "0.29.1+cpu",
+          "annoy": "1.17.3",
+          "matplotlib": "3.11.2",
+          "contrastive-ne": "0.4.0",
+          "contrastive": "1.2.0",
+          "umap-learn": "0.5.12",
+          "numba": "0.68.0",
+          "llvmlite": "0.50.0",
+          "pynndescent": "0.6.0",
+          "openTSNE": "1.0.4"
+        },
+        "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+        "project_git": {
+          "head": "a41619c876601980300cebf5bfb61f9f76167f87",
+          "dirty": false
+        },
+        "hostname": "math-h100-r01.math.mcgill.ca",
+        "slurm_job_id": "6085",
+        "cne_device": "cpu",
+        "cuda": null,
+        "gpu": null
+      }
+    },
+    "2": {
+      "seed": 2,
+      "rows": [
+        {
+          "variant": "raw",
+          "graph_digit_acc": 0.3912,
+          "edge_purity": 0.22661060857009385,
+          "graph_grass_recall": 0.49432,
+          "graph_digit_recall": 0.022466666666666666
+        },
+        {
+          "variant": "pca50",
+          "graph_digit_acc": 0.4244,
+          "edge_purity": 0.243923145665773,
+          "graph_grass_recall": 0.37278666666666666,
+          "graph_digit_recall": 0.0234
+        },
+        {
+          "variant": "cpca10",
+          "graph_digit_acc": 0.445,
+          "edge_purity": 0.31909642109781616,
+          "graph_grass_recall": 0.00504,
+          "graph_digit_recall": 0.0546
+        }
+      ],
+      "cpca_alpha": 5.541020330009492,
+      "digit_acc_clean": 0.914,
+      "xi": {
+        "xi_same_digit": 0.10962695978569673,
+        "same_digit_chance": 0.09981996399279856,
+        "xi_same_digit_excess": 0.009806995792898163,
+        "grass_dist_xi_pairs": 3.774447574081968,
+        "grass_dist_random_pairs": 7.9627687507511755,
+        "grass_dist_grass_knn": 3.6199572733530108,
+        "len_min": 21,
+        "len_median": 42.0,
+        "len_p90": 60.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.9488,
+        "frac_capped_rows": 0.1078,
+        "xi_sha256": "613b65a0a3ba8935cb0d737fb1a8e46aae4dc2062056b9f08dc111ed7fc9f9cc"
+      },
+      "environment": {
+        "python": "3.12.15",
+        "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+        "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+        "cpu_count": 192,
+        "torch": "2.14.1+cpu",
+        "torch_num_threads": 1,
+        "torch_deterministic_algorithms": true,
+        "packages": {
+          "numpy": "2.5.2",
+          "scipy": "1.18.1",
+          "scikit-learn": "1.9.1",
+          "torchvision": "0.29.1+cpu",
+          "annoy": "1.17.3",
+          "matplotlib": "3.11.2",
+          "contrastive-ne": "0.4.0",
+          "contrastive": "1.2.0",
+          "umap-learn": "0.5.12",
+          "numba": "0.68.0",
+          "llvmlite": "0.50.0",
+          "pynndescent": "0.6.0",
+          "openTSNE": "1.0.4"
+        },
+        "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+        "project_git": {
+          "head": "a41619c876601980300cebf5bfb61f9f76167f87",
+          "dirty": false
+        },
+        "hostname": "math-h100-r01.math.mcgill.ca",
+        "slurm_job_id": "6085",
+        "cne_device": "cpu",
+        "cuda": null,
+        "gpu": null
+      }
+    },
+    "3": {
+      "seed": 3,
+      "rows": [
+        {
+          "variant": "raw",
+          "graph_digit_acc": 0.3702,
+          "edge_purity": 0.21972025605594878,
+          "graph_grass_recall": 0.48645333333333335,
+          "graph_digit_recall": 0.02208
+        },
+        {
+          "variant": "pca50",
+          "graph_digit_acc": 0.42400000000000004,
+          "edge_purity": 0.23954631603885335,
+          "graph_grass_recall": 0.3583866666666667,
+          "graph_digit_recall": 0.02252
+        },
+        {
+          "variant": "cpca10",
+          "graph_digit_acc": 0.5436000000000001,
+          "edge_purity": 0.39692769488831997,
+          "graph_grass_recall": 0.005413333333333333,
+          "graph_digit_recall": 0.09384
+        }
+      ],
+      "cpca_alpha": 4.3754793750741845,
+      "digit_acc_clean": 0.9110000000000001,
+      "xi": {
+        "xi_same_digit": 0.10880496974221346,
+        "same_digit_chance": 0.09981996399279856,
+        "xi_same_digit_excess": 0.008985005749414895,
+        "grass_dist_xi_pairs": 3.83696390098471,
+        "grass_dist_random_pairs": 7.863225293029001,
+        "grass_dist_grass_knn": 3.673266482207593,
+        "len_min": 25,
+        "len_median": 42.0,
+        "len_p90": 60.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.9514,
+        "frac_capped_rows": 0.1042,
+        "xi_sha256": "9203b7825b40bd9169b4f6fe6451576b9d182f25cc5b3a54ec9aecd9c3911c42"
+      },
+      "environment": {
+        "python": "3.12.15",
+        "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+        "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+        "cpu_count": 192,
+        "torch": "2.14.1+cpu",
+        "torch_num_threads": 1,
+        "torch_deterministic_algorithms": true,
+        "packages": {
+          "numpy": "2.5.2",
+          "scipy": "1.18.1",
+          "scikit-learn": "1.9.1",
+          "torchvision": "0.29.1+cpu",
+          "annoy": "1.17.3",
+          "matplotlib": "3.11.2",
+          "contrastive-ne": "0.4.0",
+          "contrastive": "1.2.0",
+          "umap-learn": "0.5.12",
+          "numba": "0.68.0",
+          "llvmlite": "0.50.0",
+          "pynndescent": "0.6.0",
+          "openTSNE": "1.0.4"
+        },
+        "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+        "project_git": {
+          "head": "a41619c876601980300cebf5bfb61f9f76167f87",
+          "dirty": false
+        },
+        "hostname": "math-h100-r01.math.mcgill.ca",
+        "slurm_job_id": "6085",
+        "cne_device": "cpu",
+        "cuda": null,
+        "gpu": null
+      }
+    },
+    "4": {
+      "seed": 4,
+      "rows": [
+        {
+          "variant": "raw",
+          "graph_digit_acc": 0.3736,
+          "edge_purity": 0.2265331487811079,
+          "graph_grass_recall": 0.4871466666666667,
+          "graph_digit_recall": 0.022693333333333333
+        },
+        {
+          "variant": "pca50",
+          "graph_digit_acc": 0.42119999999999996,
+          "edge_purity": 0.2468470074423994,
+          "graph_grass_recall": 0.3580933333333333,
+          "graph_digit_recall": 0.02316
+        },
+        {
+          "variant": "cpca10",
+          "graph_digit_acc": 0.4556,
+          "edge_purity": 0.3298420056262274,
+          "graph_grass_recall": 0.004906666666666667,
+          "graph_digit_recall": 0.05958666666666667
+        }
+      ],
+      "cpca_alpha": 5.541020330009492,
+      "digit_acc_clean": 0.9174,
+      "xi": {
+        "xi_same_digit": 0.11025358203943707,
+        "same_digit_chance": 0.09981996399279856,
+        "xi_same_digit_excess": 0.010433618046638504,
+        "grass_dist_xi_pairs": 3.7833656431069254,
+        "grass_dist_random_pairs": 7.992135464260233,
+        "grass_dist_grass_knn": 3.6339904011123347,
+        "len_min": 30,
+        "len_median": 42.0,
+        "len_p90": 60.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.9534,
+        "frac_capped_rows": 0.1198,
+        "xi_sha256": "a4b30740282e9cd35e6e477f172451a470b3e58df49ad002827dfd05ef8be0ba"
+      },
+      "environment": {
+        "python": "3.12.15",
+        "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+        "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+        "cpu_count": 192,
+        "torch": "2.14.1+cpu",
+        "torch_num_threads": 1,
+        "torch_deterministic_algorithms": true,
+        "packages": {
+          "numpy": "2.5.2",
+          "scipy": "1.18.1",
+          "scikit-learn": "1.9.1",
+          "torchvision": "0.29.1+cpu",
+          "annoy": "1.17.3",
+          "matplotlib": "3.11.2",
+          "contrastive-ne": "0.4.0",
+          "contrastive": "1.2.0",
+          "umap-learn": "0.5.12",
+          "numba": "0.68.0",
+          "llvmlite": "0.50.0",
+          "pynndescent": "0.6.0",
+          "openTSNE": "1.0.4"
+        },
+        "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+        "project_git": {
+          "head": "a41619c876601980300cebf5bfb61f9f76167f87",
+          "dirty": false
+        },
+        "hostname": "math-h100-r01.math.mcgill.ca",
+        "slurm_job_id": "6085",
+        "cne_device": "cpu",
+        "cuda": null,
+        "gpu": null
+      }
+    },
+    "5": {
+      "seed": 5,
+      "rows": [
+        {
+          "variant": "raw",
+          "graph_digit_acc": 0.348,
+          "edge_purity": 0.22276073532944285,
+          "graph_grass_recall": 0.48328,
+          "graph_digit_recall": 0.024266666666666666
+        },
+        {
+          "variant": "pca50",
+          "graph_digit_acc": 0.41579999999999995,
+          "edge_purity": 0.24000592460934608,
+          "graph_grass_recall": 0.36776,
+          "graph_digit_recall": 0.024186666666666665
+        },
+        {
+          "variant": "cpca10",
+          "graph_digit_acc": 0.46900000000000003,
+          "edge_purity": 0.32424279412021134,
+          "graph_grass_recall": 0.005866666666666667,
+          "graph_digit_recall": 0.058186666666666664
+        }
+      ],
+      "cpca_alpha": 5.541020330009492,
+      "digit_acc_clean": 0.9076000000000001,
+      "xi": {
+        "xi_same_digit": 0.10747336414557103,
+        "same_digit_chance": 0.09981996399279856,
+        "xi_same_digit_excess": 0.007653400152772466,
+        "grass_dist_xi_pairs": 3.783140651062249,
+        "grass_dist_random_pairs": 7.97088420232325,
+        "grass_dist_grass_knn": 3.6730176693073675,
+        "len_min": 30,
+        "len_median": 42.0,
+        "len_p90": 60.0,
+        "len_max": 60,
+        "n_empty_rows": 0,
+        "frac_tie_split_rows": 0.9564,
+        "frac_capped_rows": 0.108,
+        "xi_sha256": "22a8a6005eb48ea5cf99be9ea095b0f2ed7c9a135ea938dc149103f98e3f59fb"
+      },
+      "environment": {
+        "python": "3.12.15",
+        "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+        "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+        "cpu_count": 192,
+        "torch": "2.14.1+cpu",
+        "torch_num_threads": 1,
+        "torch_deterministic_algorithms": true,
+        "packages": {
+          "numpy": "2.5.2",
+          "scipy": "1.18.1",
+          "scikit-learn": "1.9.1",
+          "torchvision": "0.29.1+cpu",
+          "annoy": "1.17.3",
+          "matplotlib": "3.11.2",
+          "contrastive-ne": "0.4.0",
+          "contrastive": "1.2.0",
+          "umap-learn": "0.5.12",
+          "numba": "0.68.0",
+          "llvmlite": "0.50.0",
+          "pynndescent": "0.6.0",
+          "openTSNE": "1.0.4"
+        },
+        "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+        "project_git": {
+          "head": "a41619c876601980300cebf5bfb61f9f76167f87",
+          "dirty": false
+        },
+        "hostname": "math-h100-r01.math.mcgill.ca",
+        "slurm_job_id": "6085",
+        "cne_device": "cpu",
+        "cuda": null,
+        "gpu": null
+      }
+    }
+  }
+}
