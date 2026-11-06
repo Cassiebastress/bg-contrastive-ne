@@ -1,0 +1,215 @@
+{
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+    "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+    "cpu_count": 192,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 1,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "a9329a617f8bf3b7f91a1ec69d52b51375d36330",
+      "dirty": false
+    },
+    "hostname": "math-h100-r01.math.mcgill.ca",
+    "slurm_job_id": "6084",
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  },
+  "n_grass_images": 1274,
+  "digits": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "regression_0_1": [
+    {
+      "seed": 0,
+      "stored_file_matches_manifest": true,
+      "rebuild_identical": true
+    },
+    {
+      "seed": 1,
+      "stored_file_matches_manifest": true,
+      "rebuild_identical": true
+    },
+    {
+      "seed": 2,
+      "stored_file_matches_manifest": true,
+      "rebuild_identical": true
+    },
+    {
+      "seed": 3,
+      "stored_file_matches_manifest": true,
+      "rebuild_identical": true
+    },
+    {
+      "seed": 4,
+      "stored_file_matches_manifest": true,
+      "rebuild_identical": true
+    },
+    {
+      "seed": 5,
+      "stored_file_matches_manifest": true,
+      "rebuild_identical": true
+    }
+  ],
+  "xi_checks_refactor": {
+    "seed": 0,
+    "fields": 14,
+    "identical": true,
+    "mismatched": []
+  },
+  "seeds": [
+    {
+      "seed": 0,
+      "digit_counts": {
+        "0": 500,
+        "1": 500,
+        "2": 500,
+        "3": 500,
+        "4": 500,
+        "5": 500,
+        "6": 500,
+        "7": 500,
+        "8": 500,
+        "9": 500
+      },
+      "n_target_pool": 637,
+      "n_background_pool": 637,
+      "distinct_target_sources": 637,
+      "distinct_background_sources": 637,
+      "filenames_sha256": "18ee7e2e312aeeebd1a4044817172086e4ec88c7746861e783aa6935fd48594f",
+      "checks": "passed"
+    },
+    {
+      "seed": 1,
+      "digit_counts": {
+        "0": 500,
+        "1": 500,
+        "2": 500,
+        "3": 500,
+        "4": 500,
+        "5": 500,
+        "6": 500,
+        "7": 500,
+        "8": 500,
+        "9": 500
+      },
+      "n_target_pool": 637,
+      "n_background_pool": 637,
+      "distinct_target_sources": 637,
+      "distinct_background_sources": 637,
+      "filenames_sha256": "18ee7e2e312aeeebd1a4044817172086e4ec88c7746861e783aa6935fd48594f",
+      "checks": "passed"
+    },
+    {
+      "seed": 2,
+      "digit_counts": {
+        "0": 500,
+        "1": 500,
+        "2": 500,
+        "3": 500,
+        "4": 500,
+        "5": 500,
+        "6": 500,
+        "7": 500,
+        "8": 500,
+        "9": 500
+      },
+      "n_target_pool": 637,
+      "n_background_pool": 637,
+      "distinct_target_sources": 637,
+      "distinct_background_sources": 637,
+      "filenames_sha256": "18ee7e2e312aeeebd1a4044817172086e4ec88c7746861e783aa6935fd48594f",
+      "checks": "passed"
+    },
+    {
+      "seed": 3,
+      "digit_counts": {
+        "0": 500,
+        "1": 500,
+        "2": 500,
+        "3": 500,
+        "4": 500,
+        "5": 500,
+        "6": 500,
+        "7": 500,
+        "8": 500,
+        "9": 500
+      },
+      "n_target_pool": 637,
+      "n_background_pool": 637,
+      "distinct_target_sources": 637,
+      "distinct_background_sources": 637,
+      "filenames_sha256": "18ee7e2e312aeeebd1a4044817172086e4ec88c7746861e783aa6935fd48594f",
+      "checks": "passed"
+    },
+    {
+      "seed": 4,
+      "digit_counts": {
+        "0": 500,
+        "1": 500,
+        "2": 500,
+        "3": 500,
+        "4": 500,
+        "5": 500,
+        "6": 500,
+        "7": 500,
+        "8": 500,
+        "9": 500
+      },
+      "n_target_pool": 637,
+      "n_background_pool": 637,
+      "distinct_target_sources": 637,
+      "distinct_background_sources": 636,
+      "filenames_sha256": "18ee7e2e312aeeebd1a4044817172086e4ec88c7746861e783aa6935fd48594f",
+      "checks": "passed"
+    },
+    {
+      "seed": 5,
+      "digit_counts": {
+        "0": 500,
+        "1": 500,
+        "2": 500,
+        "3": 500,
+        "4": 500,
+        "5": 500,
+        "6": 500,
+        "7": 500,
+        "8": 500,
+        "9": 500
+      },
+      "n_target_pool": 637,
+      "n_background_pool": 637,
+      "distinct_target_sources": 636,
+      "distinct_background_sources": 637,
+      "filenames_sha256": "18ee7e2e312aeeebd1a4044817172086e4ec88c7746861e783aa6935fd48594f",
+      "checks": "passed"
+    }
+  ]
+}
