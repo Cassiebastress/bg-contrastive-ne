@@ -1,6 +1,7 @@
 """Single-stage vs two-stage (r_a): tables and figures, generated from results/single_stage/ (no number typed by hand).
 
-Tables: the reuse check of the stored two-stage runs, the optimization-noise reference and tolerances, then per dataset
+Tables: the reuse check of the stored two-stage runs, the optimization-noise reference and tolerances (with, added
+post hoc, the layout agreement between the seed-3 two-stage runs that differ only in training seed), then per dataset
 the confirmation seeds 3-5 (per seed, the difference, whether it is within tolerance, and mean [min, max]), the
 agreement between the two embeddings (kNN overlap at 15, Procrustes disparity), the runtimes, and seeds 0-2 as a
 secondary table. Figures (seed 3, per dataset): both embeddings side by side, colored by digit and by mean grass
@@ -14,6 +15,7 @@ Outputs: results/single_stage/tables.md, embeddings_{01,0to9}_seed3.png, learnin
 """
 import json
 import sys
+from itertools import combinations
 from pathlib import Path
 
 import matplotlib
@@ -28,7 +30,7 @@ sys.path.insert(0, str(ROOT))
 
 from data import mnist_grass as mg  # noqa: E402
 from scripts.mnist_grass_0to9_report import BLUE_RAMP, round_length  # noqa: E402
-from scripts.single_stage_run import DATASETS, OUT, PRIMARY, RECHECK_SEED, new, stored  # noqa: E402
+from scripts.single_stage_run import DATASETS, NOISE_SEEDS, OUT, PRIMARY, RECHECK_SEED, new, stored  # noqa: E402
 
 BLUE, ORANGE = "#2a78d6", "#eb6834"  # reference palette slots 1-2 (validator: all checks pass)
 VERSIONS = (("two_stage", "two-stage (r_a), stored"), ("single", "r_a-single"))
@@ -71,6 +73,21 @@ def noise_table(noise_ref):
     return "\n".join(out)
 
 
+def noise_agreement_table():
+    """Post hoc, descriptive: how much two-stage layouts differ when only the training seed changes (seed 3)."""
+    from scipy.spatial import procrustes
+
+    from eval.metrics import knn_recall
+    out = ["| dataset | pair (training seeds) | kNN overlap at 15 | Procrustes disparity |", "|---|---|---|---|"]
+    for d, info in DATASETS.items():
+        embs = {RECHECK_SEED: np.load(stored(d, RECHECK_SEED)[1]),
+                **{s: new(d, RECHECK_SEED, "two_stage", train_seed=s)[1] for s in NOISE_SEEDS}}
+        for a, b in combinations(embs, 2):
+            out.append(f"| {info['label']} | {a} vs {b} | {knn_recall(embs[a], embs[b], k=15):.3f} | "
+                       f"{procrustes(embs[a], embs[b])[2]:.3f} |")
+    return "\n".join(out)
+
+
 def seed_table(rows, tol):
     out = ["| seed | digit acc, two-stage | digit acc, single | Δ | within ±{:.4f} | grass recall, two-stage | grass "
            "recall, single | Δ | within ±{:.4f} | matches closely |".format(tol["acc"], tol["grass"]),
@@ -98,7 +115,9 @@ def summary_table(rows):
 def tables(res, noise_ref):
     md = ["# Single-stage vs two-stage (r_a): tables (generated)", "",
           "## Reuse check of the stored two-stage runs", "", reuse_table(noise_ref), "",
-          "## Optimization-noise reference (seed 3, two-stage)", "", noise_table(noise_ref)]
+          "## Optimization-noise reference (seed 3, two-stage)", "", noise_table(noise_ref), "",
+          "Layout agreement between those two-stage runs (descriptive, added after the results, to read the agreement "
+          "numbers below against):", "", noise_agreement_table()]
     for d, info in DATASETS.items():
         r = res[d]
         main = [x for x in r["seeds"] if x["seed"] in PRIMARY]
