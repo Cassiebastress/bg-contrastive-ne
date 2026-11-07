@@ -1,0 +1,14 @@
+$PY scripts/single_stage_run.py --dataset 01 --seed 0 --variant single
+$PY scripts/single_stage_run.py --dataset 01 --seed 1 --variant single
+$PY scripts/single_stage_run.py --dataset 01 --seed 2 --variant single
+$PY scripts/single_stage_run.py --dataset 01 --seed 3 --variant single
+$PY scripts/single_stage_run.py --dataset 01 --seed 4 --variant single
+$PY scripts/single_stage_run.py --dataset 01 --seed 5 --variant single
+$PY scripts/single_stage_run.py --dataset 0to9 --seed 0 --variant single
+$PY scripts/single_stage_run.py --dataset 0to9 --seed 1 --variant single
+$PY scripts/single_stage_run.py --dataset 0to9 --seed 2 --variant single
+$PY scripts/single_stage_run.py --dataset 0to9 --seed 3 --variant single
+$PY scripts/single_stage_run.py --dataset 0to9 --seed 4 --variant single
+$PY scripts/single_stage_run.py --dataset 0to9 --seed 5 --variant single
+$PY scripts/single_stage_run.py --dataset 01 --seed 3 --variant single --rep 2
+$PY scripts/single_stage_run.py --dataset 0to9 --seed 3 --variant single --rep 2

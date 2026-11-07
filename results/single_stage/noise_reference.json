@@ -1,0 +1,194 @@
+{
+  "01": {
+    "reuse": {
+      "stored_runs": [
+        {
+          "seed": 0,
+          "commit": "9405a42",
+          "slurm_job": "6034",
+          "code_unchanged": false,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        },
+        {
+          "seed": 1,
+          "commit": "9405a42",
+          "slurm_job": "6034",
+          "code_unchanged": false,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        },
+        {
+          "seed": 2,
+          "commit": "9405a42",
+          "slurm_job": "6034",
+          "code_unchanged": false,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        },
+        {
+          "seed": 3,
+          "commit": "1511f6c",
+          "slurm_job": "6036",
+          "code_unchanged": false,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        },
+        {
+          "seed": 4,
+          "commit": "1511f6c",
+          "slurm_job": "6036",
+          "code_unchanged": false,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        },
+        {
+          "seed": 5,
+          "commit": "1511f6c",
+          "slurm_job": "6036",
+          "code_unchanged": false,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        }
+      ],
+      "rerun_seed3_identical": true,
+      "reusable": true
+    },
+    "noise": {
+      "runs": [
+        {
+          "train_seed": 3,
+          "digit_acc": 0.9712,
+          "recall_grass": 0.004253333333333333
+        },
+        {
+          "train_seed": 1003,
+          "digit_acc": 0.9709999999999999,
+          "recall_grass": 0.00424
+        },
+        {
+          "train_seed": 2003,
+          "digit_acc": 0.9696,
+          "recall_grass": 0.004373333333333333
+        }
+      ],
+      "noise_acc": 0.0015999999999999348,
+      "noise_grass": 0.0001333333333333334,
+      "tol_acc": 0.005,
+      "tol_grass": 0.005
+    }
+  },
+  "0to9": {
+    "reuse": {
+      "stored_runs": [
+        {
+          "seed": 0,
+          "commit": "065e966",
+          "slurm_job": "6086",
+          "code_unchanged": true,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        },
+        {
+          "seed": 1,
+          "commit": "065e966",
+          "slurm_job": "6086",
+          "code_unchanged": true,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        },
+        {
+          "seed": 2,
+          "commit": "065e966",
+          "slurm_job": "6086",
+          "code_unchanged": true,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        },
+        {
+          "seed": 3,
+          "commit": "ba1f582",
+          "slurm_job": "6087",
+          "code_unchanged": true,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        },
+        {
+          "seed": 4,
+          "commit": "ba1f582",
+          "slurm_job": "6087",
+          "code_unchanged": true,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        },
+        {
+          "seed": 5,
+          "commit": "ba1f582",
+          "slurm_job": "6087",
+          "code_unchanged": true,
+          "npy_sha_matches": true,
+          "digit_acc_reproduced": true
+        }
+      ],
+      "rerun_seed3_identical": true,
+      "reusable": true
+    },
+    "noise": {
+      "runs": [
+        {
+          "train_seed": 3,
+          "digit_acc": 0.517,
+          "recall_grass": 0.0034
+        },
+        {
+          "train_seed": 1003,
+          "digit_acc": 0.5077999999999999,
+          "recall_grass": 0.003173333333333333
+        },
+        {
+          "train_seed": 2003,
+          "digit_acc": 0.5132,
+          "recall_grass": 0.0033466666666666666
+        }
+      ],
+      "noise_acc": 0.009200000000000097,
+      "noise_grass": 0.00022666666666666668,
+      "tol_acc": 0.009200000000000097,
+      "tol_grass": 0.005
+    }
+  },
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-5.15.0-202-generic-x86_64-with-glibc2.35",
+    "cpu_model": "Intel(R) Xeon(R) Gold 6234 CPU @ 3.30GHz",
+    "cpu_count": 32,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 1,
+    "torch_deterministic_algorithms": false,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "7200fc432c68072c8b3a06a73aac3dc73dd24803",
+      "dirty": false
+    },
+    "hostname": null,
+    "slurm_job_id": null,
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}
