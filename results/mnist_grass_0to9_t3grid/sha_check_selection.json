@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "seed": 0,
+      "label_free_alpha": 5.541020330009492,
+      "alpha_index": 19,
+      "stored_sha256": "4b9c6c71147f69f9d521a25d36f75edaddee2b875957c0a30428f61e8fae0773",
+      "grid_sha256": "4b9c6c71147f69f9d521a25d36f75edaddee2b875957c0a30428f61e8fae0773",
+      "identical": true
+    },
+    {
+      "seed": 1,
+      "label_free_alpha": 5.541020330009492,
+      "alpha_index": 19,
+      "stored_sha256": "41f434b215e72bd689d8162f46e4194e1b13f9ff2f77bd63f89e4058a1a570f0",
+      "grid_sha256": "41f434b215e72bd689d8162f46e4194e1b13f9ff2f77bd63f89e4058a1a570f0",
+      "identical": true
+    },
+    {
+      "seed": 2,
+      "label_free_alpha": 5.541020330009492,
+      "alpha_index": 19,
+      "stored_sha256": "38636100a5cc3770bd4ac5208682b4dd22ae0fa684920cd76a848578ddd69ffb",
+      "grid_sha256": "38636100a5cc3770bd4ac5208682b4dd22ae0fa684920cd76a848578ddd69ffb",
+      "identical": true
+    }
+  ],
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-5.15.0-202-generic-x86_64-with-glibc2.35",
+    "cpu_model": "Intel(R) Xeon(R) Gold 6234 CPU @ 3.30GHz",
+    "cpu_count": 32,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 32,
+    "torch_deterministic_algorithms": false,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "2ddd9ca7afeac1b54d419b629fe08b69774941a1",
+      "dirty": false
+    },
+    "hostname": null,
+    "slurm_job_id": null,
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}
