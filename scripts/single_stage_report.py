@@ -4,14 +4,15 @@ Tables: the reuse check of the stored two-stage runs, the optimization-noise ref
 post hoc, the layout agreement between the seed-3 two-stage runs that differ only in training seed), then per dataset
 the confirmation seeds 3-5 (per seed, the difference, whether it is within tolerance, and mean [min, max]), the
 agreement between the two embeddings (kNN overlap at 15, Procrustes disparity), the runtimes, and seeds 0-2 as a
-secondary table. Figures (seed 3, per dataset): both embeddings side by side, colored by digit and by mean grass
-brightness; and the per-epoch learning rate of each schedule. Digit colors: 0/1 in the reference blue and orange (the
-pair passes the dataviz validator); 0-9 in tab10 in digit order, as in Damrich et al. (2023), Fig. 1, by choice (it
-fails the validator; see REPORT_mnist_grass_0to9.md for the accessible view). Grass: the one-hue blue ramp. Needs
-data/processed/ and the embeddings (cluster).
+secondary table. Figures (per dataset, seed 3 and the confirmation seed with the lowest kNN overlap between the two
+versions): both embeddings side by side, colored by digit and by mean grass brightness; and the per-epoch learning
+rate of each schedule. Digit colors: 0/1 in the reference blue and orange (the pair passes the dataviz validator);
+0-9 in tab10 in digit order, as in Damrich et al. (2023), Fig. 1, by choice (it fails the validator; see
+REPORT_mnist_grass_0to9.md for the accessible view). Grass: the one-hue blue ramp. Needs data/processed/ and the
+embeddings (cluster).
 
     python scripts/single_stage_report.py
-Outputs: results/single_stage/tables.md, embeddings_{01,0to9}_seed3.png, learning_rate.png
+Outputs: results/single_stage/tables.md, embeddings_{01,0to9}_seed{S}.png, learning_rate.png
 """
 import json
 import sys
@@ -141,13 +142,13 @@ def scale_bar(ax, e):
                                   frameon=False, size_vertical=0, fontproperties={"size": 8}, label_top=False))
 
 
-def embedding_figure(d, res):
-    data = mg.load(mg.processed_path(RECHECK_SEED, ROOT, name="mnist_grass_0to9" if d == "0to9" else "mnist_grass"))
+def embedding_figure(d, res, seed):
+    data = mg.load(mg.processed_path(seed, ROOT, name="mnist_grass_0to9" if d == "0to9" else "mnist_grass"))
     y, brightness = data["y"], data["grass_T"].mean(axis=1)
     colors = np.asarray([BLUE, ORANGE] if d == "01" else plt.get_cmap("tab10").colors)
     order = np.random.default_rng(0).permutation(len(y))  # fixed draw order: no digit painted last on purpose
-    embs = {"two_stage": np.load(stored(d, RECHECK_SEED)[1]), "single": new(d, RECHECK_SEED, "single")[1]}
-    row = next(r for r in res[d]["seeds"] if r["seed"] == RECHECK_SEED)
+    embs = {"two_stage": np.load(stored(d, seed)[1]), "single": new(d, seed, "single")[1]}
+    row = next(r for r in res[d]["seeds"] if r["seed"] == seed)
     with plt.rc_context({"font.family": "serif", "mathtext.fontset": "cm"}):
         fig, axes = plt.subplots(2, 2, figsize=(9, 9))
         for j, (v, name) in enumerate(VERSIONS):
@@ -166,10 +167,10 @@ def embedding_figure(d, res):
         fig.legend(handles=handles, title="digit", loc="upper right", bbox_to_anchor=(1.07, 0.9), frameon=False,
                    ncol=1 if d == "01" else 2)
         fig.colorbar(sc, ax=axes[1, :], fraction=0.03, label="mean grass-patch brightness")
-        fig.suptitle(f"MNIST-on-grass {DATASETS[d]['label']}, seed {RECHECK_SEED}: top, colored by digit; bottom, by "
+        fig.suptitle(f"MNIST-on-grass {DATASETS[d]['label']}, seed {seed}: top, colored by digit; bottom, by "
                      f"grass brightness\nkNN overlap {row['knn_overlap']:.3f}, Procrustes disparity "
                      f"{row['procrustes']:.3f}", fontsize=10)
-        fig.savefig(OUT / f"embeddings_{d}_seed{RECHECK_SEED}.png", dpi=120, bbox_inches="tight")
+        fig.savefig(OUT / f"embeddings_{d}_seed{seed}.png", dpi=120, bbox_inches="tight")
         plt.close(fig)
 
 
@@ -194,7 +195,10 @@ def main():
     noise_ref = json.loads((OUT / "noise_reference.json").read_text())
     tables(res, noise_ref)
     for d in DATASETS:
-        embedding_figure(d, res)
+        embedding_figure(d, res, RECHECK_SEED)
+        # also the confirmation seed where the two layouts agree least, so the figures don't show only a close pair
+        embedding_figure(d, res, min((r for r in res[d]["seeds"] if r["seed"] in PRIMARY),
+                                     key=lambda r: r["knn_overlap"])["seed"])
     lr_figure()
     print((OUT / "tables.md").read_text())
 
