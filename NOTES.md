@@ -447,3 +447,20 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
   - Per-digit accuracy is best for 0, 1 and 6 and worst for 5, 8 and 9; 4 and 9 are the main confusion.
 - **Reading:** on additive data with ten classes, the local residual graph beats cPCA-10 → t-SNE. Possible reasons, untested: 10 components may be too few, and T3 depends on α. The raw-graph runs fail because raw neighborhoods are mostly grass.
 - **Next (suggested):** non-additive real data; T3 with more components (descriptive); what ξ_B is for, as the number of classes grows.
+
+# Single-stage vs two-stage (r_a) (`REPORT_single_stage.md`, `results/single_stage/`)
+
+- **Question:** does BC-NE, (r_a), need the two-stage schedule? Without background negatives, the only thing that happens at the Stage 1 → Stage 2 handoff is a learning-rate reset. r_a-single is one 750-epoch `fit_neg` run with package defaults, from the same init and training seed.
+- **Package facts, checked in the code first:**
+  - Early exaggeration is a no-op at neg_spec = 1.0, because it only applies when `s` is set (`cne.py:462`). Each run asserts this.
+  - The learning rate anneals linearly to about 0 over each fit's own epochs.
+- **Setup:**
+  - descriptive, plan `docs/plans/single_stage_plan.md`;
+  - criterion and adoption rule generated and committed (`d6f7be0`) before any single-stage run;
+  - tolerance = max(0.005, the range over three two-stage training seeds on seed 3);
+  - the stored two-stage runs are reused: all 12 `.npy` SHA-256 values and accuracies reproduced, and the seed-3 reruns were bit-identical. The 0/1 code diff fails by construction (`sample_digits`), so the rerun is what verifies them.
+- **Result:** "matches closely" holds on both datasets, on all 12 seeds. Mean Δ digit accuracy over seeds 3–5 is −0.0001 (0/1) and −0.0016 (0–9). The closest call is 0–9 seed 3 (−0.0086 vs a tolerance of 0.0092).
+  - **Adopted:** BC-NE is now one 750-epoch run.
+  - **Unchanged:** (r_c) stays two-stage.
+- **Layouts:** on 0–9 seeds 0, 4 and 5 and 0/1 seed 1, the two versions place the same digit groups differently. kNN overlap there is 0.23–0.64, against 0.71–0.75 between two-stage training seeds. The quality metrics are still within tolerance.
+- **Downstream:** in the tuned-T3 plan, comparison 2 becomes r_a-single vs T3\*. It reuses the 0–9 single-stage runs on seeds 3–5.

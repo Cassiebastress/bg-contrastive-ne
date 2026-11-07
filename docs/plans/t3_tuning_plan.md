@@ -104,3 +104,11 @@ stored T3 run's on all 6 seeds, or the phase stops. This replaces a separate rer
 - The pre-registration commit comes before the selection results, and `selection.json` comes before the confirmation
   results.
 - Every number in the report comes from generated files.
+
+## Update after the single-stage check (`REPORT_single_stage.md`)
+
+Single-stage (r_a) was adopted as BC-NE's core form. Comparison 2 therefore becomes **r_a-single vs T3\***, reusing
+`results/single_stage/runs/0to9_seed{3,4,5}_single.json` (cluster job 6101, code `d6f7be0`; the `.npy` files are on
+the cluster). Two-stage (r_a) vs T3\* is reported descriptively. The reuse check for these rows: dataset hashes match,
+the stored SHA-256 matches the `.npy`, and the code is unchanged since `d6f7be0`. Comparison 1, (r_c) vs T3\*, is
+unchanged.

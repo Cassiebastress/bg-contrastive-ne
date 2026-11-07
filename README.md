@@ -46,7 +46,12 @@ Neighbor embeddings such as t-SNE and UMAP work in two steps. They build a k-nea
    - build the kNN graph on what remains.
 
    Neighbors in this graph are similar *after* removing the local background variation. This needs no clustering and no global projection. Code: `method/residual_graph.py`.
-2. **Two-stage Neg-t-SNE.** The graph is embedded with Neg-t-SNE ([Damrich et al., ICLR 2023](https://arxiv.org/abs/2206.01816)), a negative-sampling neighbor embedding that sits between t-SNE and UMAP. We use the authors' `contrastive-ne` package, vendored in `third_party/`. Training runs as a 250-epoch warm-up followed by a 500-epoch second stage. Code: `common/embed.py`.
+2. **Neg-t-SNE.** The graph is embedded with Neg-t-SNE ([Damrich et al., ICLR 2023](https://arxiv.org/abs/2206.01816)), a negative-sampling neighbor embedding that sits between t-SNE and UMAP. We use the authors' `contrastive-ne` package, vendored in `third_party/`.
+   - **BC-NE:** one standard 750-epoch run with package defaults. This is the form adopted after `REPORT_single_stage.md`, which found it matches the earlier two-stage schedule closely.
+   - **BC-NE+BN:** keeps the two-stage schedule, a 250-epoch warm-up and then a 500-epoch second stage in which background negatives act.
+   - **Earlier reports:** they used the two-stage schedule for both.
+
+   Code: `common/embed.py`.
 3. **Optional background negatives.** In the second stage, extra repulsion is added between target points whose *background* neighborhoods overlap (Jaccard overlap of their nearest background points). Code: `method/xi_b.py`, `method/bg_term.py`.
 
    The theory: negative sampling, unlike NCE, does not put the noise distribution into its classifier. Drawing extra negatives from a background-similarity distribution therefore changes what the embedding learns, roughly "target similarity divided by background similarity". The derivation is in the supervisor report, §3.
@@ -84,6 +89,7 @@ These are the headline results. The supervisor report has the details and caveat
 | MNIST-on-grass | Does it work on real images? | `REPORT_mnist_grass.md` | Beats t-SNE controls; cPCA → t-SNE is better. |
 | bsgraph | Build the kNN graph on local background residuals. | `REPORT_bsgraph.md` | Big gain; ties cPCA → t-SNE; background negatives now redundant. |
 | MNIST 0–9 | Repeat MNIST-on-grass with all ten digits. | `REPORT_mnist_grass_0to9.md` | The residual graph beats cPCA → t-SNE and the t-SNE controls; background negatives add a small, consistent gain. |
+| single stage | Does BC-NE need the two-stage schedule? | `REPORT_single_stage.md` | No: one 750-epoch run matches it closely on 0/1 and 0–9, so it becomes BC-NE's form. |
 
 Other documents:
 - `NOTES.md`: working notes, package internals with file/line references, and a short summary of each phase.
@@ -142,7 +148,7 @@ python -m pytest            # from the repo root; pytest.ini puts the repo on th
 ```python
 import numpy as np
 from common.repro import setup_determinism
-from common.embed import pca_init, two_stage
+from common.embed import fit_neg, pca_init, two_stage
 from method.residual_graph import residual_graph
 from method.xi_b import build_xi_b
 
@@ -153,16 +159,15 @@ setup_determinism(seed)
 # 1. Background-suppressed kNN graph (defaults k_loc=30, r=2, k=15)
 G, _ = residual_graph(X_T, X_B, k_loc=30, r=2)
 
-# 2. Two-stage Neg-t-SNE (250 + 500 epochs) from a PCA initialization of the raw target
-stage1, stage2 = two_stage(pca_init(X_T), G, seed)
-Y = stage2["embd"]                      # (n_T, 2) embedding
+# 2. One 750-epoch Neg-t-SNE run from a PCA initialization of the raw target (BC-NE)
+Y = fit_neg(pca_init(X_T), G, seed, n_epochs=750)["embd"]   # (n_T, 2) embedding
 
-# Optional: background negatives in Stage 2 (redundant with the residual graph so far)
+# Optional: background negatives (BC-NE+BN), two-stage: they act in Stage 2 after a 250-epoch warm-up
 xi = build_xi_b(X_T, X_B, k_B=15, L=30, seed=seed)
 _, stage2_bn = two_stage(pca_init(X_T), G, seed, bg_mode="xi_b", m_B=1, xi=xi)
 ```
 
-**Runtime.** At n = 5000, one two-stage run takes a few minutes on one CPU core. The residual step does one small SVD per target point.
+**Runtime.** At n = 5000, one run takes a few minutes on one CPU core. The residual step does one small SVD per target point.
 
 **Preprocessing.** Preprocess `X_T` and `X_B` identically (for real data, fit any scaling on both together).
 

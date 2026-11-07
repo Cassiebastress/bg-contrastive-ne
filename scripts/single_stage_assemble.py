@@ -19,7 +19,7 @@ def body(path, demote=1):
 
 
 def main():
-    parts = {"tables": body(OUT / "tables.md"), "criterion": body(OUT / "criterion.md", demote=2)}
+    parts = {"tables": body(OUT / "tables.md"), "criterion": body(OUT / "criterion.md")}
     text = (ROOT / "scripts" / "REPORT_single_stage.template.md").read_text()
     for name, content in parts.items():
         text = text.replace("{{" + name + "}}", content)

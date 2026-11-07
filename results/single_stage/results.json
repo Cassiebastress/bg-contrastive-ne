@@ -1,0 +1,394 @@
+{
+  "01": {
+    "seeds": [
+      {
+        "seed": 0,
+        "two_stage": {
+          "digit_acc": 0.9720000000000001,
+          "recall_digits": 0.058,
+          "recall_grass": 0.004066666666666666,
+          "ari": 0.875314321410944
+        },
+        "single": {
+          "digit_acc": 0.9728,
+          "recall_digits": 0.057293333333333335,
+          "recall_grass": 0.004333333333333333,
+          "ari": 0.8745655299236251
+        },
+        "delta": {
+          "digit_acc": 0.0007999999999999119,
+          "recall_digits": -0.0007066666666666679,
+          "recall_grass": 0.0002666666666666668,
+          "ari": -0.0007487914873188783
+        },
+        "knn_overlap": 0.7723066666666667,
+        "procrustes": 0.0030730481130291087,
+        "runtime_two_stage": 100.51648163981736,
+        "runtime_single": 69.98099240474403,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      },
+      {
+        "seed": 1,
+        "two_stage": {
+          "digit_acc": 0.9735999999999999,
+          "recall_digits": 0.05837333333333333,
+          "recall_grass": 0.00368,
+          "ari": 0.8656109379590965
+        },
+        "single": {
+          "digit_acc": 0.9705999999999999,
+          "recall_digits": 0.05832,
+          "recall_grass": 0.0034933333333333335,
+          "ari": 0.8738203544650608
+        },
+        "delta": {
+          "digit_acc": -0.0030000000000000027,
+          "recall_digits": -5.3333333333335786e-05,
+          "recall_grass": -0.00018666666666666658,
+          "ari": 0.008209416505964295
+        },
+        "knn_overlap": 0.63932,
+        "procrustes": 0.21487490679863042,
+        "runtime_two_stage": 118.5965202730149,
+        "runtime_single": 64.31117313820869,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      },
+      {
+        "seed": 2,
+        "two_stage": {
+          "digit_acc": 0.9712,
+          "recall_digits": 0.05977333333333333,
+          "recall_grass": 0.00392,
+          "ari": 0.8738200077327368
+        },
+        "single": {
+          "digit_acc": 0.9712,
+          "recall_digits": 0.06061333333333333,
+          "recall_grass": 0.003946666666666667,
+          "ari": 0.8730721015536362
+        },
+        "delta": {
+          "digit_acc": 0.0,
+          "recall_digits": 0.0008400000000000005,
+          "recall_grass": 2.6666666666667026e-05,
+          "ari": -0.0007479061791005881
+        },
+        "knn_overlap": 0.76644,
+        "procrustes": 0.0014265422235557978,
+        "runtime_two_stage": 106.51841058582067,
+        "runtime_single": 70.70254398975521,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      },
+      {
+        "seed": 3,
+        "two_stage": {
+          "digit_acc": 0.9712,
+          "recall_digits": 0.05418666666666667,
+          "recall_grass": 0.004253333333333333,
+          "ari": 0.8559543517427988
+        },
+        "single": {
+          "digit_acc": 0.9704,
+          "recall_digits": 0.05434666666666667,
+          "recall_grass": 0.004346666666666667,
+          "ari": 0.8581769692185289
+        },
+        "delta": {
+          "digit_acc": -0.0007999999999999119,
+          "recall_digits": 0.00016000000000000042,
+          "recall_grass": 9.333333333333416e-05,
+          "ari": 0.0022226174757301598
+        },
+        "knn_overlap": 0.73944,
+        "procrustes": 0.008063305336189253,
+        "runtime_two_stage": 63.08602951467037,
+        "runtime_single": 69.99413839541376,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      },
+      {
+        "seed": 4,
+        "two_stage": {
+          "digit_acc": 0.9738,
+          "recall_digits": 0.05596,
+          "recall_grass": 0.00416,
+          "ari": 0.8873311088790337
+        },
+        "single": {
+          "digit_acc": 0.9743999999999999,
+          "recall_digits": 0.05590666666666667,
+          "recall_grass": 0.004253333333333333,
+          "ari": 0.8873311088790337
+        },
+        "delta": {
+          "digit_acc": 0.0005999999999999339,
+          "recall_digits": -5.3333333333335786e-05,
+          "recall_grass": 9.333333333333329e-05,
+          "ari": 0.0
+        },
+        "knn_overlap": 0.76448,
+        "procrustes": 0.014911024146874303,
+        "runtime_two_stage": 63.161291720345616,
+        "runtime_single": 68.52438776288182,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      },
+      {
+        "seed": 5,
+        "two_stage": {
+          "digit_acc": 0.9698,
+          "recall_digits": 0.05572,
+          "recall_grass": 0.004053333333333333,
+          "ari": 0.8745632792436042
+        },
+        "single": {
+          "digit_acc": 0.9698,
+          "recall_digits": 0.05464,
+          "recall_grass": 0.004266666666666667,
+          "ari": 0.8768100359339827
+        },
+        "delta": {
+          "digit_acc": 0.0,
+          "recall_digits": -0.0010799999999999976,
+          "recall_grass": 0.0002133333333333336,
+          "ari": 0.0022467566903784375
+        },
+        "knn_overlap": 0.7305066666666666,
+        "procrustes": 0.005463365321824721,
+        "runtime_two_stage": 62.92207210510969,
+        "runtime_single": 67.84727936517447,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      }
+    ],
+    "tolerances": {
+      "acc": 0.005,
+      "grass": 0.005
+    },
+    "rerun_seed3_identical": true,
+    "matches_closely": true
+  },
+  "0to9": {
+    "seeds": [
+      {
+        "seed": 0,
+        "two_stage": {
+          "digit_acc": 0.5194,
+          "recall_digits": 0.046053333333333335,
+          "recall_grass": 0.0036266666666666665,
+          "ari": 0.230637246369915
+        },
+        "single": {
+          "digit_acc": 0.5114,
+          "recall_digits": 0.045013333333333336,
+          "recall_grass": 0.003853333333333333,
+          "ari": 0.2280618941012023
+        },
+        "delta": {
+          "digit_acc": -0.008000000000000007,
+          "recall_digits": -0.0010399999999999993,
+          "recall_grass": 0.00022666666666666668,
+          "ari": -0.002575352268712694
+        },
+        "knn_overlap": 0.3968933333333333,
+        "procrustes": 0.07700790836462792,
+        "runtime_two_stage": 91.00853246822953,
+        "runtime_single": 64.90367962233722,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      },
+      {
+        "seed": 1,
+        "two_stage": {
+          "digit_acc": 0.5108,
+          "recall_digits": 0.050706666666666664,
+          "recall_grass": 0.0036533333333333335,
+          "ari": 0.21967549413683365
+        },
+        "single": {
+          "digit_acc": 0.5115999999999999,
+          "recall_digits": 0.05093333333333333,
+          "recall_grass": 0.00356,
+          "ari": 0.22154935409833573
+        },
+        "delta": {
+          "digit_acc": 0.0007999999999999119,
+          "recall_digits": 0.00022666666666666668,
+          "recall_grass": -9.333333333333372e-05,
+          "ari": 0.001873859961502078
+        },
+        "knn_overlap": 0.7285066666666666,
+        "procrustes": 0.00720509016913557,
+        "runtime_two_stage": 80.21884647663683,
+        "runtime_single": 66.43506588041782,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      },
+      {
+        "seed": 2,
+        "two_stage": {
+          "digit_acc": 0.554,
+          "recall_digits": 0.05190666666666666,
+          "recall_grass": 0.0036266666666666665,
+          "ari": 0.25959516070342764
+        },
+        "single": {
+          "digit_acc": 0.5484,
+          "recall_digits": 0.05108,
+          "recall_grass": 0.0034933333333333335,
+          "ari": 0.2623346456031163
+        },
+        "delta": {
+          "digit_acc": -0.005600000000000049,
+          "recall_digits": -0.000826666666666663,
+          "recall_grass": -0.00013333333333333296,
+          "ari": 0.002739484899688671
+        },
+        "knn_overlap": 0.74884,
+        "procrustes": 0.0031834979287524087,
+        "runtime_two_stage": 86.8817623173818,
+        "runtime_single": 66.28270154632628,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      },
+      {
+        "seed": 3,
+        "two_stage": {
+          "digit_acc": 0.517,
+          "recall_digits": 0.04597333333333333,
+          "recall_grass": 0.0034,
+          "ari": 0.24304943304538246
+        },
+        "single": {
+          "digit_acc": 0.5084,
+          "recall_digits": 0.04577333333333333,
+          "recall_grass": 0.00352,
+          "ari": 0.24384777761387402
+        },
+        "delta": {
+          "digit_acc": -0.008600000000000052,
+          "recall_digits": -0.0001999999999999988,
+          "recall_grass": 0.00012000000000000031,
+          "ari": 0.0007983445684915658
+        },
+        "knn_overlap": 0.7295466666666667,
+        "procrustes": 0.004776539710947016,
+        "runtime_two_stage": 78.59019731357694,
+        "runtime_single": 65.73916808050126,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      },
+      {
+        "seed": 4,
+        "two_stage": {
+          "digit_acc": 0.5138,
+          "recall_digits": 0.05104,
+          "recall_grass": 0.0033866666666666667,
+          "ari": 0.20547939461143366
+        },
+        "single": {
+          "digit_acc": 0.5114,
+          "recall_digits": 0.050973333333333336,
+          "recall_grass": 0.0036666666666666666,
+          "ari": 0.24159837356954705
+        },
+        "delta": {
+          "digit_acc": -0.0024000000000000687,
+          "recall_digits": -6.666666666666626e-05,
+          "recall_grass": 0.00027999999999999987,
+          "ari": 0.03611897895811339
+        },
+        "knn_overlap": 0.3211466666666667,
+        "procrustes": 0.11047690118936401,
+        "runtime_two_stage": 78.24001722037792,
+        "runtime_single": 89.2655278397724,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      },
+      {
+        "seed": 5,
+        "two_stage": {
+          "digit_acc": 0.5102,
+          "recall_digits": 0.05298666666666667,
+          "recall_grass": 0.0038933333333333333,
+          "ari": 0.22638446278531313
+        },
+        "single": {
+          "digit_acc": 0.5164,
+          "recall_digits": 0.05226666666666667,
+          "recall_grass": 0.0036533333333333335,
+          "ari": 0.22541232115291882
+        },
+        "delta": {
+          "digit_acc": 0.006199999999999983,
+          "recall_digits": -0.0007199999999999984,
+          "recall_grass": -0.00023999999999999976,
+          "ari": -0.0009721416323943133
+        },
+        "knn_overlap": 0.23074666666666666,
+        "procrustes": 0.37927571376051905,
+        "runtime_two_stage": 62.419609130360186,
+        "runtime_single": 89.24862411431968,
+        "within_acc": true,
+        "within_grass": true,
+        "matches": true
+      }
+    ],
+    "tolerances": {
+      "acc": 0.009200000000000097,
+      "grass": 0.005
+    },
+    "rerun_seed3_identical": true,
+    "matches_closely": true
+  },
+  "adopt_single_stage": true,
+  "outcome": "single-stage (r_a) becomes the core form",
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-5.15.0-202-generic-x86_64-with-glibc2.35",
+    "cpu_model": "Intel(R) Xeon(R) Gold 6234 CPU @ 3.30GHz",
+    "cpu_count": 32,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 1,
+    "torch_deterministic_algorithms": false,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "d6f7be024231a4e58409d74b19bcb761c0c83a67",
+      "dirty": false
+    },
+    "hostname": null,
+    "slurm_job_id": null,
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}
