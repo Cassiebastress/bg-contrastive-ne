@@ -134,6 +134,18 @@ def selection_table(sel, sel_means, conf_means):
     return "\n".join(out), lf
 
 
+def by_k_table(sel_means, conf_means):
+    """Per k: the best alpha on the selection seeds, and alpha = 1 and alpha = 0, with their seed-set means."""
+    one, zero = int(np.flatnonzero(ALPHAS == 1.0)[0]), 0
+    out = ["| k | best α on seeds 0–2 | its mean, seeds 0–2 | its mean, seeds 3–5 | α = 1, seeds 3–5 | α = 0 (PCA), "
+           "seeds 3–5 |", "|---|---|---|---|---|---|"]
+    for k in KS:
+        a = max(range(len(ALPHAS)), key=lambda i: (sel_means[(k, i)], -ALPHAS[i]))
+        out.append(f"| {k} | {ALPHAS[a]:.4g} | {sel_means[(k, a)]:.3f} | {conf_means[(k, a)]:.3f} "
+                   f"| {conf_means[(k, one)]:.3f} | {conf_means[(k, zero)]:.3f} |")
+    return "\n".join(out)
+
+
 def oracle_table(rows):
     out = ["| seed | oracle setting | oracle T3 | T3\\* | (r_c) | (r_c) − oracle |", "|---|---|---|---|---|---|"]
     for s in SEEDS["confirmation"]:
@@ -177,7 +189,7 @@ def heatmap(sel, sel_means, conf_means, lf):
     mats = [np.array([[m[(k, a)] for a in range(len(ALPHAS))] for k in KS]) for m in (sel_means, conf_means)]
     lo, hi = min(m.min() for m in mats), max(m.max() for m in mats)
     fig, axes = plt.subplots(2, 1, figsize=(9, 5.2), constrained_layout=True, sharex=True)
-    ticks = [0] + [int(np.argmin(np.abs(ALPHAS - v))) for v in (1, 10, 100, 1000)]
+    ticks = [0] + [int(np.argmin(np.abs(np.log(ALPHAS[1:]) - np.log(v)))) + 1 for v in (1, 10, 100, 1000)]
     star = (KS.index(sel["T3_star"]["k"]), sel["T3_star"]["alpha_index"])
     for ax, mat, title in zip(axes, mats, ("Selection seeds 0–2 (T3* chosen here)", "Confirmation seeds 3–5")):
         im = ax.imshow(mat, cmap=BLUE_RAMP, vmin=lo, vmax=hi, aspect="auto", interpolation="nearest")
@@ -191,8 +203,8 @@ def heatmap(sel, sel_means, conf_means, lf):
         for s in ax.spines.values():
             s.set_visible(False)
         ax.tick_params(colors=MUTED, length=0)
-    axes[1].set_xticks(ticks, ["0", "1", "10", "100", "1000"])
-    axes[1].set_xlabel("α (0 = plain PCA, then log-spaced from 0.1)")
+    axes[1].set_xticks(ticks, [f"{ALPHAS[i]:.4g}" for i in ticks])
+    axes[1].set_xlabel("α, one column per grid value (0 = plain PCA, then 0.1 to 1000 log-spaced, plus 1)")
     fig.legend(*axes[0].get_legend_handles_labels(), loc="outside lower left", ncol=2, frameon=False, fontsize=8,
                labelcolor=INK)
     fig.colorbar(im, ax=axes, shrink=0.8, label="mean digit kNN accuracy")
@@ -219,6 +231,10 @@ Rule: {sel['rule']}.
 Grid: k ∈ {{{', '.join(map(str, KS))}}} × {len(ALPHAS)} values of α, {len(KS) * len(ALPHAS)} settings.
 
 {sel_tab}
+
+Mean digit kNN accuracy by number of components:
+
+{by_k_table(sel_means, conf_means)}
 
 ## Pre-registered comparisons (confirmation seeds 3–5)
 

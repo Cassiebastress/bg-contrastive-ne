@@ -90,6 +90,7 @@ These are the headline results. The supervisor report has the details and caveat
 | bsgraph | Build the kNN graph on local background residuals. | `REPORT_bsgraph.md` | Big gain; ties cPCA → t-SNE; background negatives now redundant. |
 | MNIST 0–9 | Repeat MNIST-on-grass with all ten digits. | `REPORT_mnist_grass_0to9.md` | The residual graph beats cPCA → t-SNE and the t-SNE controls; background negatives add a small, consistent gain. |
 | single stage | Does BC-NE need the two-stage schedule? | `REPORT_single_stage.md` | No: one 750-epoch run matches it closely on 0/1 and 0–9, so it becomes BC-NE's form. |
+| tuned T3 | Was cPCA → t-SNE under-tuned in the 0–9 phase? | `REPORT_mnist_grass_0to9_t3grid.md` | Yes: with α and the number of components tuned like m_B, it beats BC-NE and BC-NE+BN on every seed (0.689 vs 0.512 and 0.530). |
 
 Other documents:
 - `NOTES.md`: working notes, package internals with file/line references, and a short summary of each phase.

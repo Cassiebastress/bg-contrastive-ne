@@ -33,6 +33,11 @@ Everything ran on the Math Slurm cluster, CPU only, 1 thread per run. No compari
 
 1. **BC-NE+BN, (r_c), beats all three t-SNE controls on every confirmation seed** (pre-registered).
 
+   > **Update (`REPORT_mnist_grass_0to9_t3grid.md`):** the verdict against T3 holds only for T3 at its label-free
+   > setting. With its α and number of components tuned by the same label-based rule on the same selection seeds, T3
+   > (k = 50, α = 1.70) beats (r_c) and (r_a) on every confirmation seed (0.689 vs 0.530 and 0.512). The results below
+   > are unchanged.
+
    | run | mean digit kNN accuracy | (r_c)'s per-seed lead |
    |---|---|---|
    | (r_c) | 0.530 | — |

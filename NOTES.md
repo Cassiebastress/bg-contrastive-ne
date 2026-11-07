@@ -464,3 +464,22 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
   - **Unchanged:** (r_c) stays two-stage.
 - **Layouts:** on 0–9 seeds 0, 4 and 5 and 0/1 seed 1, the two versions place the same digit groups differently. kNN overlap there is 0.23–0.64, against 0.71–0.75 between two-stage training seeds. The quality metrics are still within tolerance.
 - **Downstream:** in the tuned-T3 plan, comparison 2 becomes r_a-single vs T3\*. It reuses the 0–9 single-stage runs on seeds 3–5.
+
+# Tuned T3 on MNIST-on-grass 0–9 (`REPORT_mnist_grass_0to9_t3grid.md`, `results/mnist_grass_0to9_t3grid/`)
+
+- **Question:** was T3 (cPCA → t-SNE) under-tuned when (r_c) beat it in the 0–9 phase? T3 had one label-free setting (k = 10, α from the package rule); (r_c) had m_B tuned with labels.
+- **Setup:**
+  - pre-registered (`2ddd9ca`);
+  - grid k ∈ {2, 5, 10, 20, 30, 50, 100} × `cpca.ALPHAS` ∪ {1}, 294 settings;
+  - T3\* chosen on seeds 0–2 by mean digit kNN accuracy, ties to fewer components then smaller α, committed (`dbd9de7`) before any confirmation run;
+  - one process per (seed, α), all k (jobs 6108, 6109; 126 processes and 22 min each).
+- **Checks:**
+  - the grid point (label-free α, k = 10) reproduced the stored T3 SHA-256 on all 6 seeds;
+  - the first reuse check failed only because its code list wrongly included `scripts/single_stage_run.py` for every stored run (fixed in `eb64dc8`). The pre-registered remedy ran anyway: (r_c) and two-stage (r_a) were rerun on seeds 3–5 (job 6110), all bit-identical.
+- **Result:**
+  - T3\* = (k = 50, α = 1.70): 0.701 on selection, 0.689 on confirmation.
+  - Pre-registered: T3\* beats (r_c) (0.530) and single-stage (r_a) (0.512) on every confirmation seed.
+  - Grass removal is equal (recall 0.003–0.004), but clean-digit recall is 0.165 vs 0.052.
+  - Accuracy peaks on a single ridge at α ≈ 1.3–2.2 for every k. α = 1 gives only about 0.40. The label-free α (5.54, or 4.38 on seed 3) is off the ridge; tuned PCA (α = 0) ≈ T2.
+- **Consequence:** the 0–9 verdict against T3 holds only for the label-free setting (pointer added to that report). On additive data, a well-tuned global projection is enough. The non-additive real dataset remains the open test.
+
