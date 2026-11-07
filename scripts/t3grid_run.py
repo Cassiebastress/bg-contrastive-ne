@@ -11,7 +11,14 @@ library defaults and random_state = the dataset seed (scripts/mnist_grass_run.ts
   --merge STAGE       runs_{STAGE}.csv and the SHA check (sha_check_{STAGE}.json: the grid point (label-free alpha,
                       k = 10) must reproduce the stored T3 embedding on every seed); for selection also selection.json
                       (T3* and PCA*: highest mean digit accuracy over seeds 0-2, ties -> fewer components, then smaller
-                      alpha); for confirmation also reuse.json (the stored runs the comparisons reuse)
+                      alpha); for confirmation also reuse.json (the stored runs the comparisons reuse, with the
+                      reruns below)
+  --rerun RUN --seed S
+                      RUN in RERUN: rerun a stored 0-9 confirmation run exactly as scripts/mnist_grass_0to9_run.py does
+                      and record whether it is bit-identical (reruns/{RUN}_seed{S}.json). The pre-registered remedy
+                      after the first reuse check failed, which came from a bug in that check (CODE listed
+                      scripts/single_stage_run.py, a file only the single-stage runs depend on, for every run)
+  --make-jobs rerun   cluster/jobs/mnist_grass_0to9_t3grid_rerun.txt
 """
 import argparse
 import csv
@@ -45,10 +52,12 @@ N_CLASSES = 10
 K = 15
 METRICS = ("digit_acc", "recall_digits", "recall_grass", "ari")
 FIELDS = ["stage", "seed", "alpha_index", "alpha", "k", *METRICS, "runtime_s", "sha256"]
-# everything a stored run depends on, from the dataset files to the embedding
+# everything a stored run depends on, from the dataset files to the embedding; the single-stage runs also on SINGLE_CODE
 CODE = ["common", "method", "baselines/cpca.py", "eval/metrics.py", "data/mnist_grass.py", "scripts/bsgraph_run.py",
-        "scripts/mnist_grass_run.py", "scripts/mnist_grass_0to9_run.py", "scripts/single_stage_run.py",
-        "third_party/contrastive-ne"]
+        "scripts/mnist_grass_run.py", "scripts/mnist_grass_0to9_run.py", "third_party/contrastive-ne"]
+SINGLE_CODE = ["scripts/single_stage_run.py"]
+RERUN = {"r_c": "r_c_m5", "r_a_two_stage": "r_a"}  # reuse-check group -> stored 0-9 run, rerun on seeds 3-5
+RERUN_DIR = OUT / "reruns"
 
 
 def stop(msg):
@@ -99,8 +108,12 @@ def run_one(stage, seed, i):
 
 
 def make_jobs(stage):
-    lines = [f"$PY scripts/t3grid_run.py --stage {stage} --seed {s} --alpha-index {i}"
-             for i in range(len(ALPHAS)) for s in SEEDS[stage]]
+    if stage == "rerun":
+        lines = [f"$PY scripts/t3grid_run.py --rerun {r} --seed {s}" for r in RERUN.values()
+                 for s in SEEDS["confirmation"]]
+    else:
+        lines = [f"$PY scripts/t3grid_run.py --stage {stage} --seed {s} --alpha-index {i}"
+                 for i in range(len(ALPHAS)) for s in SEEDS[stage]]
     path = ROOT / "cluster" / "jobs" / f"{NAME}_{stage}.txt"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n")
@@ -139,13 +152,29 @@ def sha_check(stage, rows_):
     return out
 
 
-def code_unchanged(commit):
-    return subprocess.run(["git", "-C", str(ROOT), "diff", "--quiet", commit, "HEAD", "--", *CODE]).returncode == 0
+def code_unchanged(commit, extra=()):
+    return subprocess.run(["git", "-C", str(ROOT), "diff", "--quiet", commit, "HEAD", "--", *CODE, *extra]
+                          ).returncode == 0
+
+
+def rerun_one(run, seed):
+    """A stored 0-9 confirmation run, recomputed as scripts/mnist_grass_0to9_run.run_one does, against its SHA-256."""
+    from scripts.mnist_grass_0to9_run import embed
+    assert_committed(PREREG)
+    setup_determinism(seed)
+    X_T, X_B, _ = load(seed)
+    E, _ = embed(run, seed, X_T, X_B)
+    stored = json.loads((OLD / "runs" / f"confirmation_seed{seed}_{run}.json").read_text())["sha256"]
+    rec = {"run": run, "seed": seed, "sha256": sha(E), "stored_sha256": stored, "identical": sha(E) == stored,
+           "environment": environment_info()}
+    RERUN_DIR.mkdir(parents=True, exist_ok=True)
+    (RERUN_DIR / f"{run}_seed{seed}.json").write_text(json.dumps(rec, indent=2))
+    print(json.dumps({k: v for k, v in rec.items() if k != "environment"}), flush=True)
 
 
 def reuse_check():
     """Each stored run the comparisons reuse: code unchanged since its commit, .npy SHA-256 as recorded (load checks
-    the dataset hash)."""
+    the dataset hash) and, for (r_c) and two-stage (r_a), the rerun bit-identical."""
     m_b = json.loads((OLD / "selection.json").read_text())["r_c"]["best_m_B"]
     stored = {"r_c": [OLD / "runs" / f"confirmation_seed{s}_r_c_m{m_b}" for s in SEEDS["confirmation"]],
               "r_a_two_stage": [OLD / "runs" / f"confirmation_seed{s}_r_a" for s in SEEDS["confirmation"]],
@@ -160,9 +189,14 @@ def reuse_check():
             rec = json.loads(p.with_suffix(".json").read_text())
             commit = rec["environment"]["project_git"]["head"]
             out.append({"run": run, "file": p.name, "seed": rec["seed"], "commit": commit[:7],
-                        "slurm_job": rec["environment"]["slurm_job_id"], "code_unchanged": code_unchanged(commit),
+                        "slurm_job": rec["environment"]["slurm_job_id"],
+                        "code_unchanged": code_unchanged(commit, SINGLE_CODE if run == "r_a_single" else ()),
                         "npy_sha_matches": sha(np.load(p.with_suffix(".npy"))) == rec["sha256"]})
-    return {"m_B": m_b, "runs": out, "reusable": all(r["code_unchanged"] and r["npy_sha_matches"] for r in out)}
+            if run in RERUN:
+                rerun = RERUN_DIR / f"{RERUN[run]}_seed{rec['seed']}.json"
+                out[-1]["rerun_identical"] = rerun.exists() and json.loads(rerun.read_text())["identical"]
+    ok = all(r["code_unchanged"] and r["npy_sha_matches"] and r.get("rerun_identical", True) for r in out)
+    return {"m_B": m_b, "runs": out, "reusable": ok}
 
 
 def merge(stage):
@@ -199,13 +233,16 @@ def main():
     parser.add_argument("--stage", choices=list(SEEDS))
     parser.add_argument("--seed", type=int)
     parser.add_argument("--alpha-index", type=int)
-    parser.add_argument("--make-jobs", choices=list(SEEDS))
+    parser.add_argument("--make-jobs", choices=[*SEEDS, "rerun"])
+    parser.add_argument("--rerun", choices=list(RERUN.values()))
     parser.add_argument("--merge", choices=list(SEEDS))
     args = parser.parse_args()
     if args.make_jobs:
         return make_jobs(args.make_jobs)
     if args.merge:
         return merge(args.merge)
+    if args.rerun:
+        return rerun_one(args.rerun, args.seed)
     run_one(args.stage, args.seed, args.alpha_index)
 
 

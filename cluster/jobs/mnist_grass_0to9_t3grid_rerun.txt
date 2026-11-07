@@ -1,0 +1,6 @@
+$PY scripts/t3grid_run.py --rerun r_c_m5 --seed 3
+$PY scripts/t3grid_run.py --rerun r_c_m5 --seed 4
+$PY scripts/t3grid_run.py --rerun r_c_m5 --seed 5
+$PY scripts/t3grid_run.py --rerun r_a --seed 3
+$PY scripts/t3grid_run.py --rerun r_a --seed 4
+$PY scripts/t3grid_run.py --rerun r_a --seed 5

@@ -145,21 +145,30 @@ def oracle_table(rows):
     return "\n".join(out)
 
 
+def rerun_cell(rr):
+    if "rerun_identical" not in rr[0]:
+        return "—"
+    return "yes" if all(r["rerun_identical"] for r in rr) else "NO"
+
+
 def checks_table():
     out = ["| stage | seed | label-free α | grid point reproduces stored T3 (SHA-256) |", "|---|---|---|---|"]
     for stage in SEEDS:
         for c in json.loads((OUT / f"sha_check_{stage}.json").read_text())["checks"]:
             out.append(f"| {stage} | {c['seed']} | {c['label_free_alpha']:.4g} | {'yes' if c['identical'] else 'NO'} |")
     reuse = json.loads((OUT / "reuse.json").read_text())
-    out += ["", "Reused runs (code unchanged since the run's commit; stored `.npy` matches its SHA-256):", "",
-            "| run | seeds | commit | Slurm job | code unchanged | .npy SHA-256 matches |", "|---|---|---|---|---|---|"]
+    out += ["", "Reused runs (code unchanged since the run's commit; stored `.npy` matches its SHA-256; for (r_c) and "
+            "two-stage (r_a), rerun on the cluster and compared bit for bit):", "",
+            "| run | seeds | commit | Slurm job | code unchanged | .npy SHA-256 matches | rerun bit-identical |",
+            "|---|---|---|---|---|---|---|"]
     groups = {}
     for r in reuse["runs"]:
         groups.setdefault((r["run"], r["commit"], r["slurm_job"]), []).append(r)
     for (run, commit, job), rr in groups.items():
         out.append(f"| {run} | {', '.join(str(r['seed']) for r in rr)} | `{commit}` | {job} "
                    f"| {'yes' if all(r['code_unchanged'] for r in rr) else 'NO'} "
-                   f"| {'yes' if all(r['npy_sha_matches'] for r in rr) else 'NO'} |")
+                   f"| {'yes' if all(r['npy_sha_matches'] for r in rr) else 'NO'} "
+                   f"| {rerun_cell(rr)} |")
     return "\n".join(out)
 
 
