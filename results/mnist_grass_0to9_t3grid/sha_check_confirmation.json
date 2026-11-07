@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "seed": 3,
+      "label_free_alpha": 4.3754793750741845,
+      "alpha_index": 18,
+      "stored_sha256": "ec5f5adc7a768d00e693d6700698a48695a169b90202d6a0cb90f2ac58d72469",
+      "grid_sha256": "ec5f5adc7a768d00e693d6700698a48695a169b90202d6a0cb90f2ac58d72469",
+      "identical": true
+    },
+    {
+      "seed": 4,
+      "label_free_alpha": 5.541020330009492,
+      "alpha_index": 19,
+      "stored_sha256": "3f1002bacf53e060653584dc7d72f5341f12d921043e545f23af3815dc005c45",
+      "grid_sha256": "3f1002bacf53e060653584dc7d72f5341f12d921043e545f23af3815dc005c45",
+      "identical": true
+    },
+    {
+      "seed": 5,
+      "label_free_alpha": 5.541020330009492,
+      "alpha_index": 19,
+      "stored_sha256": "e565c24493ec1d81b39adc056ffb0a5f5f4ac05ee77f148f84c2d731fb3cda96",
+      "grid_sha256": "e565c24493ec1d81b39adc056ffb0a5f5f4ac05ee77f148f84c2d731fb3cda96",
+      "identical": true
+    }
+  ],
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-5.15.0-202-generic-x86_64-with-glibc2.35",
+    "cpu_model": "Intel(R) Xeon(R) Gold 6234 CPU @ 3.30GHz",
+    "cpu_count": 32,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 32,
+    "torch_deterministic_algorithms": false,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "eb64dc8c1a39071f46d663fda88cb8fe1102dcfa",
+      "dirty": false
+    },
+    "hostname": null,
+    "slurm_job_id": null,
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}

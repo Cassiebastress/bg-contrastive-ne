@@ -1,0 +1,105 @@
+{
+  "stage": "confirmation",
+  "seed": 5,
+  "alpha_index": 22,
+  "alpha": 11.253355826007645,
+  "per_k": [
+    {
+      "k": 2,
+      "digit_acc": 0.096,
+      "recall_digits": 0.00324,
+      "recall_grass": 0.0028933333333333333,
+      "ari": 0.0012094470158276855,
+      "runtime_s": 29.067515606991947,
+      "sha256": "5dd84434cd3f395b45c281d829a5bbed6057cd473519b1706c10ee141c116b06"
+    },
+    {
+      "k": 5,
+      "digit_acc": 0.1246,
+      "recall_digits": 0.0037333333333333333,
+      "recall_grass": 0.0031333333333333335,
+      "ari": 0.005662563225894126,
+      "runtime_s": 25.151597641408443,
+      "sha256": "a3ddefd316e0a24f5347b5f814801b2552aa6f7d242e1af4d04fb8b877dd9c1d"
+    },
+    {
+      "k": 10,
+      "digit_acc": 0.12,
+      "recall_digits": 0.0041466666666666666,
+      "recall_grass": 0.00336,
+      "ari": 0.0038998606434814077,
+      "runtime_s": 21.10328201111406,
+      "sha256": "905619b0be6262cc844a1076c46f3a1f792f42a1028e253271b13a5aa4bbb922"
+    },
+    {
+      "k": 20,
+      "digit_acc": 0.149,
+      "recall_digits": 0.005946666666666667,
+      "recall_grass": 0.00316,
+      "ari": 0.009715103727123095,
+      "runtime_s": 22.727074522525072,
+      "sha256": "6f54a74fae56d91a4bb05b884b8869a29cbc102e393b0187c63212ecfaa3e9ef"
+    },
+    {
+      "k": 30,
+      "digit_acc": 0.14340000000000003,
+      "recall_digits": 0.00624,
+      "recall_grass": 0.00308,
+      "ari": 0.009314437879715514,
+      "runtime_s": 28.799470593221486,
+      "sha256": "b46c9475fa0cc171322f9c738d6c2d5b157c4bccd2998b23148e01a0b64d3deb"
+    },
+    {
+      "k": 50,
+      "digit_acc": 0.1634,
+      "recall_digits": 0.00716,
+      "recall_grass": 0.003173333333333333,
+      "ari": 0.011285108854787548,
+      "runtime_s": 28.833766193129122,
+      "sha256": "5c088b280d0bd324984e12a940adf1fcd2e5402ef4e7e4c34a4fa150bc5069d9"
+    },
+    {
+      "k": 100,
+      "digit_acc": 0.1794,
+      "recall_digits": 0.008773333333333333,
+      "recall_grass": 0.002746666666666667,
+      "ari": 0.02348977032526497,
+      "runtime_s": 28.971581696532667,
+      "sha256": "540cdb4927c319f30b32129d338ba0b1b417bc98f4cb3f9e93798c7e5faba380"
+    }
+  ],
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+    "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+    "cpu_count": 192,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 1,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "dbd9de7ac8242e8f2d4b91c080421d8b27d706db",
+      "dirty": false
+    },
+    "hostname": "math-h100-r01.math.mcgill.ca",
+    "slurm_job_id": "6109",
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}

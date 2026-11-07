@@ -1,0 +1,235 @@
+{
+  "m_B": 5,
+  "runs": [
+    {
+      "run": "r_c",
+      "file": "confirmation_seed3_r_c_m5",
+      "seed": 3,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true,
+      "rerun_identical": true
+    },
+    {
+      "run": "r_c",
+      "file": "confirmation_seed4_r_c_m5",
+      "seed": 4,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true,
+      "rerun_identical": true
+    },
+    {
+      "run": "r_c",
+      "file": "confirmation_seed5_r_c_m5",
+      "seed": 5,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true,
+      "rerun_identical": true
+    },
+    {
+      "run": "r_a_two_stage",
+      "file": "confirmation_seed3_r_a",
+      "seed": 3,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true,
+      "rerun_identical": true
+    },
+    {
+      "run": "r_a_two_stage",
+      "file": "confirmation_seed4_r_a",
+      "seed": 4,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true,
+      "rerun_identical": true
+    },
+    {
+      "run": "r_a_two_stage",
+      "file": "confirmation_seed5_r_a",
+      "seed": 5,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true,
+      "rerun_identical": true
+    },
+    {
+      "run": "r_a_single",
+      "file": "0to9_seed3_single",
+      "seed": 3,
+      "commit": "d6f7be0",
+      "slurm_job": "6101",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "r_a_single",
+      "file": "0to9_seed4_single",
+      "seed": 4,
+      "commit": "d6f7be0",
+      "slurm_job": "6101",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "r_a_single",
+      "file": "0to9_seed5_single",
+      "seed": 5,
+      "commit": "d6f7be0",
+      "slurm_job": "6101",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T2",
+      "file": "selection_seed0_T2",
+      "seed": 0,
+      "commit": "065e966",
+      "slurm_job": "6086",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T2",
+      "file": "selection_seed1_T2",
+      "seed": 1,
+      "commit": "065e966",
+      "slurm_job": "6086",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T2",
+      "file": "selection_seed2_T2",
+      "seed": 2,
+      "commit": "065e966",
+      "slurm_job": "6086",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T2",
+      "file": "confirmation_seed3_T2",
+      "seed": 3,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T2",
+      "file": "confirmation_seed4_T2",
+      "seed": 4,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T2",
+      "file": "confirmation_seed5_T2",
+      "seed": 5,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T3",
+      "file": "selection_seed0_T3",
+      "seed": 0,
+      "commit": "065e966",
+      "slurm_job": "6086",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T3",
+      "file": "selection_seed1_T3",
+      "seed": 1,
+      "commit": "065e966",
+      "slurm_job": "6086",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T3",
+      "file": "selection_seed2_T3",
+      "seed": 2,
+      "commit": "065e966",
+      "slurm_job": "6086",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T3",
+      "file": "confirmation_seed3_T3",
+      "seed": 3,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T3",
+      "file": "confirmation_seed4_T3",
+      "seed": 4,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    },
+    {
+      "run": "T3",
+      "file": "confirmation_seed5_T3",
+      "seed": 5,
+      "commit": "ba1f582",
+      "slurm_job": "6087",
+      "code_unchanged": true,
+      "npy_sha_matches": true
+    }
+  ],
+  "reusable": true,
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-5.15.0-202-generic-x86_64-with-glibc2.35",
+    "cpu_model": "Intel(R) Xeon(R) Gold 6234 CPU @ 3.30GHz",
+    "cpu_count": 32,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 32,
+    "torch_deterministic_algorithms": false,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "eb64dc8c1a39071f46d663fda88cb8fe1102dcfa",
+      "dirty": false
+    },
+    "hostname": null,
+    "slurm_job_id": null,
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}
