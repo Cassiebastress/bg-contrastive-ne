@@ -60,21 +60,24 @@ Neighbor embeddings such as t-SNE and UMAP work in two steps. They build a k-nea
 
 ## What we have found so far
 
-These are the headline results. The supervisor report has the details and caveats.
+These are the headline results. Each phase report has the details and caveats. All the real-data results come from MNIST-on-grass, where target = 0.25 × digit + grass: the background is *added* to the signal.
 
 | finding | evidence |
 |---|---|
-| **The residual graph is what makes the method work.** On MNIST-on-grass, BC-NE with background negatives reaches 0.973 digit kNN accuracy, against 0.931 for the original method (background negatives on the raw kNN graph). It wins on every confirmation seed. | pre-registered, `REPORT_bsgraph.md` |
-| **Background negatives are redundant once the graph is background-suppressed.** With and without them, results differ by ≤ 0.002 per seed. | pre-registered, `REPORT_bsgraph.md` |
-| **On MNIST-on-grass, BC-NE ties cPCA → t-SNE** (0.973 vs 0.955, not consistent across seeds) and is more stable across seeds. It clearly beats t-SNE (0.884) and PCA → t-SNE (0.891). | pre-registered, `REPORT_bsgraph.md`, `REPORT_mnist_grass.md` |
-| **Global cPCA wins whenever the background is simply added to the signal.** If target = signal + independent background, the target-minus-background covariance is exactly the signal covariance, so cPCA is exact in the population. Every additive benchmark we ran, synthetic or real, behaves accordingly. | derivation; `REPORT_phase5prep.md`, `REPORT_mnist_grass.md` |
+| **The residual graph is what makes the method work.** With digits 0/1, BC-NE with background negatives reaches 0.973 digit kNN accuracy, against 0.931 for the original method (background negatives on the raw kNN graph). With digits 0–9 the gap is wider: 0.530 vs 0.226. It wins on every confirmation seed of both. | pre-registered, `REPORT_bsgraph.md`, `REPORT_mnist_grass_0to9.md` |
+| **Background negatives add little once the graph is background-suppressed.** With 0/1, results with and without them differ by ≤ 0.002 per seed. With 0–9 they add a small, consistent gain (mean +0.016). | pre-registered, `REPORT_bsgraph.md`, `REPORT_mnist_grass_0to9.md` |
+| **BC-NE needs no warm-up.** One standard 750-epoch run matches the two-stage schedule closely on 0/1 and 0–9, so it is now BC-NE's form. | descriptive, with a criterion committed in advance, `REPORT_single_stage.md` |
+| **Tuned cPCA → t-SNE beats BC-NE on MNIST-on-grass 0–9.** Its α and number of components were chosen with labels by the same rule that chose BC-NE+BN's m_B. It then wins on every confirmation seed: 0.689, against 0.530 for BC-NE+BN and 0.512 for BC-NE. At the cPCA package's label-free α, the comparison goes the other way (0.433), and with 0/1 it was a tie (0.973 vs 0.955). All of these clearly beat t-SNE and PCA → t-SNE. | pre-registered, `REPORT_mnist_grass_0to9_t3grid.md`, `REPORT_mnist_grass_0to9.md`, `REPORT_bsgraph.md` |
+| **Global cPCA wins whenever the background is simply added to the signal, if α is chosen well.** If target = signal + independent background, the target-minus-background covariance is exactly the signal covariance, so cPCA is exact in the population. Every additive benchmark we ran, synthetic or real, behaves accordingly. On 0–9 the package's label-free α misses the good range (α ≈ 1.3–2.2). | derivation; `REPORT_phase5prep.md`, `REPORT_mnist_grass.md`, `REPORT_mnist_grass_0to9_t3grid.md` |
 | **On synthetic benchmarks built so that no single global projection works,** the original method beats every global linear pipeline, including ones chosen with labels. A cluster-then-cPCA pipeline ("local cPCA") does better still. | pre-registered, `REPORT_phase5b.md` |
 
-**Main open question.** The residual graph's intended advantage is suppressing a background that no global projection can remove. That has not yet been tested on real data where the background is *not* simply additive, and that is the next step.
+**Main open question.** The residual graph's intended advantage is suppressing a background that no global projection can remove. On additive real data, a well-tuned global projection is enough, and it wins. Whether BC-NE helps on real data with a *non-additive* background is untested, and that is the next step.
 
 ## Where to read more
 
-**Start with the supervisor report:** [`docs/supervisor_report/main.pdf`](docs/supervisor_report/main.pdf) (LaTeX source in the same folder). It is about 12 pages and self-contained. It covers the problem, the theory, the method, each design decision with its evidence, the results, and what remains untested.
+**Start with the supervisor report:** [`docs/supervisor_report/main.pdf`](docs/supervisor_report/main.pdf) (LaTeX source in the same folder). It is self-contained. It covers the problem, the theory, the method, each design decision with its evidence, the results, and what remains untested.
+- **What it covers:** the work up to the 0/1 residual-graph phase (bsgraph).
+- **What it predates:** the MNIST 0–9, single-stage and tuned-T3 phases. Read their reports for the current picture, especially `REPORT_mnist_grass_0to9_t3grid.md`.
 
 **For a specific experiment**, the work ran in phases. Each phase has a report at the repository root and a results folder under `results/`. In chronological order:
 
@@ -87,8 +90,8 @@ These are the headline results. The supervisor report has the details and caveat
 | 5a | Can we break cPCA with non-additive signals? | `REPORT_phase5a.md` | Mostly not. Background negatives beat a same-cluster oracle control. |
 | 5b | Benchmarks where no global projection works ("Design L"). | `REPORT_phase5b.md` | Background negatives beat every global linear pipeline; local cPCA beats them. |
 | MNIST-on-grass | Does it work on real images? | `REPORT_mnist_grass.md` | Beats t-SNE controls; cPCA → t-SNE is better. |
-| bsgraph | Build the kNN graph on local background residuals. | `REPORT_bsgraph.md` | Big gain; ties cPCA → t-SNE; background negatives now redundant. |
-| MNIST 0–9 | Repeat MNIST-on-grass with all ten digits. | `REPORT_mnist_grass_0to9.md` | The residual graph beats cPCA → t-SNE and the t-SNE controls; background negatives add a small, consistent gain. |
+| bsgraph | Build the kNN graph on local background residuals. | `REPORT_bsgraph.md` | Big gain; ties cPCA → t-SNE at its label-free α; background negatives now redundant. |
+| MNIST 0–9 | Repeat MNIST-on-grass with all ten digits. | `REPORT_mnist_grass_0to9.md` | The residual graph beats cPCA → t-SNE at its label-free α, and the t-SNE controls; background negatives add a small, consistent gain. The cPCA result reverses once cPCA is tuned (tuned T3). |
 | single stage | Does BC-NE need the two-stage schedule? | `REPORT_single_stage.md` | No: one 750-epoch run matches it closely on 0/1 and 0–9, so it becomes BC-NE's form. |
 | tuned T3 | Was cPCA → t-SNE under-tuned in the 0–9 phase? | `REPORT_mnist_grass_0to9_t3grid.md` | Yes: with α and the number of components tuned like m_B, it beats BC-NE and BC-NE+BN on every seed (0.689 vs 0.512 and 0.530). |
 
