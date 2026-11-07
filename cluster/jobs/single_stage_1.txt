@@ -1,0 +1,6 @@
+$PY scripts/single_stage_run.py --dataset 01 --seed 3 --variant two_stage
+$PY scripts/single_stage_run.py --dataset 01 --seed 3 --variant two_stage --train-seed 1003
+$PY scripts/single_stage_run.py --dataset 01 --seed 3 --variant two_stage --train-seed 2003
+$PY scripts/single_stage_run.py --dataset 0to9 --seed 3 --variant two_stage
+$PY scripts/single_stage_run.py --dataset 0to9 --seed 3 --variant two_stage --train-seed 1003
+$PY scripts/single_stage_run.py --dataset 0to9 --seed 3 --variant two_stage --train-seed 2003
