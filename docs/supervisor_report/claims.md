@@ -35,6 +35,9 @@ This file lists every claim in the report with its type and source.
 | S4 | BC-NE+BN vs cPCA→t-SNE not consistent; ranges 0.972–0.974 vs 0.941–0.979 | pre / desc | `results/bsgraph/tables_phase2.md` |
 | S5 | additive ⇒ C_T − C_B = C_S | der | §5.6 proof |
 | S6 | cPCA pipelines beat raw-graph BN on every additive benchmark run: synthetic (desc), MNIST (pre) | desc / pre | `results/phase5prep/cpca_summary.md`; `results/mnist_grass/tables.md` |
+| S7 | ten digits: BC-NE+BN vs raw-graph BN 0.530 vs 0.226 | pre | `results/mnist_grass_0to9/tables.md`, `comparisons.json` |
+| S8 | ten digits: BC-NE+BN vs BC-NE +0.016 on average, not treated as a real gain | pre (rule met) / interp | `results/mnist_grass_0to9/comparisons.json` (+0.004, +0.031, +0.014) |
+| S9 | ten digits: label-free cPCA→t-SNE 0.433 < 0.530 (pre); label-tuned 0.689 (desc); label tuning not realistic (interp) | pre / desc / interp | `results/mnist_grass_0to9/tables.md`; `results/mnist_grass_0to9_t3grid/tables.md` |
 
 ## §2 Problem, data and evaluation
 
@@ -68,12 +71,14 @@ This file lists every claim in the report with its type and source.
 | M4 | PCA init with PC1 at std 1 | pub | Kobak & Linderman 2021; Damrich et al. 2023 |
 | M5 | Stage 1 250 / Stage 2 500 epochs, fresh annealing | (fact) | `common/embed.py` |
 | M6 | built-in early exaggeration does nothing at NEG defaults | desc | NOTES.md §5, §10 |
-| M7 | warm-up rationale; no single-stage comparison | interp | Initial_Project_Plan.md §0/§4; no ablation in any results directory |
+| M7 | warm-up rationale (interp); unnecessary without BN (see D22); not compared with BN | interp / desc | Initial_Project_Plan.md §0/§4; `results/single_stage/results.json` |
 | M8 | ξ_B construction | (definition) | `method/xi_b.py` |
 | M9 | unit test: equal loss and gradient for one background and one uniform negative | desc | `tests/test_bg_term.py` |
 | M10 | the BN term lowers the similarity of background-overlapping pairs | der | eq. (3) |
 | M11 | "target similarity divided by background similarity" | interp | REPORT.md "Why the islands split" |
 | M12 | 11-line hook; exact graphs; own sampler generator; bit-identical when off | desc | NOTES.md §1, §8, Phase 3 |
+| M13 | cost: searches O(n(n+n_B)D) exact; residual SVDs O(n k_loc² D); epochs O(nk(m+m_B)); ξ_B overlaps linear without hubs; same class as Neg-t-SNE / UMAP / t-SNE | der | `method/residual_graph.py`, `method/xi_b.py`, `common/knn.py` |
+| M14 | times per run: BC-NE 62–79 s, plain Neg-t-SNE 68–75 s, BC-NE+BN 139–151 s, t-SNE 34–41 s | desc | `generated/tab_mnist09.tex` (from `results/mnist_grass_0to9/runs_confirmation.csv`, job 6087) |
 
 ## §5 Design decisions
 
@@ -100,6 +105,8 @@ This file lists every claim in the report with its type and source.
 | D19 | label-free default supported | interp | — |
 | D20 | BN redundant with the residual graph; m_B = 1; 0.973 → 0.968 | pre / desc | `results/bsgraph/tables_phase2.md` |
 | D21 | same information, two uses | interp | REPORT_bsgraph.md Interpretation |
+| D22 | one 750-epoch run within tolerance on every seed of 0/1 and 0–9; mean Δ −0.0001 / −0.0016; tolerances 0.005 / 0.0092; some layouts rearranged | desc | `results/single_stage/criterion.md` (committed `d6f7be0`), `results.json`, `tables.md` |
+| D23 | ten digits: BC-NE+BN ahead of BC-NE by +0.004 to +0.031 (mean +0.016), not treated as a real gain | pre (rule met) / interp | `results/mnist_grass_0to9/comparisons.json` |
 
 ## §6 Results
 
@@ -111,6 +118,14 @@ This file lists every claim in the report with its type and source.
 | R4 | Tables 2–3 values and verdicts | pre / desc | `results/bsgraph/tables_phase2.md`; `results/mnist_grass/tables.md` |
 | R5 | grass recall 0.022 → 0.003 | desc | `results/bsgraph/tables_phase2.md` |
 | R6 | bit-identical rerun; reuse check | desc | `results/bsgraph/recheck.json`, `reuse.json` |
+| R7 | ten-digit setup: 500 per digit, m_B = 5 / 20, pre-registered | (definition) | `results/mnist_grass_0to9/preregistration.md` (`a9329a6`), `selection.json` |
+| R8 | BC-NE+BN beats t-SNE, PCA-50→t-SNE and raw-graph BN on every seed; both raw-graph runs below t-SNE | pre / desc | `results/mnist_grass_0to9/comparisons.json`, `tables.md` |
+| R9 | BC-NE+BN and BC-NE beat label-free cPCA→t-SNE (0.530, 0.514 vs 0.433); label-tuned 0.689 | pre / desc | `results/mnist_grass_0to9/comparisons.json`; `results/mnist_grass_0to9_t3grid/tables.md` |
+| R10 | grass recall 0.003–0.004 vs 0.14 | desc | `results/mnist_grass_0to9/tables.md` |
+| R11 | ARI 0.244 / 0.225 / 0.117 / ≤ 0.031; 0/1 post hoc 0.87 / 0.80 | desc | `results/mnist_grass_0to9/tables.md` ("Beside the 0/1 runs"), `ari_01_posthoc.csv` |
+| R12 | clean-digit classifier 0.91 | desc | REPORT_mnist_grass_0to9.md Summary 6 |
+| R13 | Table 5 and Fig. 2 | desc | `scripts/supervisor_0to9.py` → `generated/tab_mnist09.tex`, `figures/mnist09_seed3.png` |
+| R14 | ten digits: reruns bit-identical, checksums matched, no flags | desc | `results/mnist_grass_0to9/recheck_*.json`, `runs_confirmation.csv` |
 
 ## §7–8 Gaps and next steps
 
@@ -123,7 +138,7 @@ All items are `desc` (not yet run) or `interp`.
 | pre-registration commits | — | `git log --diff-filter=A` on each pre-registration file; `3dd613a` from REPORT_mnist_grass.md |
 | Mac vs cluster ≤ 0.027, no mixed comparisons | desc | `results/mnist_grass/tables.md` (cluster validation table) |
 | environment versions | — | REPORT.md Reproducibility; results JSON `environment` blocks |
-| Tables 5–7 | — | `results/bsgraph/phase1.md`; `results/bsgraph/tables_phase2.md` and `results/mnist_grass/tables.md` (appendices); `results/phase4/tables.md` |
+| Tables 6–8 | — | `results/bsgraph/phase1.md`; `results/bsgraph/tables_phase2.md` and `results/mnist_grass/tables.md` (appendices); `results/phase4/tables.md` |
 
 ## Citations
 

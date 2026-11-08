@@ -51,7 +51,7 @@
 
 \title{Background-contrastive neighbor embedding:\\ method, evidence and open questions}
 \author{Cassia Bastress}
-\date{October 2026}
+\date{November 2026}
 
 \begin{document}
 \maketitle
@@ -66,11 +66,11 @@ This report describes the current state of the method, the reasoning and evidenc
 
 \paragraph{Key findings.}
 \begin{enumerate}
-  \item \textbf{The residual graph is what makes the method work.} MNIST-on-grass is a real-image benchmark: MNIST digits overlaid on grass photographs. On it, \BN{} beats the method's earlier form, which used background negatives on the raw kNN graph, on every confirmation seed. Digit kNN accuracy is 0.973 vs 0.931 \cpre. Without background negatives, the residual graph alone raises plain Neg-t-SNE by 0.10--0.13 \cdesc.
+  \item \textbf{The residual graph is what makes the method work.} MNIST-on-grass is a real-image benchmark: MNIST digits overlaid on grass photographs. On it, \BN{} beats the method's earlier form, which used background negatives on the raw kNN graph, on every confirmation seed. Digit kNN accuracy is 0.973 vs 0.931 \cpre. With all ten digits the gap is wider: 0.530 vs 0.226 \cpre. Without background negatives, the residual graph alone raises plain Neg-t-SNE by 0.10--0.13 \cdesc.
   % source: results/bsgraph/tables_phase2.md, results/bsgraph/comparisons.json
-  \item \textbf{Background negatives become redundant once the graph is background-suppressed.} \BN{} and \methodname{} differ by at most 0.002 per seed, with one exact tie \cpre.
-  \item \textbf{On MNIST-on-grass the method ties contrastive PCA (cPCA) followed by t-SNE, and is more stable across seeds.} Neither is consistently better \cpre. Across seeds, \BN{} ranges over 0.972--0.974 and cPCA$\to$t-SNE over 0.941--0.979 \cdesc.
-  \item \textbf{Global cPCA wins when the background is additive.} If target $=$ signal $+$ independent background, the difference of the target and background covariances is exactly the signal covariance \cder. Accordingly, cPCA-based pipelines beat raw-graph background negatives on every additive benchmark we ran: synthetic \cdesc{} and real \cpre.
+  \item \textbf{Background negatives add little once the graph is background-suppressed.} With two digits, \BN{} and \methodname{} differ by at most 0.002 per seed, with one exact tie \cpre. With ten digits the difference is small (+0.016 on average), and we do not treat it as a real gain \cinterp.
+  \item \textbf{On MNIST-on-grass with two digits the method ties contrastive PCA (cPCA) followed by t-SNE, and is more stable across seeds.} Neither is consistently better \cpre. Across seeds, \BN{} ranges over 0.972--0.974 and cPCA$\to$t-SNE over 0.941--0.979 \cdesc.
+  \item \textbf{Global cPCA wins when the background is additive.} If target $=$ signal $+$ independent background, the difference of the target and background covariances is exactly the signal covariance \cder. Accordingly, cPCA-based pipelines beat raw-graph background negatives on every additive benchmark we ran: synthetic \cdesc{} and real \cpre. With ten digits, cPCA$\to$t-SNE at its label-free $\alpha$ falls behind the method (0.433 vs 0.530) \cpre, but with $\alpha$ tuned on labels it is ahead (0.689) \cdesc. Tuning $\alpha$ that way needs labels, which real data does not have, so it is not a realistic setting \cinterp.
 \end{enumerate}
 
 \paragraph{Main open question.} The residual graph has so far been tested only on MNIST-on-grass. That dataset's background is additive, so global cPCA already does about as well. The residual graph's intended advantage is suppressing a background that no single global projection can remove. That advantage has not yet been tested on real data with a non-additive background (\cref{sec:gaps}).
@@ -123,7 +123,7 @@ We have a \emph{target} dataset $X_T \in \R^{n_T\times D}$ and a \emph{backgroun
   name & construction & what it tests \\
   \midrule
   additive (orthogonal, overlapping, nonlinear) & $x_T = \rho A z_s + B(z_b) + \varepsilon$, $x_B = B(z_b') + \varepsilon$. Orthogonal: signal and background spans orthogonal. Overlapping: half the signal span inside the background span. Nonlinear: $B$ a random tanh network. $\rho = 0.2, 0.2, 0.3$. & whether background negatives beat simple controls \\
-  MNIST-on-grass (real) & digits 0/1 at 25\% intensity added to $28\times28$ grass patches; background $=$ grass patches & real images, additive background \\
+  MNIST-on-grass (real) & digits 0/1 (and 0--9) at 25\% intensity added to $28\times28$ grass patches; background $=$ grass patches & real images, additive background \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -134,6 +134,7 @@ We have a \emph{target} dataset $X_T \in \R^{n_T\times D}$ and a \emph{backgroun
   \item \textbf{Target and background:} drawn from two disjoint halves of the photographs.
   \item \textbf{Seeds:} each seed has 5000 target and 5000 background images.
   \item \textbf{Recipe:} the authors' notebook, with five documented changes made for determinism and provenance.
+  \item \textbf{Ten digits:} a second version uses all ten digits, 500 of each per seed (\cref{sec:mnist09}).
 \end{itemize}
 The grass is added independently of the digit, so this dataset is additive.
 
@@ -242,7 +243,7 @@ Every embedding is initialized from the first two principal components, scaled s
 
 Training is two separate fits on the same graph. Stage~1 runs 250 epochs from the PCA initialization. Stage~2 runs 500 epochs starting exactly from the Stage~1 embedding, with a fresh learning-rate annealing. Background negatives, when used, are active in Stage~2 only.
 
-We use two separate fits rather than the package's built-in early-exaggeration phase, which does nothing at its negative-sampling defaults \cdesc. They give an exact, reproducible handoff. The warm-up was meant to let a global layout form before the background term acts, but no single-stage schedule was compared \cinterp.
+We use two separate fits rather than the package's built-in early-exaggeration phase, which does nothing at its negative-sampling defaults \cdesc. They give an exact, reproducible handoff. The warm-up was meant to let a global layout form before the background term acts \cinterp. Without background negatives it turns out to be unnecessary (\cref{sec:dec-schedule}); with them, no single-stage schedule has been compared.
 
 \subsection{Optional background negatives}
 \label{sec:xib}
@@ -291,6 +292,17 @@ By \cref{eq:qstar-bg}, the term lowers the target similarity of pairs with overl
   \item \textbf{Graphs:} all kNN graphs are exact and built once per dataset. The package's own approximate graph is unseeded, so it is not used.
   \item \textbf{Determinism:} every fit runs with deterministic algorithms and seeded generators. The background sampler has its own generator, so with background negatives turned off the result is bit-identical to the unmodified package.
 \end{itemize}
+
+\paragraph{Computational cost} \cder. With $n$ targets, $n_B$ background points and $D$ features:
+\label{sec:cost}
+\begin{itemize}
+  \item \textbf{Neighbor searches:} t-SNE, UMAP and Neg-t-SNE each need one target-to-target kNN search. \methodname{} adds one target-to-background search ($\kloc$ neighbors), and background negatives one more ($k_B$). With exact brute-force search, as used here, each costs $O(n(n+n_B)D)$. Approximate search, as the standard packages use, applies to them equally.
+  \item \textbf{Residuals:} one SVD of a $\kloc \times D$ matrix per target, $O(n\,\kloc^2 D)$, linear in $n$.
+  \item \textbf{Training:} each epoch costs $O(nk(m+m_B))$, linear in $n$, as for Neg-t-SNE and UMAP.
+  \item \textbf{$\xiB$:} overlaps are counted through shared background neighbors. This is linear in $n$ unless some background point is a neighbor of a growing number of targets.
+\end{itemize}
+The method is therefore in the same complexity class as Neg-t-SNE, UMAP and t-SNE: the neighbor searches dominate, and everything else is linear in $n$. In practice ($n = 5000$, $D = 784$, one CPU thread; \cref{tab:mnist09}), \methodname{} took about as long as plain Neg-t-SNE (62--79\,s vs 68--75\,s), so the residual graph adds little. Background negatives with $m_B = 5$ roughly doubled the time (139--151\,s), and openTSNE's t-SNE was faster (34--41\,s) \cdesc.
+% source: method/residual_graph.py, method/xi_b.py, common/knn.py; times: docs/supervisor_report/generated/tab_mnist09.tex
 
 % =====================================================================
 \section{Design decisions and their evidence}
@@ -390,9 +402,17 @@ Before any residual graph was computed, we committed a graph-quality gate. On ea
 The choice among variants barely mattered \cdesc. The grid covered $\kloc \in \{15,30,100\}$ and $r \in \{0,1,2,5,10\}$. All 15 variants reach a mean graph digit accuracy of 0.954--0.964 (0.951--0.965 on individual seeds). Every one is above both reference graphs: raw 0.904 and PCA-50 0.935. Even $r = 0$, which only subtracts the local background mean, clears both (full grid in \cref{tab:grid}). The labels used in selection therefore decided little, which supports a fixed, label-free default \cinterp. So far this holds on one dataset only.
 % source: results/bsgraph/phase1.md
 
+\subsection{The two-stage schedule without background negatives}
+\label{sec:dec-schedule}
+
+Without background negatives, Stage~2 differs from Stage~1 only in the learning-rate reset. We therefore compared two-stage \methodname{} with one standard 750-epoch Neg-t-SNE run (package defaults; same graph, initialization and seed) on MNIST-on-grass with two and with ten digits, seeds 0--5. Before any single run, we committed a tolerance for each dataset and measure: the larger of 0.005 and the spread over three training seeds of the two-stage run.
+
+The single run is within tolerance on digit kNN accuracy and recall vs grass on every seed of both datasets \cdesc. Over seeds 3--5, the mean change in digit accuracy is $-0.0001$ with two digits and $-0.0016$ with ten, against tolerances of 0.005 and 0.0092. On a few seeds the digit groups settle into a different arrangement, with the same quality. Without background negatives, the reset therefore does not change performance meaningfully and is unnecessary. The results in this report use the two-stage schedule. Whether the warm-up matters when background negatives act in Stage~2 has not been tested.
+% source: results/single_stage/criterion.md, results/single_stage/results.json, results/single_stage/tables.md
+
 \subsection{Current status of background negatives}
 
-With the residual graph, background negatives were redundant on MNIST-on-grass \cpre. The smallest value on the grid, $m_B = 1$, was selected, and accuracy fell slowly as $m_B$ grew: from 0.973 to 0.968 at $m_B = 40$ \cdesc{} (\cref{tab:mb}). They have not been tested with the residual graph on any other data.
+With the residual graph, background negatives were redundant on MNIST-on-grass \cpre. The smallest value on the grid, $m_B = 1$, was selected, and accuracy fell slowly as $m_B$ grew: from 0.973 to 0.968 at $m_B = 40$ \cdesc{} (\cref{tab:mb}). With ten digits, \BN{} was ahead of \methodname{} by only +0.004 to +0.031 per seed (mean +0.016); we do not treat that as a real gain (\cref{sec:mnist09}). They have not been tested with the residual graph on any other data.
 
 A plausible reason for the redundancy \cinterp: the residual graph and $\xiB$ use the same information, namely each target's nearest background points. $\xiB$ uses it for repulsion, the residual graph to define neighborhoods. On this dataset, putting that information into the graph is what helps.
 % source: results/bsgraph/tables_phase2.md (appendix)
@@ -498,6 +518,39 @@ All synthetic results used the \emph{raw} kNN graph with background negatives, t
 \label{fig:mnist}
 \end{figure}
 
+\subsection{Real data: MNIST-on-grass with ten digits}
+\label{sec:mnist09}
+
+\paragraph{Setup.} The same recipe with all ten digits: 500 images of each digit per seed, so 5000 target and 5000 background images, with the grass pools and every setting as before. Only $m_B$ was re-selected on seeds 0--2: $m_B = 5$ for \BN{} and $m_B = 20$ for the raw graph. The experiment was pre-registered, and chance accuracy is 0.10. As a secondary metric we add the adjusted Rand index (ARI) between the digit labels and $k$-means clusters of the embedding ($k = 10$, 10 restarts, seeded) \cdesc.
+
+\paragraph{Results} (\cref{tab:mnist09,fig:mnist09}).
+\begin{itemize}
+  \item \BN{} beats t-SNE, PCA-50$\to$t-SNE and raw-graph background negatives on every seed \cpre. The residual graph matters even more than with two digits: 0.530 against 0.226 on the raw graph, and both raw-graph runs fall below t-SNE \cdesc.
+  \item \BN{} is ahead of \methodname{} on each seed, but only by +0.004 to +0.031 (mean +0.016). This passes the paired-seed rule, but with three seeds and differences this small we do not treat it as a real gain: background negatives add little \cinterp.
+  \item Against cPCA$\to$t-SNE at its label-free $\alpha$ (10 components), \BN{} and \methodname{} both win on every seed (0.530 and 0.514 vs 0.433) \cpre. With $\alpha$ and the number of components tuned on labels, cPCA$\to$t-SNE does better than the method on these data (0.689) \cdesc. Tuning $\alpha$ that way needs labels, which real data does not provide, so it is an optimistic bound rather than a realistic baseline; \methodname{} uses no labels \cinterp.
+  \item The residual-graph and cPCA maps all remove the grass: recall vs grass is 0.003--0.004, against 0.14 for t-SNE \cdesc.
+  \item ARI ranks the runs as digit accuracy does: 0.244 for \BN{}, 0.225 for \methodname{}, 0.117 for cPCA$\to$t-SNE, and at most 0.031 for every other run \cdesc. It is low everywhere because no map forms ten clean clusters: in \cref{fig:mnist09} the digits occupy overlapping regions rather than separate islands. With two digits (computed afterwards from the saved embeddings), \BN{} and \methodname{} reach 0.87 and cPCA$\to$t-SNE 0.80 \cdesc.
+  \item The absolute level is modest: 0.53 is far above chance, but the same classifier reaches 0.91 on the clean digits, so much of the digit structure is still lost \cdesc.
+\end{itemize}
+% source: results/mnist_grass_0to9/tables.md, results/mnist_grass_0to9/comparisons.json, REPORT_mnist_grass_0to9.md; tuned cPCA: results/mnist_grass_0to9_t3grid/tables.md
+
+\paragraph{Checks.} The \BN{} seed-3 and t-SNE seed-0 reruns were bit-identical, every dataset matched its checksum, and no run was flagged \cdesc.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{MNIST-on-grass with ten digits, confirmation seeds 3--5: mean [min, max]. ARI is $k$-means ($k = 10$) against the digit labels. The 0/1 ARI is the same method on the two-digit data (\cref{tab:mnist}), each at the $m_B$ selected there, computed afterwards from the saved embeddings. Times are wall-clock per run on one CPU thread, including graph construction. Chance accuracy is 0.10.}
+\label{tab:mnist09}
+\input{generated/tab_mnist09.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/mnist09_seed3.png}
+\caption{MNIST-on-grass with ten digits, confirmation seed 3, colored by digit. Each panel gives its digit kNN accuracy and ARI on this seed. Plain Neg-t-SNE and PCA-50$\to$t-SNE are in \cref{tab:mnist09} only.}
+\label{fig:mnist09}
+\end{figure}
+
 \clearpage
 % =====================================================================
 \section{What has and has not been tested}
@@ -517,6 +570,7 @@ All synthetic results used the \emph{raw} kNN graph with background negatives, t
   3 additive synthetic & additive, discrete clusters & raw & uniform, spectrum ref., cPCA & beats controls; cPCA better \\
   MNIST-on-grass & real, additive & raw & t-SNE, PCA/cPCA$\to$t-SNE & beats t-SNE controls; cPCA better \\
   MNIST-on-grass & real, additive & residual & the above, and raw & beats raw and t-SNE; ties cPCA \\
+  MNIST-on-grass, ten digits & real, additive & residual & the above & beats raw, t-SNE and label-free cPCA; label-tuned cPCA better \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -525,11 +579,11 @@ The main gaps, in rough order of importance:
 \begin{enumerate}
   \item \textbf{Non-additive real data.} Every real-data result is on an additive dataset, where global cPCA is exact in population. This is also where the local residual graph's case against a global cPCA graph must be made (\cref{sec:dec-local}).
   \item \textbf{Continuous or curved backgrounds.} Every background so far consists of discrete, well-separated clusters.
-  \item \textbf{The role of background negatives.} With the residual graph they are redundant on MNIST-on-grass and untested elsewhere, for example when the residual graph is imperfect.
+  \item \textbf{The role of background negatives.} With the residual graph they add little on MNIST-on-grass, with two or ten digits, and are untested elsewhere, for example when the residual graph is imperfect.
   \item \textbf{Label-free defaults beyond MNIST-on-grass.} $\kloc$ and $r$ have been checked on one dataset only.
   \item \textbf{The algorithm confound.} Comparisons with t-SNE-based controls also change the embedding algorithm. Without the background term, Neg-t-SNE was below t-SNE on MNIST-on-grass (\cref{sec:dec-neg}).
   \item \textbf{Nonlinear contrastive methods}, such as contrastiveVI \cite{weinberger2023contrastivevi}, have not been compared.
-  \item \textbf{Scaling.} Only $n = 5000$ has been tested. The residual construction does one small SVD per target point.
+  \item \textbf{Scaling.} Only $n = 5000$ has been tested. The cost is in the same class as standard neighbor embeddings (\cref{sec:cost}), but run times at larger $n$ have not been measured.
 \end{enumerate}
 
 % =====================================================================
@@ -562,6 +616,8 @@ The repository (\cref{app:repro}) organizes the work by phases. Each phase has i
   cPCA$\to$Neg-t-SNE on the additive benchmarks & (e2) & \texttt{REPORT\_phase5prep.md} & \texttt{results/phase5prep/} \\
   MNIST-on-grass, raw graph; t-SNE / PCA$\to$t-SNE / cPCA$\to$t-SNE & (c), (a); T1 / T2 / T3 & \texttt{REPORT\_mnist\_grass.md} & \texttt{results/mnist\_grass/} \\
   \methodname{} / \BN{}; residual-graph grid & (r\_a) / (r\_c); Phase 1 & \texttt{REPORT\_bsgraph.md} & \texttt{results/bsgraph/} \\
+  MNIST-on-grass with ten digits & (r\_c), (r\_a), (c), (a); T1--T3 & \texttt{REPORT\_mnist\_grass\_\allowbreak 0to9.md} & \texttt{results/mnist\_grass\_\allowbreak 0to9/} \\
+  two-stage vs one run, without background negatives & r\_a-single & \texttt{REPORT\_single\_stage.md} & \texttt{results/single\_stage/} \\
   \midrule
   plain Neg-t-SNE & (a) & all & --- \\
   raw graph + background negatives & (c) & all & --- \\
@@ -588,6 +644,8 @@ The repository (\cref{app:repro}) organizes the work by phases. Each phase has i
   global metrics and thresholds, before any cPCA result & \texttt{23459ff} \\
   MNIST-on-grass (raw graph): pre-registration; selection & \texttt{8f916ee}; \texttt{3dd613a} \\
   residual graph: graph-quality gate; embeddings & \texttt{3f0fc27}; \texttt{42bd31c} \\
+  MNIST-on-grass, ten digits: pre-registration; selection & \texttt{a9329a6}; \texttt{9a3ec00} \\
+  two-stage vs one run: tolerances & \texttt{d6f7be0} \\
   \bottomrule
 \end{tabular}
 \end{center}
