@@ -461,10 +461,8 @@ All synthetic results used the \emph{raw} kNN graph with background negatives, t
   \item \BN{} beats raw-graph background negatives, t-SNE and PCA$\to$t-SNE on every seed \cpre.
   \item It ties cPCA$\to$t-SNE, and it ties \methodname{} without background negatives; neither comparison is consistent \cpre.
   \item Recall vs grass falls from 0.022 to 0.003, the same as cPCA$\to$t-SNE \cdesc.
-  \item In the embedding (\cref{fig:mnist}), the two digits form separate islands with no gradient in grass brightness. On the raw graph, by contrast, the digits split within one blob that still runs from dark to bright grass.
+  \item In the embedding (\cref{fig:mnist}; the controls in \cref{fig:mnist-controls}), the two digits form separate islands with no gradient in grass brightness. On the raw graph, by contrast, the digits split within one blob that still runs from dark to bright grass.
 \end{itemize}
-
-\paragraph{Checks.} The \BN{} seed-3 rerun was bit-identical. The raw-graph and t-SNE rows were reused from the earlier experiment, after checking that the code they depend on was unchanged and that every dataset matched its recorded checksum \cdesc. The controls' embeddings are shown in \cref{fig:mnist-controls}.
 
 \begin{table}[htbp]
 \centering

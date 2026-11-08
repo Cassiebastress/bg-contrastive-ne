@@ -117,7 +117,6 @@ This file lists every claim in the report with its type and source.
 | R3 | MNIST pre-checks 0.90 / 0.93 / 1.00; grass recall 0.44 | desc | `results/mnist_grass/prechecks.md`; `results/bsgraph/phase1.md` |
 | R4 | Tables 2–3 values and verdicts | pre / desc | `results/bsgraph/tables_phase2.md`; `results/mnist_grass/tables.md` |
 | R5 | grass recall 0.022 → 0.003 | desc | `results/bsgraph/tables_phase2.md` |
-| R6 | bit-identical rerun; reuse check | desc | `results/bsgraph/recheck.json`, `reuse.json` |
 | R7 | ten-digit setup: 500 per digit, m_B = 5 / 20, pre-registered | (definition) | `results/mnist_grass_0to9/preregistration.md` (`a9329a6`), `selection.json` |
 | R8 | BC-NE+BN beats t-SNE, PCA-50→t-SNE and raw-graph BN on every seed; both raw-graph runs below t-SNE | pre / desc | `results/mnist_grass_0to9/comparisons.json`, `tables.md` |
 | R9 | BC-NE+BN and BC-NE beat label-free cPCA→t-SNE (0.530, 0.514 vs 0.433); label-tuned 0.689 | pre / desc | `results/mnist_grass_0to9/comparisons.json`; `results/mnist_grass_0to9_t3grid/tables.md` |
