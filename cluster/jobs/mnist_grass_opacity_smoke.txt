@@ -1,0 +1,5 @@
+$PY scripts/opacity_run.py --stage selection --seed 0 --w 0.25 --proc r_a
+$PY scripts/opacity_run.py --stage selection --seed 0 --w 0.25 --proc T1
+$PY scripts/opacity_run.py --stage selection --seed 0 --w 0.25 --proc a
+$PY scripts/opacity_run.py --stage selection --seed 0 --w 0.25 --proc cpca
+$PY scripts/opacity_run.py --stage selection --seed 0 --w 0.25 --proc local
