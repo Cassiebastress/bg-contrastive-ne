@@ -167,10 +167,21 @@ def tables():
     return rows, curves, grid_acc, grid_ari, pre
 
 
-def scatter(ax, e, c, order, **kw):
+LINEAR = ("cPCA2D", "PCA2D")  # 2-D projections: a few extreme cells stretch the axes, so these zoom to the bulk
+
+
+def scatter(ax, e, c, order, central=False, **kw):
+    """Points in a fixed random draw order. central=True: axes limited to the 0.5-99.5 percentile box of each axis
+    (stated in the panel title), which keeps the bulk of a linear projection readable."""
     e = e[order]
     ax.scatter(*e.T, c=c[order] if isinstance(c, np.ndarray) else c, s=0.6, edgecolor="none", rasterized=True, **kw)
-    ax.set_aspect("equal", adjustable="datalim")
+    if central:
+        lo, hi = np.percentile(e, 0.5, axis=0), np.percentile(e, 99.5, axis=0)
+        pad = 0.05 * (hi - lo)
+        ax.set_xlim(lo[0] - pad[0], hi[0] + pad[0])
+        ax.set_ylim(lo[1] - pad[1], hi[1] + pad[1])
+    else:
+        ax.set_aspect("equal", adjustable="datalim")
     ax.axis("off")
 
 
@@ -182,11 +193,13 @@ def embedding_figures(rows, d):
         fig, axes = plt.subplots(2, 4, figsize=(13, 7))
         for ax, run in zip(axes.flat, MAIN_RUNS):
             e = np.load(RUNS_DIR / f"seed{FIG_SEED}_{run}.npy")
+            central = run in LINEAR
             if kind == "label":
-                scatter(ax, e, LABEL_COLORS[y], order)
+                scatter(ax, e, LABEL_COLORS[y], order, central=central)
             else:
-                scatter(ax, e, depth, order, cmap="viridis")
-            ax.set_title(f"{LABELS[run]}\nacc {rec[run]['label_acc']:.3f} · ARI {rec[run]['ari']:.3f}", fontsize=9)
+                scatter(ax, e, depth, order, central=central, cmap="viridis")
+            ax.set_title(f"{LABELS[run]}{' (central 99%)' if central else ''}\nacc {rec[run]['label_acc']:.3f} · "
+                         f"ARI {rec[run]['ari']:.3f}", fontsize=9)
         if kind == "label":
             handles = [plt.Line2D([], [], marker="o", ls="", ms=6, color=c, label=lab)
                        for c, lab in zip(LABEL_COLORS, ("pre-transplant", "post-transplant"))]
@@ -275,11 +288,10 @@ def replication_figure(d, pre):
     keys = [f"{a:.6g}" for a in PAPER_ALPHAS]
     fig, axes = plt.subplots(1, len(keys), figsize=(3.2 * len(keys), 3.4))
     for ax, k in zip(axes, keys):
-        scatter(ax, proj[k], LABEL_COLORS[y], order)
-        ax.set_aspect("auto")
+        scatter(ax, proj[k], LABEL_COLORS[y], order, central=True)
         ax.set_title(f"α = {float(k):.3g}\nacc {acc[k]:.3f}", fontsize=9.5)
-    fig.suptitle("cPCA-2D on the paper's preprocessing (its α values; blue pre, orange post)", fontsize=10,
-                 color=MUTED)
+    fig.suptitle("cPCA-2D on the paper's preprocessing (its α values; blue pre, orange post; central 99% of cells)",
+                 fontsize=10, color=MUTED)
     fig.tight_layout()
     fig.savefig(OUT / "replication.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
