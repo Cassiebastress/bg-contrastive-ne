@@ -34,7 +34,7 @@ This file lists every claim in the report with its type and source.
 | S3 | BC-NE+BN vs BC-NE differ by ≤ 0.002 per seed, with one exact tie; not consistent | pre | `results/bsgraph/comparisons.json` (+0.0014, 0.0000, +0.0020) |
 | S4 | BC-NE+BN vs cPCA→t-SNE not consistent; ranges 0.972–0.974 vs 0.941–0.979 | pre / desc | `results/bsgraph/tables_phase2.md` |
 | S5 | additive ⇒ C_T − C_B = C_S | der | §5.6 proof |
-| S6 | cPCA pipelines beat raw-graph BN on every additive benchmark run: synthetic (desc), MNIST (pre) | desc / pre | `results/phase5prep/cpca_summary.md`; `results/mnist_grass/tables.md` |
+| S6 | cPCA followed by a neighbor embedding beats raw-graph BN on every additive benchmark run: synthetic (desc), MNIST (pre) | desc / pre | `results/phase5prep/cpca_summary.md`; `results/mnist_grass/tables.md` |
 | S7 | ten digits: BC-NE+BN vs raw-graph BN 0.530 vs 0.226 | pre | `results/mnist_grass_0to9/tables.md`, `comparisons.json` |
 | S8 | ten digits: BC-NE+BN vs BC-NE +0.016 on average, not treated as a real gain | pre (rule met) / interp | `results/mnist_grass_0to9/comparisons.json` (+0.004, +0.031, +0.014) |
 | S9 | ten digits: label-free cPCA→t-SNE 0.433 < 0.530 (pre); label-tuned 0.689 (desc); label tuning not realistic (interp) | pre / desc / interp | `results/mnist_grass_0to9/tables.md`; `results/mnist_grass_0to9_t3grid/tables.md` |
@@ -107,24 +107,33 @@ This file lists every claim in the report with its type and source.
 | D21 | same information, two uses | interp | REPORT_bsgraph.md Interpretation |
 | D22 | one 750-epoch run within tolerance on every seed of 0/1 and 0–9; mean Δ −0.0001 / −0.0016; tolerances 0.005 / 0.0092; some layouts rearranged | desc | `results/single_stage/criterion.md` (committed `d6f7be0`), `results.json`, `tables.md` |
 | D23 | ten digits: BC-NE+BN ahead of BC-NE by +0.004 to +0.031 (mean +0.016), not treated as a real gain | pre (rule met) / interp | `results/mnist_grass_0to9/comparisons.json` |
+| D24 | controls table: cPCA-2D (the 2-D cPCA projection used directly as the embedding) | (definition) | `baselines/cpca.py` (`project(f, alpha, 2)`) |
 
 ## §6 Results
 
 | # | claim | type | source |
 |---|---|---|---|
-| R1 | Table 1 values; BN beats every control | pre | `results/phase4/headline.md`, `tables.md` |
+| R1 | Table 2 values; BN beats every control | pre | `results/phase4/headline.md`, `tables.md` |
 | R2 | cPCA→Neg-t-SNE 0.980–0.989; +0.10 / +0.40 / +0.11; neighbor fraction 0.805–0.820 vs 0.000–0.001 | desc | `results/phase5prep/cpca_summary.md` |
 | R3 | MNIST pre-checks 0.90 / 0.93 / 1.00; grass recall 0.44 | desc | `results/mnist_grass/prechecks.md`; `results/bsgraph/phase1.md` |
-| R4 | Tables 2–3 values and verdicts | pre / desc | `results/bsgraph/tables_phase2.md`; `results/mnist_grass/tables.md` |
+| R4 | Tables 3–4 values and verdicts | pre / desc | `results/bsgraph/tables_phase2.md`; `results/mnist_grass/tables.md` |
 | R5 | grass recall 0.022 → 0.003 | desc | `results/bsgraph/tables_phase2.md` |
 | R7 | ten-digit setup: 500 per digit, m_B = 5 / 20, pre-registered | (definition) | `results/mnist_grass_0to9/preregistration.md` (`a9329a6`), `selection.json` |
 | R8 | BC-NE+BN beats t-SNE, PCA-50→t-SNE and raw-graph BN on every seed; both raw-graph runs below t-SNE | pre / desc | `results/mnist_grass_0to9/comparisons.json`, `tables.md` |
 | R9 | BC-NE+BN and BC-NE beat label-free cPCA→t-SNE (0.530, 0.514 vs 0.433); label-tuned 0.689 | pre / desc | `results/mnist_grass_0to9/comparisons.json`; `results/mnist_grass_0to9_t3grid/tables.md` |
 | R10 | grass recall 0.003–0.004 vs 0.14 | desc | `results/mnist_grass_0to9/tables.md` |
-| R11 | ARI 0.244 / 0.225 / 0.117 / ≤ 0.031; 0/1 post hoc 0.87 / 0.80 | desc | `results/mnist_grass_0to9/tables.md` ("Beside the 0/1 runs"), `ari_01_posthoc.csv` |
+| R11 | ARI 0.244 / 0.225 / 0.117 / 0.074 (cPCA-2D) / ≤ 0.031; 0/1 post hoc 0.87 / 0.80 / 0.79 (cPCA-2D) | desc | `results/mnist_grass_0to9/tables.md` ("Beside the 0/1 runs"), `ari_01_posthoc.csv`; `results/cpca2d_posthoc/tables.md` |
 | R12 | clean-digit classifier 0.91 | desc | REPORT_mnist_grass_0to9.md Summary 6 |
 | R13 | Table 5 and Fig. 2 | desc | `scripts/supervisor_0to9.py` → `generated/tab_mnist09.tex`, `figures/mnist09_seed3.png` |
 | R14 | ten digits: reruns bit-identical, checksums matched, no flags | desc | `results/mnist_grass_0to9/recheck_*.json`, `runs_confirmation.csv` |
+| R15 | synthetic: cPCA-2D 0.81–0.87; above raw-graph BN on overlapping, level on nonlinear, below on orthogonal; Table 2 now generated | desc | `results/phase5prep/cpca_summary.md` ((e1)); `scripts/supervisor_cpca2d.py` → `generated/tab_additive.tex` (reproduces the 15 earlier typed cells exactly) |
+| R16 | 0/1: cPCA-2D 0.949 [0.939, 0.967] vs cPCA→t-SNE 0.955, grass recall 0.003; Table 3 row; Fig. 1 bottom row | desc (post hoc) | `results/cpca2d_posthoc/tables.md` (job 6281; every α and projection recomputed bit for bit); `scripts/supervisor_cpca2d.py` → `generated/row_mnist_cpca2d.tex`, `figures/mnist_residual_seed3.png` |
+| R17 | ten digits: cPCA-2D 0.269, above t-SNE 0.253, below cPCA→t-SNE 0.433 and BC-NE 0.514; Table 5 row; Fig. 2 panel | desc (post hoc) | `results/cpca2d_posthoc/tables.md`; `scripts/supervisor_0to9.py` → `generated/tab_mnist09.tex`, `figures/mnist09_seed3.png` |
+| R18 | fainter digits, w = 0.10: BC-NE 0.835 vs t-SNE 0.598, ahead on every seed by 0.22–0.26; ARI 0.442 (0.40–0.47) vs 0.001 | desc | `results/mnist_grass_opacity/tables.md`, `runs_{selection,confirmation}.csv` |
+| R19 | by eye (author, seed 3): BC-NE separates down to w = 0.08, t-SNE down to 0.20; neither at 0.06; all near chance at w ≤ 0.05 | desc | `results/mnist_grass_opacity/visual_judgment.md` (`14594f4`), `tables.md` |
+| R20 | t-SNE ARI near 0 at every w, even 0.25 | desc | `results/mnist_grass_opacity/tables.md` (ARI table) |
+| R21 | cPCA→t-SNE matches BC-NE at w ≥ 0.15, 0.748 / ARI 0.269 at w = 0.10 (below BC-NE's ARI on every seed); cPCA-2D close at every w (0.751 at 0.10) | desc | `results/mnist_grass_opacity/tables.md`, `runs_*.csv` |
+| R22 | grass recall ≤ 0.012 (BC-NE) vs 0.13–0.19 (t-SNE); Table 6 and Fig. 3 | desc | `results/mnist_grass_opacity/runs_*.csv`; `scripts/supervisor_opacity.py` → `generated/tab_opacity.tex`, `figures/opacity_seed3.png` |
 
 ## §7–8 Gaps and next steps
 
@@ -137,7 +146,7 @@ All items are `desc` (not yet run) or `interp`.
 | pre-registration commits | — | `git log --diff-filter=A` on each pre-registration file; `3dd613a` from REPORT_mnist_grass.md |
 | Mac vs cluster ≤ 0.027, no mixed comparisons | desc | `results/mnist_grass/tables.md` (cluster validation table) |
 | environment versions | — | REPORT.md Reproducibility; results JSON `environment` blocks |
-| Tables 6–8 | — | `results/bsgraph/phase1.md`; `results/bsgraph/tables_phase2.md` and `results/mnist_grass/tables.md` (appendices); `results/phase4/tables.md` |
+| Tables 8–10 | — | `results/bsgraph/phase1.md`; `results/bsgraph/tables_phase2.md` and `results/mnist_grass/tables.md` (appendices); `results/phase4/tables.md` |
 
 ## Citations
 

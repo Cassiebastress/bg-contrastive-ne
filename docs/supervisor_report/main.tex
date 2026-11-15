@@ -75,7 +75,7 @@ This report describes the current state of the method, the reasoning and evidenc
   % source: results/bsgraph/tables_phase2.md, results/bsgraph/comparisons.json
   \item \textbf{Background negatives add little once the graph is background-suppressed.} With two digits, \BN{} and \methodname{} differ by at most 0.002 per seed, with one exact tie \cpre. With ten digits the difference is small (+0.016 on average), and we do not treat it as a real gain \cinterp.
   \item \textbf{On MNIST-on-grass with two digits the method ties contrastive PCA (cPCA) followed by t-SNE, and is more stable across seeds.} Neither is consistently better \cpre. Across seeds, \BN{} ranges over 0.972--0.974 and cPCA$\to$t-SNE over 0.941--0.979 \cdesc.
-  \item \textbf{Global cPCA wins when the background is additive.} If target $=$ signal $+$ independent background, the difference of the target and background covariances is exactly the signal covariance \cder. Accordingly, cPCA-based pipelines beat raw-graph background negatives on every additive benchmark we ran: synthetic \cdesc{} and real \cpre. With ten digits, cPCA$\to$t-SNE at its label-free $\alpha$ falls behind the method (0.433 vs 0.530) \cpre, but with $\alpha$ tuned on labels it is ahead (0.689) \cdesc. Tuning $\alpha$ that way needs labels, which real data does not have, so it is not a realistic setting \cinterp.
+  \item \textbf{Global cPCA wins when the background is additive.} If target $=$ signal $+$ independent background, the difference of the target and background covariances is exactly the signal covariance \cder. Accordingly, cPCA followed by a neighbor embedding beats raw-graph background negatives on every additive benchmark we ran: synthetic \cdesc{} and real \cpre. With ten digits, cPCA$\to$t-SNE at its label-free $\alpha$ falls behind the method (0.433 vs 0.530) \cpre, but with $\alpha$ tuned on labels it is ahead (0.689) \cdesc. Tuning $\alpha$ that way needs labels, which real data does not have, so it is not a realistic setting \cinterp.
 \end{enumerate}
 
 \paragraph{Main open question.} The residual graph has so far been tested only on MNIST-on-grass. That dataset's background is additive, so global cPCA already does about as well. The residual graph's intended advantage is suppressing a background that no single global projection can remove. That advantage has not yet been tested on real data with a non-additive background (\cref{sec:gaps}).
@@ -167,6 +167,7 @@ The grass is added independently of the digit, so this dataset is additive.
   uniform extra negatives (same number, drawn uniformly) & more repulsion \\
   t-SNE-end spectrum reference ($\bar Z = 100n$, i.e.\ $c = 500/n$) & a shift along the attraction--repulsion spectrum \\
   cPCA$\to$Neg-t-SNE, cPCA$\to$t-SNE & linear background suppression \\
+  cPCA-2D (the 2-D cPCA projection) & linear suppression alone \\
   t-SNE, PCA$\to$t-SNE & standard practice \\
   \bottomrule
 \end{tabular}
@@ -433,24 +434,15 @@ All synthetic results used the \emph{raw} kNN graph with background negatives, t
 \paragraph{Do background negatives help beyond more repulsion?} Yes. \Cref{tab:additive} shows large gains over every control at every level, consistent across seeds \cpre.
 % source: results/phase4/headline.md; results/phase4/tables.md
 
-\paragraph{Does global cPCA do better?} Yes, as the population identity predicts (\cref{sec:identity}). cPCA$\to$Neg-t-SNE reaches 0.980--0.989 (\cref{tab:additive}), beating raw-graph background negatives by $+0.10$, $+0.40$ and $+0.11$ \cdesc. It also organizes the layout by signal across clusters. Of a point's 15 embedding neighbors, a fraction of 0.805--0.820 share its signal group but come from a different background cluster. For background negatives the fraction is 0.000--0.001 \cdesc.
+\paragraph{Does global cPCA do better?} Yes, as the population identity predicts (\cref{sec:identity}). cPCA$\to$Neg-t-SNE reaches 0.980--0.989 (\cref{tab:additive}), beating raw-graph background negatives by $+0.10$, $+0.40$ and $+0.11$ \cdesc. The 2-D cPCA projection itself (cPCA-2D), without a neighbor embedding, reaches only 0.81--0.87: above raw-graph background negatives on the overlapping benchmark, level on the nonlinear one and below on the orthogonal one \cdesc. cPCA$\to$Neg-t-SNE also organizes the layout by signal across clusters. Of a point's 15 embedding neighbors, a fraction of 0.805--0.820 share its signal group but come from a different background cluster. For background negatives the fraction is 0.000--0.001 \cdesc.
 % source: results/phase5prep/cpca_summary.md
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Additive synthetic benchmarks: signal kNN accuracy on the confirmation seeds, mean [min, max]. Background negatives use the raw kNN graph at the $m_B$ chosen on the selection seeds (10, 20 and 10). Every difference between background negatives and a control is consistent across 3 paired seeds \cpre. The last column, cPCA$\to$Neg-t-SNE, is descriptive here.}
+\caption{Additive synthetic benchmarks: signal kNN accuracy on the confirmation seeds, mean [min, max]. Background negatives use the raw kNN graph at the $m_B$ chosen on the selection seeds (10, 20 and 10). Every difference between background negatives and a control is consistent across 3 paired seeds \cpre. The last two columns are descriptive here: cPCA-2D is the 2-D cPCA projection used directly as the embedding, and cPCA$\to$Neg-t-SNE embeds the top cPCA directions; both use the label-free $\alpha$.}
 \label{tab:additive}
-% source: results/phase4/headline.md; results/phase5prep/cpca_summary.md
-\resizebox{\textwidth}{!}{\begin{tabular}{lccccc}
-  \toprule
-  background & plain & uniform (best) & spectrum ref. & background neg. & cPCA$\to$Neg-t-SNE \\
-  \midrule
-  orthogonal  & 0.312 [0.304, 0.322] & 0.387 [0.374, 0.410] & 0.346 [0.337, 0.352] & 0.894 [0.890, 0.899] & 0.989 [0.988, 0.990] \\
-  overlapping & 0.368 [0.355, 0.388] & 0.405 [0.391, 0.416] & 0.384 [0.382, 0.387] & 0.582 [0.573, 0.588] & 0.980 [0.978, 0.982] \\
-  nonlinear   & 0.347 [0.339, 0.353] & 0.429 [0.399, 0.464] & 0.381 [0.364, 0.394] & 0.868 [0.843, 0.902] & 0.980 [0.976, 0.984] \\
-  \bottomrule
-\end{tabular}}
+\input{generated/tab_additive.tex}
 \end{table}
 
 \subsection{Real data: MNIST-on-grass}
@@ -466,15 +458,16 @@ All synthetic results used the \emph{raw} kNN graph with background negatives, t
   \item \BN{} beats raw-graph background negatives, t-SNE and PCA$\to$t-SNE on every seed \cpre.
   \item It ties cPCA$\to$t-SNE, and it ties \methodname{} without background negatives; neither comparison is consistent \cpre.
   \item Recall vs grass falls from 0.022 to 0.003, the same as cPCA$\to$t-SNE \cdesc.
+  \item cPCA-2D, the 2-D cPCA projection used directly as the embedding (scored afterwards), reaches 0.949, close to cPCA$\to$t-SNE (0.955), with the same grass recall (0.003) \cdesc. With two digits, one linear direction already separates them (\cref{fig:mnist}, bottom row).
   \item In the embedding (\cref{fig:mnist}; the controls in \cref{fig:mnist-controls}), the two digits form separate islands with no gradient in grass brightness. On the raw graph, by contrast, the digits split within one blob that still runs from dark to bright grass.
 \end{itemize}
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{MNIST-on-grass, confirmation seeds 3--5: digit kNN accuracy (mean [min, max] and per seed) and recall vs grass (lower is better). No run was flagged.}
+\caption{MNIST-on-grass, confirmation seeds 3--5: digit kNN accuracy (mean [min, max] and per seed) and recall vs grass (lower is better). cPCA-2D, the 2-D cPCA projection at cPCA$\to$t-SNE's label-free $\alpha$ used directly as the embedding, was scored afterwards from the saved projections \cdesc. No run was flagged.}
 \label{tab:mnist}
-% source: results/bsgraph/tables_phase2.md
+% source: results/bsgraph/tables_phase2.md; cPCA-2D row: scripts/supervisor_cpca2d.py from results/cpca2d_posthoc/runs.csv
 \resizebox{\textwidth}{!}{\begin{tabular}{lccccc}
   \toprule
   run & digit acc. & seed 3 & seed 4 & seed 5 & recall vs grass \\
@@ -486,6 +479,7 @@ All synthetic results used the \emph{raw} kNN graph with background negatives, t
   t-SNE & 0.884 [0.872, 0.891] & 0.872 & 0.891 & 0.890 & 0.135 \\
   PCA-50$\to$t-SNE & 0.891 [0.883, 0.898] & 0.883 & 0.898 & 0.893 & 0.131 \\
   cPCA$\to$t-SNE & 0.955 [0.941, 0.979] & 0.941 & 0.979 & 0.943 & 0.003 \\
+  \input{generated/row_mnist_cpca2d.tex} \\
   \bottomrule
 \end{tabular}}
 \end{table}
@@ -516,8 +510,8 @@ All synthetic results used the \emph{raw} kNN graph with background negatives, t
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[height=0.55\textheight]{figures/mnist_residual_seed3.png}
-\caption{MNIST-on-grass, confirmation seed 3, colored by digit (left; blue 0, red 1) and by the mean brightness of each image's grass patch (right). Rows, top to bottom: \BN{} (\texttt{(r\_c)}); \methodname{} without background negatives (\texttt{(r\_a)}); raw graph + background negatives (\texttt{(c)}); cPCA$\to$t-SNE (\texttt{T3}).}
+\includegraphics[height=0.85\textheight]{figures/mnist_residual_seed3.png}
+\caption{MNIST-on-grass, confirmation seed 3, colored by digit (left; blue 0, red 1) and by the mean brightness of each image's grass patch (right). Rows, top to bottom: \BN{} (\texttt{(r\_c)}); \methodname{} without background negatives (\texttt{(r\_a)}); raw graph + background negatives (\texttt{(c)}); cPCA$\to$t-SNE (\texttt{T3}); cPCA-2D, scored afterwards and drawn to scale (almost all of its spread is along the first cPCA direction).}
 \label{fig:mnist}
 \end{figure}
 
@@ -531,18 +525,19 @@ All synthetic results used the \emph{raw} kNN graph with background negatives, t
   \item \BN{} beats t-SNE, PCA-50$\to$t-SNE and raw-graph background negatives on every seed \cpre. The residual graph matters even more than with two digits: 0.530 against 0.226 on the raw graph, and both raw-graph runs fall below t-SNE \cdesc.
   \item \BN{} is ahead of \methodname{} on each seed, but only by +0.004 to +0.031 (mean +0.016). This passes the paired-seed rule, but with three seeds and differences this small we do not treat it as a real gain: background negatives add little \cinterp.
   \item Against cPCA$\to$t-SNE at its label-free $\alpha$ (10 components), \BN{} and \methodname{} both win on every seed (0.530 and 0.514 vs 0.433) \cpre. With $\alpha$ and the number of components tuned on labels, cPCA$\to$t-SNE does better than the method on these data (0.689) \cdesc. Tuning $\alpha$ that way needs labels, which real data does not provide, so it is an optimistic bound rather than a realistic baseline; \methodname{} uses no labels \cinterp.
+  \item cPCA-2D, the 2-D cPCA projection used directly as the embedding (scored afterwards), reaches only 0.269: a little above t-SNE (0.253) and far below cPCA$\to$t-SNE (0.433) and \methodname{} (0.514) \cdesc. In two linear dimensions the ten digits overlap (\cref{fig:mnist09}); with two digits it was close to cPCA$\to$t-SNE (0.949 vs 0.955).
   \item The residual-graph and cPCA maps all remove the grass: recall vs grass is 0.003--0.004, against 0.14 for t-SNE \cdesc.
-  \item ARI ranks the runs as digit accuracy does: 0.244 for \BN{}, 0.225 for \methodname{}, 0.117 for cPCA$\to$t-SNE, and at most 0.031 for every other run \cdesc. It is low everywhere because no map forms ten clean clusters: in \cref{fig:mnist09} the digits occupy overlapping regions rather than separate islands. With two digits (computed afterwards from the saved embeddings), \BN{} and \methodname{} reach 0.87 and cPCA$\to$t-SNE 0.80 \cdesc.
+  \item ARI ranks the runs as digit accuracy does: 0.244 for \BN{}, 0.225 for \methodname{}, 0.117 for cPCA$\to$t-SNE, 0.074 for cPCA-2D, and at most 0.031 for every other run \cdesc. It is low everywhere because no map forms ten clean clusters: in \cref{fig:mnist09} the digits occupy overlapping regions rather than separate islands. With two digits (computed afterwards from the saved embeddings), \BN{} and \methodname{} reach 0.87, cPCA$\to$t-SNE 0.80 and cPCA-2D 0.79 \cdesc.
   \item The absolute level is modest: 0.53 is far above chance, but the same classifier reaches 0.91 on the clean digits, so much of the digit structure is still lost \cdesc.
 \end{itemize}
-% source: results/mnist_grass_0to9/tables.md, results/mnist_grass_0to9/comparisons.json, REPORT_mnist_grass_0to9.md; tuned cPCA: results/mnist_grass_0to9_t3grid/tables.md
+% source: results/mnist_grass_0to9/tables.md, results/mnist_grass_0to9/comparisons.json, REPORT_mnist_grass_0to9.md; tuned cPCA: results/mnist_grass_0to9_t3grid/tables.md; cPCA-2D: results/cpca2d_posthoc/tables.md
 
 \paragraph{Checks.} The \BN{} seed-3 and t-SNE seed-0 reruns were bit-identical, every dataset matched its checksum, and no run was flagged \cdesc.
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{MNIST-on-grass with ten digits, confirmation seeds 3--5: mean [min, max]. ARI is $k$-means ($k = 10$) against the digit labels. The 0/1 ARI is the same method on the two-digit data (\cref{tab:mnist}), each at the $m_B$ selected there, computed afterwards from the saved embeddings. Times are wall-clock per run on one CPU thread, including graph construction. Chance accuracy is 0.10.}
+\caption{MNIST-on-grass with ten digits, confirmation seeds 3--5: mean [min, max]. ARI is $k$-means ($k = 10$) against the digit labels. The 0/1 ARI is the same method on the two-digit data (\cref{tab:mnist}), each at the $m_B$ selected there, computed afterwards from the saved embeddings. Times are wall-clock per run on one CPU thread, including graph construction. cPCA-2D was scored afterwards from the 2-D projections the cPCA$\to$t-SNE runs saved \cdesc; it shares their cPCA fit, so it has no time of its own. Chance accuracy is 0.10.}
 \label{tab:mnist09}
 \input{generated/tab_mnist09.tex}
 \end{table}
@@ -567,7 +562,7 @@ All synthetic results used the \emph{raw} kNN graph with background negatives, t
   \item \textbf{At $w = 0.10$, \methodname{} separates the digits and t-SNE does not.} Digit kNN accuracy is 0.835 against 0.598, with \methodname{} ahead on every seed by 0.22--0.26. Its ARI is 0.442 (0.40--0.47 per seed), against 0.001 for t-SNE \cdesc. In \cref{fig:opacity}, \methodname{}'s two digits fill opposite halves of the map, while t-SNE's are mixed throughout.
   \item \textbf{By eye, \methodname{} separates the digits down to $w = 0.08$, and t-SNE only down to $w = 0.20$} (the author's judgment on seed 3, \cref{fig:opacity}). So from $w = 0.15$ to 0.08, \methodname{} succeeds where t-SNE fails. At $w = 0.06$ neither separates them, and at $w \le 0.05$ every method is close to chance (0.5) \cdesc.
   \item \textbf{t-SNE's ARI is near 0 at every opacity,} even at $w = 0.25$, where its digits are visibly separated: a two-cluster $k$-means split of its layout does not follow the digits \cdesc.
-  \item \textbf{cPCA$\to$t-SNE} (label-free $\alpha$) matches \methodname{} at $w \ge 0.15$ and falls behind as the digits fade. At $w = 0.10$ its accuracy is 0.748 and its ARI 0.269, below \methodname{}'s ARI on every seed \cdesc.
+  \item \textbf{cPCA$\to$t-SNE} (label-free $\alpha$) matches \methodname{} at $w \ge 0.15$ and falls behind as the digits fade. At $w = 0.10$ its accuracy is 0.748 and its ARI 0.269, below \methodname{}'s ARI on every seed; cPCA-2D is close to it at every $w$ (0.751 at $w = 0.10$) \cdesc.
   \item \textbf{The grass is removed at every opacity:} recall vs grass is at most 0.012 for \methodname{}, against 0.13--0.19 for t-SNE \cdesc.
 \end{itemize}
 
