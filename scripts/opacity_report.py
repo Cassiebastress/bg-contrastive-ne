@@ -232,7 +232,7 @@ def accuracy_figure(rows, s):
                 zorder=4 if main else 3)
     if s["w_star"] is not None:
         ax.axvline(s["w_star"], color=INK, lw=0.8, ls="--", zorder=1)
-        ax.text(s["w_star"], 1.005, " w*", color=INK, fontsize=9, ha="left", va="bottom")
+        ax.text(s["w_star"], 0.455, " w*", color=INK, fontsize=9, ha="left", va="bottom")
     ax.set_xlabel("digit opacity w (target = w · digit + grass)")
     ax.set_ylabel("digit kNN accuracy")
     ax.set_ylim(0.45, 1.0)
