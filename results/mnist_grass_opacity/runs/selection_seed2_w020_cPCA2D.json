@@ -1,0 +1,61 @@
+{
+  "stage": "selection",
+  "seed": 2,
+  "w": 0.2,
+  "run": "cPCA2D",
+  "rep": 0,
+  "applicable": true,
+  "digit_acc": 0.9503999999999999,
+  "recall_digits": 0.0172,
+  "recall_grass": 0.00304,
+  "ari": 0.7899154397215014,
+  "sha256": "c76595ddee4ff1c1fb4081e51b36e50e61538100b3e55440b7842bcb31271be7",
+  "runtime_s": 47.410657996311784,
+  "alpha": 4.3754793750741845,
+  "representatives": [
+    0.0,
+    1.0608183551394483,
+    4.3754793750741845,
+    28.942661247167518
+  ],
+  "variance_ratios": [
+    1.0201852040730024,
+    1.200698386196309,
+    6.282302817296952,
+    2.583808730335483
+  ],
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+    "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+    "cpu_count": 192,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 1,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "91fdb42a3d0d9ad5e13c5c44d6462f1b3d6a2d6d",
+      "dirty": false
+    },
+    "hostname": "math-h100-r01.math.mcgill.ca",
+    "slurm_job_id": "6265",
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "metric": "digit kNN accuracy",
+  "window": [
+    0.1
+  ],
+  "w_star": 0.1,
+  "rule": "largest w with mean r_a >= 0.8 and mean T1 <= 0.6 over seeds 0-2",
+  "mean_r_a": {
+    "0.25": 0.9715333333333334,
+    "0.2": 0.9540666666666665,
+    "0.15": 0.9178666666666668,
+    "0.1": 0.8338666666666666,
+    "0.08": 0.7708,
+    "0.06": 0.6062,
+    "0.05": 0.529,
+    "0.04": 0.5156,
+    "0.03": 0.5076,
+    "0.02": 0.5118,
+    "0.01": 0.5002
+  },
+  "mean_T1": {
+    "0.25": 0.888,
+    "0.2": 0.8133333333333334,
+    "0.15": 0.7156666666666666,
+    "0.1": 0.5894,
+    "0.08": 0.5480666666666667,
+    "0.06": 0.5262,
+    "0.05": 0.5215333333333333,
+    "0.04": 0.5184666666666667,
+    "0.03": 0.5120666666666667,
+    "0.02": 0.5101333333333333,
+    "0.01": 0.5100666666666666
+  },
+  "largest_gap_w": 0.1,
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-5.15.0-202-generic-x86_64-with-glibc2.35",
+    "cpu_model": "Intel(R) Xeon(R) Gold 6234 CPU @ 3.30GHz",
+    "cpu_count": 32,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 32,
+    "torch_deterministic_algorithms": false,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "91fdb42a3d0d9ad5e13c5c44d6462f1b3d6a2d6d",
+      "dirty": false
+    },
+    "hostname": null,
+    "slurm_job_id": null,
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}

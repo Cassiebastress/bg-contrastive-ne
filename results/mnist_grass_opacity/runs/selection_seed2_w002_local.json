@@ -1,0 +1,110 @@
+{
+  "stage": "selection",
+  "seed": 2,
+  "w": 0.02,
+  "run": "local",
+  "rep": 0,
+  "applicable": true,
+  "digit_acc": 0.5092000000000001,
+  "recall_digits": 0.0029066666666666668,
+  "recall_grass": 0.0078,
+  "ari": 0.0004821463131690723,
+  "sha256": "1c2e5de9c831ff26290225f2325a337a881c30e7fdee0fe14a4da05600184b66",
+  "runtime_s": 101.51471837796271,
+  "K": 2,
+  "silhouettes": {
+    "2": 0.24731047976442147,
+    "3": 0.18168309098332033,
+    "4": 0.1312157047415719,
+    "5": 0.13277713912353173,
+    "6": 0.10633405737730041,
+    "7": 0.10453381711235993,
+    "8": 0.07961876128325246,
+    "9": 0.077666895139187,
+    "10": 0.07818321907495945
+  },
+  "cluster_sizes_T_B": {
+    "0": [
+      2131,
+      2141
+    ],
+    "1": [
+      2869,
+      2859
+    ]
+  },
+  "k": 10,
+  "R": 1.9309759442830892,
+  "s": 19.30975944283089,
+  "cross_cluster_knn_frac": 0.0,
+  "embd_std": 7.4333882331848145,
+  "params": {
+    "k": 15,
+    "seed": 2,
+    "n_epochs": 750,
+    "batch_size": 32768,
+    "negative_samples": 5,
+    "optimizer": "sgd",
+    "learning_rate": 1.0,
+    "momentum": 0.0,
+    "anneal_lr": "linear",
+    "lr_min_factor": 0.0,
+    "spec_param": 1.0,
+    "neg_spec": 1.0,
+    "s": null,
+    "Z_bar": null,
+    "eps": 1.0,
+    "clamp_low": 0.0001,
+    "clamp_high": 1.0,
+    "loss_aggregation": "sum",
+    "early_exaggeration": true,
+    "force_resample": null,
+    "clip_grad": true,
+    "device": "cpu",
+    "background": {
+      "bg_mode": "none",
+      "m_B": 0,
+      "gamma": 1.0,
+      "n": null,
+      "seed": 0
+    }
+  },
+  "alphas": {
+    "0": 7.017038286703826,
+    "1": 5.541020330009492
+  },
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+    "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+    "cpu_count": 192,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 1,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "91fdb42a3d0d9ad5e13c5c44d6462f1b3d6a2d6d",
+      "dirty": false
+    },
+    "hostname": "math-h100-r01.math.mcgill.ca",
+    "slurm_job_id": "6265",
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}
