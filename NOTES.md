@@ -495,3 +495,16 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
 - **Visual judgment** (project owner, seed 3, `14594f4`): t-SNE separates at 0.25 and 0.20 only; BC-NE down to 0.08. So visually the range is w = 0.08–0.15. Disagrees with the levels at T1 w = 0.15 (0.704, no visible clustering) and r_a w = 0.08 (0.749, visibly separated).
 - **Baselines:** label-free cPCA (T3, cPCA-2D) matches r_a at w ≥ 0.15 and falls behind at 0.10 (0.75 vs 0.835) and 0.08 (0.60–0.62 vs 0.768). α was not tuned. Local cPCA finds K = 2 everywhere and sits between T1 and cPCA. Plain Neg-t-SNE (a) is below T1.
 - **ARI caveat:** ≈ 0 for T1, a and local cPCA even at high kNN accuracy; k-means follows the layout's large-scale shape, not the digits.
+
+# Single-cell RNA-seq, AML027 (`REPORT_scrna.md`, `results/scrna/`)
+
+- **Question:** does BC-NE (r_a, no background negatives) help on real data whose background is structured rather than added? Data: the cPCA paper's Figure 3 (Zheng 2017): target AML027 pre (3933) vs post (3965) transplant bone marrow, background healthy donor 1 (1985; donor 2 adds 2472). The mice protein data was dropped first: 18 target / 9 background mice was too few units.
+- **Setup:**
+  - pre-registered (`82ca18e`), 10 seeds, no selection; preprocessing: log-normalize, 500 most dispersed genes, pooled z-score (`data/scrna.py`, manifest `ce1cc59`; the 10x server refuses urllib's default user agent);
+  - baselines a, T1, T2 (PCA-50 → t-SNE), U2 (PCA-50 → UMAP), T3, cPCA-2D, PCA-2D; new secondary metric: background-structure retention (Jaccard of embedding neighbors' 15 nearest background cells);
+  - jobs 6282 (pre-check), 6283 (smoke), 6284 (main, 186 processes, 37 min); all reruns bit-identical, smoke reproduced.
+- **Result:** label kNN accuracy r_a 0.944; beats every baseline consistently across 10 seeds except T1 (0.943, not consistent), margins +0.004 to +0.020 (cPCA-2D +0.100). High-D accuracy is already 0.951, so accuracy barely discriminates; the ceiling rule (both ≥ 0.95) narrowly did not apply.
+- **ARI:** r_a 0.758 vs T3 0.525 (variable) and 0.36–0.39 for the other embeddings: BC-NE lays out pre and post as two halves. Plain Neg-t-SNE 0.355, so the residual graph is what changes it.
+- **cPCA:** label-free α = 307 on every seed (poor: T3 0.924, cPCA-2D 0.844); with labels α = 5.54 gives T3 0.955. Replication: on the paper's preprocessing our cPCA finds its four α exactly; α = 3.46 gives 0.977.
+- **Sensitivity:** r = 0 drops ARI to 0.375–0.577 (r ≥ 2: 0.734–0.761), unlike MNIST where mean subtraction did most of the work. Donors 1 + 2 change r_a by −0.002.
+- **Caveats:** pre and post are separate 10x runs with different depth (median log10 counts 3.69 vs 3.48): batch confounds the label. One patient, one donor.
