@@ -483,3 +483,15 @@ All informativeness gates pass on every level and seed: same-y_b ≥ 0.90, and s
   - Accuracy peaks on a single ridge at α ≈ 1.3–2.2 for every k. α = 1 gives only about 0.40. The label-free α (5.54, or 4.38 on seed 3) is off the ridge; tuned PCA (α = 0) ≈ T2.
 - **Consequence:** the 0–9 verdict against T3 holds only for the label-free setting (pointer added to that report). On additive data, a well-tuned global projection is enough. The non-additive real dataset remains the open test.
 
+
+# Digit opacity on MNIST-on-grass 0/1 (`REPORT_mnist_grass_opacity.md`, `results/mnist_grass_opacity/`)
+
+- **Question:** is there an opacity range where BC-NE (r_a, single stage) separates 0 from 1 and t-SNE (T1) does not? X_T(w) = w · digit + grass_T for w ∈ {0.25, …, 0.01}, X_B unchanged; X_T(0.25) reproduced the stored target bit for bit in every run.
+- **Setup:**
+  - pre-registered (`91fdb42`): window W = {mean r_a ≥ 0.80 and mean T1 ≤ 0.60} on seeds 0–2, w\* = max W, committed (`0e957e2`) before confirmation; C1–C3 at w\* on seeds 3–5;
+  - first phase with cPCA-2D and local cPCA as baselines (standing rule from here on);
+  - jobs 6264 (smoke), 6265 (selection), 6268 (confirmation), 170 processes each, about 12 min; all reruns bit-identical.
+- **Result:** W = {0.10}, w\* = 0.10. C1 holds (r_a 0.827–0.842), C2 fails narrowly (T1 0.596, 0.611, 0.614), C3 holds (+0.23 on every seed). Six-seed crossings: T1 reaches 0.60 at w ≈ 0.101, r_a drops below 0.80 at w ≈ 0.089.
+- **Visual judgment** (project owner, seed 3, `14594f4`): t-SNE separates at 0.25 and 0.20 only; BC-NE down to 0.08. So visually the range is w = 0.08–0.15. Disagrees with the levels at T1 w = 0.15 (0.704, no visible clustering) and r_a w = 0.08 (0.749, visibly separated).
+- **Baselines:** label-free cPCA (T3, cPCA-2D) matches r_a at w ≥ 0.15 and falls behind at 0.10 (0.75 vs 0.835) and 0.08 (0.60–0.62 vs 0.768). α was not tuned. Local cPCA finds K = 2 everywhere and sits between T1 and cPCA. Plain Neg-t-SNE (a) is below T1.
+- **ARI caveat:** ≈ 0 for T1, a and local cPCA even at high kNN accuracy; k-means follows the layout's large-scale shape, not the digits.
