@@ -26,6 +26,11 @@
 \def\@listii{\leftmargin\leftmarginii \topsep 1pt \parsep 0pt \itemsep 0pt}
 \makeatother
 
+% A caption of another float type inside a float, as the capt-of package does.
+\makeatletter
+\newcommand{\captionof}[1]{\def\@captype{#1}\caption}
+\makeatother
+
 % Let floats share pages with text.
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\bottomfraction}{0.8}
@@ -547,6 +552,40 @@ All synthetic results used the \emph{raw} kNN graph with background negatives, t
 \includegraphics[width=\textwidth]{figures/mnist09_seed3.png}
 \caption{MNIST-on-grass with ten digits, confirmation seed 3, colored by digit. Each panel gives its digit kNN accuracy and ARI on this seed. Plain Neg-t-SNE and PCA-50$\to$t-SNE are in \cref{tab:mnist09} only.}
 \label{fig:mnist09}
+\end{figure}
+
+\clearpage
+\subsection{Real data: fainter digits}
+\label{sec:opacity}
+
+\paragraph{Setup.} At 25\% intensity, both \methodname{} and t-SNE separate 0 from 1 (\cref{tab:mnist}). To find where t-SNE stops separating them, we made the digits fainter: the target is $w \cdot \text{digit} + \text{grass}$ for opacities $w$ from 0.25 down to 0.01, with the same digits, grass patches and background at every $w$. Every run covers all six seeds (0--5). \methodname{} is run as one 750-epoch Neg-t-SNE fit instead of the two-stage schedule; on these data the two match closely.\footnote{\texttt{REPORT\_single\_stage.md} in the repository: mean difference in digit kNN accuracy $-0.0001$ on the two-digit data.} ARI is computed between the digit labels and $k$-means clusters of the embedding ($k = 2$).
+% source: results/mnist_grass_opacity/tables.md, results/mnist_grass_opacity/runs_{selection,confirmation}.csv;
+% table and figure: scripts/supervisor_opacity.py; visual judgment: results/mnist_grass_opacity/visual_judgment.md
+
+\paragraph{Results} (\cref{tab:opacity,fig:opacity}).
+\begin{itemize}
+  \item \textbf{At $w = 0.10$, \methodname{} separates the digits and t-SNE does not.} Digit kNN accuracy is 0.835 against 0.598, with \methodname{} ahead on every seed by 0.22--0.26. Its ARI is 0.442 (0.40--0.47 per seed), against 0.001 for t-SNE \cdesc. In \cref{fig:opacity}, \methodname{}'s two digits fill opposite halves of the map, while t-SNE's are mixed throughout.
+  \item \textbf{By eye, \methodname{} separates the digits down to $w = 0.08$, and t-SNE only down to $w = 0.20$} (the author's judgment on seed 3, \cref{fig:opacity}). So from $w = 0.15$ to 0.08, \methodname{} succeeds where t-SNE fails. At $w = 0.06$ neither separates them, and at $w \le 0.05$ every method is close to chance (0.5) \cdesc.
+  \item \textbf{t-SNE's ARI is near 0 at every opacity,} even at $w = 0.25$, where its digits are visibly separated: a two-cluster $k$-means split of its layout does not follow the digits \cdesc.
+  \item \textbf{cPCA$\to$t-SNE} (label-free $\alpha$) matches \methodname{} at $w \ge 0.15$ and falls behind as the digits fade. At $w = 0.10$ its accuracy is 0.748 and its ARI 0.269, below \methodname{}'s ARI on every seed \cdesc.
+  \item \textbf{The grass is removed at every opacity:} recall vs grass is at most 0.012 for \methodname{}, against 0.13--0.19 for t-SNE \cdesc.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\begin{minipage}[c]{0.40\textwidth}
+\centering
+\includegraphics[height=0.48\textheight]{figures/opacity_seed3.png}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.57\textwidth}
+\caption{Fainter digits, seed 3: t-SNE (left two columns) and \methodname{} (right two columns) at the same opacity $w$, each without labels and colored by digit (blue 0, orange 1). Below $w = 0.06$ neither method separates the digits, so those rows are omitted.}
+\label{fig:opacity}
+\vspace{1.5em}
+\captionof{table}{Fainter digits: mean over all six seeds. ARI is $k$-means ($k = 2$) against the digit labels. Chance accuracy is 0.5; at $w \le 0.05$ every method is within 0.05 of it.}
+\label{tab:opacity}
+\footnotesize
+\resizebox{\linewidth}{!}{\input{generated/tab_opacity.tex}}
+\end{minipage}
 \end{figure}
 
 \clearpage
