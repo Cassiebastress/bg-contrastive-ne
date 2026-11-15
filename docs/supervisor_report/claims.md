@@ -134,6 +134,11 @@ This file lists every claim in the report with its type and source.
 | R20 | t-SNE ARI near 0 at every w, even 0.25 | desc | `results/mnist_grass_opacity/tables.md` (ARI table) |
 | R21 | cPCA→t-SNE matches BC-NE at w ≥ 0.15, 0.748 / ARI 0.269 at w = 0.10 (below BC-NE's ARI on every seed); cPCA-2D close at every w (0.751 at 0.10) | desc | `results/mnist_grass_opacity/tables.md`, `runs_*.csv` |
 | R22 | grass recall ≤ 0.012 (BC-NE) vs 0.13–0.19 (t-SNE); Table 6 and Fig. 3 | desc | `results/mnist_grass_opacity/runs_*.csv`; `scripts/supervisor_opacity.py` → `generated/tab_opacity.tex`, `figures/opacity_seed3.png` |
+| R23 | single-cell setup: AML027 pre 3933 / post 3965 vs healthy donor 1985; signal groups = the two samples; 500 genes; ten seeds | (definition) | `results/scrna/preregistration.md` (`82ca18e`), `prechecks.md`, `data/MANIFEST_scrna.md` |
+| R24 | BC-NE beats every baseline on every seed except t-SNE (not consistent); gaps ≤ 0.02 apart from cPCA-2D; high-D accuracy 0.951 | pre / desc | `results/scrna/tables.md` (pre-registered comparisons), `prechecks.md` |
+| R25 | BC-NE alone lays the samples out in two halves (highest ARI); plain Neg-t-SNE does not | desc | `results/scrna/tables.md`, `embeddings_seed0_label.png` |
+| R26 | label-free α = 307 on every seed; label-chosen α gives cPCA→t-SNE 0.955 vs BC-NE 0.944 | desc | `results/scrna/prechecks.md`, `tables.md` (α chosen using labels) |
+| R27 | caveats: separate sequencing runs at different depths; one patient, one donor; Fig. 4 | interp / desc | `results/scrna/prechecks.md` (median log10 counts); `scripts/supervisor_scrna.py` → `figures/scrna_seed0.png` |
 
 ## §7–8 Gaps and next steps
 
