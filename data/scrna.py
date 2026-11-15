@@ -69,8 +69,10 @@ def download(root):
     d.mkdir(parents=True, exist_ok=True)
     for s, want in TARBALL_SHA256.items():
         path = d / f"{s}.tar.gz"
-        if not path.exists():
-            urllib.request.urlretrieve(URL.format(s=s), path)
+        if not path.exists():  # the server refuses urllib's default user agent (403), so name the project instead
+            req = urllib.request.Request(URL.format(s=s), headers={"User-Agent": "bg-contrastive-ne-data-download"})
+            with urllib.request.urlopen(req) as r:
+                path.write_bytes(r.read())
         if sha256(path) != want:
             raise RuntimeError(f"{path.name}: SHA-256 {sha256(path)} != pinned {want}")
 
