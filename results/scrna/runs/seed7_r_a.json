@@ -1,0 +1,82 @@
+{
+  "seed": 7,
+  "run": "r_a",
+  "rep": 0,
+  "label_acc": 0.9431494857344418,
+  "ari": 0.7574730815917371,
+  "bg_retention": 0.45626695904798265,
+  "n_components": 2,
+  "frac_in_small_components": 0.0,
+  "flag_fragment": false,
+  "runtime_s": 142.49380988627672,
+  "sha256": "1472ee08f0738cd338d3e2dfbd04c645afb5e489c587d09eaf52bf63e8b7c37d",
+  "embd_std": 4.101500511169434,
+  "params": {
+    "single": {
+      "k": 15,
+      "seed": 7,
+      "n_epochs": 750,
+      "batch_size": 32768,
+      "negative_samples": 5,
+      "optimizer": "sgd",
+      "learning_rate": 1.0,
+      "momentum": 0.0,
+      "anneal_lr": "linear",
+      "lr_min_factor": 0.0,
+      "spec_param": 1.0,
+      "neg_spec": 1.0,
+      "s": null,
+      "Z_bar": null,
+      "eps": 1.0,
+      "clamp_low": 0.0001,
+      "clamp_high": 1.0,
+      "loss_aggregation": "sum",
+      "early_exaggeration": true,
+      "force_resample": null,
+      "clip_grad": true,
+      "device": "cpu",
+      "background": {
+        "bg_mode": "none",
+        "m_B": 0,
+        "gamma": 1.0,
+        "n": null,
+        "seed": 0
+      }
+    }
+  },
+  "n_B": 1985,
+  "environment": {
+    "python": "3.12.15",
+    "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+    "cpu_model": "AMD EPYC 9474F 48-Core Processor",
+    "cpu_count": 192,
+    "torch": "2.14.1+cpu",
+    "torch_num_threads": 1,
+    "torch_deterministic_algorithms": true,
+    "packages": {
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "torchvision": "0.29.1+cpu",
+      "annoy": "1.17.3",
+      "matplotlib": "3.11.2",
+      "contrastive-ne": "0.4.0",
+      "contrastive": "1.2.0",
+      "umap-learn": "0.5.12",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "pynndescent": "0.6.0",
+      "openTSNE": "1.0.4"
+    },
+    "contrastive_ne_upstream_commit": "d5f0b530f35be4d6247300a601fb5a860bc0a1c8",
+    "project_git": {
+      "head": "82ca18ef3e16d1df6b1ba5bbbf0a427634537ec9",
+      "dirty": false
+    },
+    "hostname": "math-h100-r01.math.mcgill.ca",
+    "slurm_job_id": "6284",
+    "cne_device": "cpu",
+    "cuda": null,
+    "gpu": null
+  }
+}
