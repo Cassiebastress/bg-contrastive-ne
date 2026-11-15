@@ -61,6 +61,22 @@ def knn_recall(embd, reference, k=15):
     return float((a[:, :, None] == b[:, None, :]).any(axis=2).mean())
 
 
+def background_retention(embd, overlaps, k_B, k=15):
+    """Mean over the directed edges of the embedding's exact kNN graph (k neighbors) of the Jaccard overlap of the two
+    ends' k_B nearest background points. `overlaps` is method.xi_b.background_neighbor_overlaps(X_T, X_B, k_B): the
+    intersection sizes |N_B(i) ∩ N_B(j)| (pairs absent from it share none, Jaccard 0)."""
+    nbrs = knn_indices(embd, k)
+    inter = np.asarray(overlaps[np.repeat(np.arange(len(nbrs)), k), nbrs.ravel()], dtype=np.float64).ravel()
+    return float(np.mean(inter / (2 * k_B - inter)))
+
+
+def mean_pair_background_jaccard(overlaps, k_B):
+    """The same Jaccard overlap averaged over all ordered pairs i != j (the value for a map with random neighbors)."""
+    n = overlaps.shape[0]
+    inter = np.asarray(overlaps.data, dtype=np.float64)
+    return float((inter / (2 * k_B - inter)).sum() / (n * (n - 1)))
+
+
 def pair_distance_ranks(X):
     """Ranks (average ties) of all pairwise Euclidean distances, in pdist order; float64."""
     return rankdata(pdist(np.asarray(X, dtype=np.float64)))
