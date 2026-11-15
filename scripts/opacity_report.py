@@ -153,22 +153,35 @@ def runtime_table(rows):
 
 
 def judgment_table(conf):
-    """The project owner's visual judgment of T1 (seed 3), next to T1's seed-3 accuracy and the 0.60 rule."""
+    """The project owner's visual judgment (seed 3) next to the seed-3 accuracy and the pre-registered levels: T1
+    counts as separating the digits when its accuracy is above 0.60, r_a when it is at least 0.80. Lists where the
+    judgment and the levels disagree."""
     if not JUDGMENT.exists():
         return None
-    lines = [ln for ln in JUDGMENT.read_text().splitlines() if ln.startswith("| ") and not ln.startswith("| w ")]
     judged = {}
-    for ln in lines:
-        cells = [c.strip() for c in ln.strip("|").split("|")]
-        if cells[0].replace(".", "").isdigit():
-            judged[float(cells[0])] = cells[1:]
-    acc = {r["w"]: r["digit_acc"] for r in conf if r["run"] == "T1" and r["seed"] == FIG_SEED}
-    out = [f"| w | T1 accuracy, seed {FIG_SEED} | 0.60 rule: near chance | T1 separates the digits (project owner, "
-           "visual) | r_a separates the digits (project owner, visual) |", "|---|---|---|---|---|"]
+    for ln in JUDGMENT.read_text().splitlines():
+        cells = [c.strip() for c in ln.strip().strip("|").split("|")]
+        if ln.startswith("| ") and cells[0].replace(".", "").isdigit():
+            judged[float(cells[0])] = dict(zip(("T1", "r_a"), cells[1:]))
+    acc = {run: {r["w"]: r["digit_acc"] for r in conf if r["run"] == run and r["seed"] == FIG_SEED}
+           for run in ("T1", "r_a")}
+    rule = {"T1": lambda a: a > T1_MAX, "r_a": lambda a: a >= R_A_MIN}
+    out = [f"| w | T1 accuracy, seed {FIG_SEED} | T1 above {T1_MAX:.2f} | T1 separates the digits (project owner, "
+           f"visual) | r_a accuracy, seed {FIG_SEED} | r_a at least {R_A_MIN:.2f} | r_a separates the digits "
+           "(project owner, visual) |", "|---|---|---|---|---|---|---|"]
+    differ = {"T1": [], "r_a": []}
     for w in WS:
-        j = judged.get(w, ["—", "—"])
-        out.append(f"| {w:.2f} | {acc[w]:.3f} | {'yes' if acc[w] <= T1_MAX else 'no'} | {j[0]} | "
-                   f"{j[1] if len(j) > 1 else '—'} |")
+        cells = []
+        for run in ("T1", "r_a"):
+            by_rule, seen = "yes" if rule[run](acc[run][w]) else "no", judged.get(w, {}).get(run, "—")
+            if seen in ("yes", "no") and seen != by_rule:
+                differ[run].append(f"{w:.2f}")
+            cells += [f"{acc[run][w]:.3f}", by_rule, seen]
+        out.append(f"| {w:.2f} | " + " | ".join(cells) + " |")
+    out.append("")
+    for run, level in (("T1", f"above {T1_MAX:.2f}"), ("r_a", f"at least {R_A_MIN:.2f}")):
+        out.append(f"- **{LABELS[run]}:** the judgment and the accuracy level ({level}) disagree at "
+                   + (f"w = {', '.join(differ[run])}." if differ[run] else "no w."))
     return "\n".join(out)
 
 

@@ -223,3 +223,22 @@ Every run checked its dataset's SHA-256 and that X_T(0.25) reproduces the stored
 | plain Neg-t-SNE (a) | 100 | 72–127 |
 | cPCA fit + T3 + cPCA-2D | 39 | 31–64 |
 | local cPCA | 125 | 87–156 |
+
+## Visual judgment (project owner)
+
+| w | T1 accuracy, seed 3 | T1 above 0.60 | T1 separates the digits (project owner, visual) | r_a accuracy, seed 3 | r_a at least 0.80 | r_a separates the digits (project owner, visual) |
+|---|---|---|---|---|---|---|
+| 0.25 | 0.872 | yes | yes | 0.970 | yes | yes |
+| 0.20 | 0.818 | yes | yes | 0.953 | yes | yes |
+| 0.15 | 0.704 | yes | no | 0.916 | yes | yes |
+| 0.10 | 0.596 | no | no | 0.827 | yes | yes |
+| 0.08 | 0.568 | no | no | 0.749 | no | yes |
+| 0.06 | 0.533 | no | no | 0.593 | no | no |
+| 0.05 | 0.528 | no | no | 0.552 | no | no |
+| 0.04 | 0.522 | no | no | 0.535 | no | no |
+| 0.03 | 0.517 | no | no | 0.520 | no | no |
+| 0.02 | 0.512 | no | no | 0.517 | no | no |
+| 0.01 | 0.512 | no | no | 0.507 | no | no |
+
+- **t-SNE (T1):** the judgment and the accuracy level (above 0.60) disagree at w = 0.15.
+- **BC-NE (r_a):** the judgment and the accuracy level (at least 0.80) disagree at w = 0.08.
