@@ -58,6 +58,9 @@ BC-NE still separates the digits and t-SNE does not**.
    accuracy is 0.85–0.97: k-means' two-way split follows the layout's large-scale shape (t-SNE's stripes, local cPCA's
    two background islands), not the digits. BC-NE's ARI falls from 0.874 at w = 0.25 to 0.442 at 0.10, where its two
    digit groups touch.
+   - **In short:** below w = 0.20, only BC-NE and global cPCA split the digits globally (t-SNE stays at about 0 at
+     every w); BC-NE's ARI is the highest at w = 0.15–0.08 and beats both cPCA runs on all six seeds at w = 0.10 (0.40–0.47
+     vs 0.17–0.38).
 9. **Checks pass.** Every rerun was bit-identical (seed 0 at w = 0.25, and seed 3 at w\*), and every run reproduced
    the stored w = 0.25 target.
 
