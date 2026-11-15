@@ -5,9 +5,10 @@ Tables: digit kNN accuracy per w and run (selection seeds, confirmation seeds, a
 pre-registered C1-C3 at w*, the crossing points, the secondary metrics, local cPCA's clusters, the checks and the
 runtimes; once visual_judgment.md exists, the project owner's visual judgment next to the 0.60 rule.
 Figures: accuracy vs opacity (all six seeds, mean with a min-max band); one 0 and one 1 at several w; the embeddings
-at w* (seed 3); and the inspection figures for the visual judgment (T1 and r_a at every w, seed 3, gray and colored by
-digit, titled with w only). Run colors: the reference categorical order (as in scripts/phase3_smoke.py), fixed per run;
-digits 0/1 in the reference blue and orange. Needs data/processed/ and the embeddings (cluster).
+at w* (seed 3); the inspection figures for the visual judgment (T1 and r_a at every w, seed 3, gray and colored by
+digit, titled with w only), and both side by side, one row per w. Run colors: the reference categorical order (as in
+scripts/phase3_smoke.py), fixed per run; digits 0/1 in the reference blue and orange. Needs data/processed/ and the
+embeddings (cluster).
 
     python scripts/opacity_report.py            # everything
     python scripts/opacity_report.py --tables   # tables only (no data or embeddings needed)
@@ -323,6 +324,29 @@ def inspection_figures():
         plt.close(fig)
 
 
+def side_by_side_figure():
+    """One row per w: t-SNE and BC-NE next to each other, each gray and colored by digit, labeled with w only."""
+    _, _, t = load(FIG_SEED, W_STORED)
+    order = np.random.default_rng(0).permutation(len(t["y"]))
+    ws = sorted(WS, reverse=True)
+    cols = [("T1", None), ("T1", t["y"]), ("r_a", None), ("r_a", t["y"])]
+    fig, axes = plt.subplots(len(ws), len(cols), figsize=(7.6, 1.85 * len(ws)))
+    for i, w in enumerate(ws):
+        emb = {run: np.load(RUNS_DIR / f"{name('confirmation', FIG_SEED, w, run)}.npy") for run in ("T1", "r_a")}
+        for j, (run, y) in enumerate(cols):
+            scatter(axes[i, j], emb[run], y, order)
+        axes[i, 0].text(-0.1, 0.5, f"w = {w:.2f}", transform=axes[i, 0].transAxes, ha="right", va="center",
+                        fontsize=10)
+    for j, (run, y) in enumerate(cols):
+        axes[0, j].set_title(f"{LABELS[run]}\n{'no labels' if y is None else 'colored by digit'}", fontsize=9.5)
+    fig.suptitle(f"t-SNE vs BC-NE by opacity, confirmation seed {FIG_SEED} (0 blue, 1 orange)", fontsize=10.5)
+    fig.tight_layout(rect=(0.04, 0, 1, 0.99))
+    x = (axes[0, 1].get_position().x1 + axes[0, 2].get_position().x0) / 2
+    fig.add_artist(plt.Line2D([x, x], [0.01, 0.975], transform=fig.transFigure, color=RULE, lw=1))
+    fig.savefig(OUT / f"side_by_side_seed{FIG_SEED}.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+
 def main():
     rows, _, s = tables()
     if "--tables" in sys.argv:
@@ -330,6 +354,7 @@ def main():
     accuracy_figure(rows, s)
     digits_figure()
     inspection_figures()
+    side_by_side_figure()
     if s["w_star"] is not None:
         embeddings_figure(s["w_star"])
 
